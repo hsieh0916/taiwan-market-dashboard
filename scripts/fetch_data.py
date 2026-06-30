@@ -1,0 +1,565 @@
+#!/usr/bin/env python3
+"""
+Taiwan Market Dashboard - Data Fetcher
+Fetches VIX data, CNN Fear & Greed, and Taiwan institutional investor data.
+Outputs to data/market_data.json for the static GitHub Pages site.
+"""
+
+import json
+import os
+import sys
+from datetime import datetime, timezone, timedelta
+
+import urllib3
+import requests
+import yfinance as yf
+
+TW_TZ = timezone(timedelta(hours=8))
+OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "market_data.json")
+
+# Set NO_SSL_VERIFY=1 to skip SSL verification (useful on corporate/local machines)
+SSL_VERIFY = os.environ.get("NO_SSL_VERIFY", "0") != "1"
+if not SSL_VERIFY:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    print("SSL verification disabled (NO_SSL_VERIFY=1)", file=sys.stderr)
+
+# Shared requests session
+_session = requests.Session()
+_session.verify = SSL_VERIFY
+_session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; MarketDashboard/1.0)"})
+
+
+def fetch_vixtwn_from_taifex():
+    """
+    Fetch Taiwan VIX (VIXTWN) from TAIFEX.
+    Note: TAIFEX periodically changes their URL structure.
+    Update the URL below if data stops flowing.
+    Ref: https://www.taifex.com.tw  (look for 臺灣波動率指數/Taiwan VIX)
+    """
+    # Candidate URLs — try in order
+    urls_to_try = [
+        # TAIFEX open API (swagger-based, may change)
+        "https://openapi.taifex.com.tw/v1/TaiwanVIX",
+        # Legacy query URL (may be restored)
+        "https://www.taifex.com.tw/cht/54/taiwanVixDateView",
+    ]
+
+    for url in urls_to_try:
+        try:
+            resp = _session.get(url, timeout=12)
+            if resp.status_code != 200:
+                continue
+            # Try JSON first
+            try:
+                data = resp.json()
+                if isinstance(data, list) and data:
+                    sorted_data = sorted(data, key=lambda x: x.get("Date", ""), reverse=True)
+                    latest = sorted_data[0]
+                    prev = sorted_data[1] if len(sorted_data) > 1 else None
+                    current = float(latest.get("Close", 0) or latest.get("VIX", 0) or 0)
+                    prev_val = float(prev.get("Close", 0) or prev.get("VIX", 0) or 0) if prev else None
+                    hist_entries = sorted_data[:60][::-1]
+                    dates = [e.get("Date", "") for e in hist_entries]
+                    closes = [float(e.get("Close", 0) or e.get("VIX", 0) or 0) for e in hist_entries]
+                    closes_valid = [c for c in closes if c > 0]
+                    return {
+                        "symbol": "VIXTWN",
+                        "current": round(current, 2) if current else None,
+                        "prev": round(prev_val, 2) if prev_val else None,
+                        "change": round(current - prev_val, 2) if prev_val and current else None,
+                        "change_pct": round((current - prev_val) / prev_val * 100, 2) if prev_val and current else None,
+                        "high_52w": round(max(closes_valid), 2) if closes_valid else None,
+                        "low_52w": round(min(closes_valid), 2) if closes_valid else None,
+                        "_history_dates": dates,
+                        "_history_closes": closes,
+                    }
+            except ValueError:
+                pass
+        except Exception as e:
+            print(f"Warning: VIXTWN source {url} failed: {e}", file=sys.stderr)
+
+    print("Warning: VIXTWN unavailable from all sources. Using VIX as proxy.", file=sys.stderr)
+    return None
+
+
+def fetch_vix_data():
+    """Fetch VIX and VIXTWN data from Yahoo Finance."""
+    tickers = {
+        "vix": "^VIX",
+        "vix9d": "^VIX9D",
+        "vix3m": "^VIX3M",
+        "vix6m": "^VIX6M",
+        "twii": "^TWII",
+    }
+
+    result = {}
+    history = {}
+
+    for key, symbol in tickers.items():
+        try:
+            ticker = yf.Ticker(symbol, session=_session)
+            hist = ticker.history(period="60d", interval="1d")
+
+            if not hist.empty:
+                result[key] = {
+                    "symbol": symbol,
+                    "current": round(float(hist["Close"].iloc[-1]), 2),
+                    "prev": round(float(hist["Close"].iloc[-2]), 2) if len(hist) > 1 else None,
+                    "change": round(float(hist["Close"].iloc[-1]) - float(hist["Close"].iloc[-2]), 2) if len(hist) > 1 else 0,
+                    "change_pct": round(
+                        (float(hist["Close"].iloc[-1]) - float(hist["Close"].iloc[-2])) / float(hist["Close"].iloc[-2]) * 100, 2
+                    ) if len(hist) > 1 else 0,
+                    "high_52w": round(float(hist["Close"].max()), 2),
+                    "low_52w": round(float(hist["Close"].min()), 2),
+                }
+                history[key] = {
+                    "dates": [str(d.date()) for d in hist.index],
+                    "closes": [round(float(v), 2) for v in hist["Close"].tolist()],
+                }
+            else:
+                result[key] = {"symbol": symbol, "current": None, "error": "no data"}
+        except Exception as e:
+            result[key] = {"symbol": symbol, "current": None, "error": str(e)}
+            print(f"Warning: failed to fetch {symbol}: {e}", file=sys.stderr)
+
+    # Fetch VIXTWN from TAIFEX
+    vixtwn_data = fetch_vixtwn_from_taifex()
+    if vixtwn_data:
+        hist_dates = vixtwn_data.pop("_history_dates", [])
+        hist_closes = vixtwn_data.pop("_history_closes", [])
+        result["vixtwn"] = vixtwn_data
+        if hist_dates:
+            history["vixtwn"] = {"dates": hist_dates, "closes": hist_closes}
+    else:
+        result["vixtwn"] = {"symbol": "VIXTWN", "current": None, "error": "TAIFEX unavailable"}
+
+    return result, history
+
+
+def fetch_cnn_fear_greed():
+    """Fetch CNN Fear & Greed Index."""
+    url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; MarketDashboard/1.0)",
+        "Referer": "https://www.cnn.com/",
+    }
+    try:
+        resp = _session.get(url, headers={"Referer": "https://www.cnn.com/"}, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+        fg = data.get("fear_and_greed", {})
+        historical = data.get("fear_and_greed_historical", {}).get("data", [])
+
+        # Trim historical to last 60 days
+        hist_dates = [item["x"] for item in historical[-60:]]
+        hist_values = [round(item["y"], 1) for item in historical[-60:]]
+
+        return {
+            "current": round(fg.get("score", 0), 1),
+            "rating": fg.get("rating", "unknown"),
+            "prev_close": round(fg.get("previous_close", 0), 1),
+            "prev_1week": round(fg.get("previous_1_week", 0), 1),
+            "prev_1month": round(fg.get("previous_1_month", 0), 1),
+            "prev_1year": round(fg.get("previous_1_year", 0), 1),
+            "history_dates": hist_dates,
+            "history_values": hist_values,
+        }
+    except Exception as e:
+        print(f"Warning: failed to fetch CNN F&G: {e}", file=sys.stderr)
+        return {"current": None, "rating": "unknown", "error": str(e)}
+
+
+def fetch_twse_institutional():
+    """Fetch Taiwan Stock Exchange three major institutional investors data."""
+    url = "https://www.twse.com.tw/fund/BFI82U"
+    params = {"response": "json", "type": "day"}
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; MarketDashboard/1.0)",
+        "Referer": "https://www.twse.com.tw/",
+    }
+
+    try:
+        resp = _session.get(url, params=params, headers={"Referer": "https://www.twse.com.tw/"}, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+
+        rows = data.get("data", [])
+        result = {
+            "date": data.get("date", ""),
+            "title": data.get("title", ""),
+            "foreign": None,
+            "investment_trust": None,
+            "dealer": None,
+            "total_net": None,
+        }
+
+        def parse_num(s):
+            try:
+                return int(str(s).replace(",", "").replace("+", ""))
+            except Exception:
+                return 0
+
+        for row in rows:
+            name = str(row[0]).strip()
+            # Net buy/sell is column index 3 (買賣超) in thousands NTD
+            if "外資" in name and "自營" not in name:
+                result["foreign"] = parse_num(row[3])
+            elif "投信" in name:
+                result["investment_trust"] = parse_num(row[3])
+            elif "自營商" in name and "避險" not in name:
+                result["dealer"] = parse_num(row[3])
+
+        # Total net
+        vals = [v for v in [result["foreign"], result["investment_trust"], result["dealer"]] if v is not None]
+        result["total_net"] = sum(vals) if vals else None
+
+        # Fetch 30-day history (weekly is enough for trends)
+        history = fetch_twse_institutional_history()
+        result["history"] = history
+
+        return result
+
+    except Exception as e:
+        print(f"Warning: failed to fetch TWSE institutional: {e}", file=sys.stderr)
+        return {"error": str(e), "foreign": None, "investment_trust": None, "dealer": None, "total_net": None}
+
+
+def fetch_twse_institutional_history():
+    """Fetch last 20 trading days of institutional data."""
+    from datetime import date, timedelta
+
+    results = []
+    today = date.today()
+    checked = 0
+    day = today
+
+    while len(results) < 20 and checked < 60:
+        checked += 1
+        if day.weekday() >= 5:
+            day -= timedelta(days=1)
+            continue
+
+        date_str = day.strftime("%Y%m%d")
+        url = "https://www.twse.com.tw/fund/BFI82U"
+        params = {"response": "json", "type": "day", "dayDate": date_str}
+        headers = {"User-Agent": "Mozilla/5.0", "Referer": "https://www.twse.com.tw/"}
+
+        try:
+            resp = _session.get(url, params=params, headers={"Referer": "https://www.twse.com.tw/"}, timeout=10)
+            data = resp.json()
+            rows = data.get("data", [])
+            if rows:
+                entry = {"date": date_str, "foreign": 0, "investment_trust": 0, "dealer": 0}
+
+                def parse_num(s):
+                    try:
+                        return int(str(s).replace(",", "").replace("+", ""))
+                    except Exception:
+                        return 0
+
+                for row in rows:
+                    name = str(row[0]).strip()
+                    if "外資" in name and "自營" not in name:
+                        entry["foreign"] = parse_num(row[3])
+                    elif "投信" in name:
+                        entry["investment_trust"] = parse_num(row[3])
+                    elif "自營商" in name and "避險" not in name:
+                        entry["dealer"] = parse_num(row[3])
+
+                entry["total"] = entry["foreign"] + entry["investment_trust"] + entry["dealer"]
+                results.append(entry)
+        except Exception:
+            pass
+
+        day -= timedelta(days=1)
+
+    results.reverse()
+    return results
+
+
+def compute_market_signal(vix_data, cnn_data, institutional_data):
+    """
+    Compute composite market signal score (-100 to +100).
+    Positive = bullish for Taiwan market, Negative = bearish.
+    """
+    scores = {}
+    details = []
+
+    # --- VIXTWN signal (weight 30%) ---
+    vixtwn_val = vix_data.get("vixtwn", {}).get("current")
+    if vixtwn_val is not None:
+        if vixtwn_val >= 30:
+            s = 70   # Extreme fear = strong contrarian buy
+            label = f"台灣VIX極度恐慌({vixtwn_val:.1f}≥30)：逆向強買訊號"
+        elif vixtwn_val >= 25:
+            s = 40
+            label = f"台灣VIX恐慌({vixtwn_val:.1f}≥25)：買入訊號"
+        elif vixtwn_val >= 20:
+            s = 10
+            label = f"台灣VIX偏高({vixtwn_val:.1f}≥20)：謹慎中性偏多"
+        elif vixtwn_val >= 15:
+            s = 0
+            label = f"台灣VIX正常({vixtwn_val:.1f}：15-20)：中性"
+        elif vixtwn_val >= 12:
+            s = -20
+            label = f"台灣VIX偏低({vixtwn_val:.1f}：12-15)：市場過度樂觀，輕度賣出警示"
+        else:
+            s = -50
+            label = f"台灣VIX極低({vixtwn_val:.1f}<12)：市場極度貪婪，強烈賣出警示"
+        scores["vixtwn"] = s * 0.30
+        details.append({"indicator": "VIXTWN", "value": vixtwn_val, "signal": s, "label": label, "weight": "30%"})
+
+    # --- US VIX signal (weight 15%) ---
+    vix_val = vix_data.get("vix", {}).get("current")
+    if vix_val is not None:
+        if vix_val >= 35:
+            s = 60
+            label = f"美股VIX恐慌({vix_val:.1f}≥35)：市場重度避險，等待反彈"
+        elif vix_val >= 25:
+            s = 30
+            label = f"美股VIX偏高({vix_val:.1f}≥25)：市場擔憂，短期偏多"
+        elif vix_val >= 18:
+            s = 5
+            label = f"美股VIX正常({vix_val:.1f}：18-25)：中性"
+        elif vix_val >= 13:
+            s = -15
+            label = f"美股VIX偏低({vix_val:.1f}：13-18)：輕度過熱"
+        else:
+            s = -40
+            label = f"美股VIX極低({vix_val:.1f}<13)：市場極度自滿"
+        scores["vix"] = s * 0.15
+        details.append({"indicator": "US VIX", "value": vix_val, "signal": s, "label": label, "weight": "15%"})
+
+    # --- VIX Term Structure signal (weight 15%) ---
+    vix9d = vix_data.get("vix9d", {}).get("current")
+    vix3m = vix_data.get("vix3m", {}).get("current")
+    vix6m = vix_data.get("vix6m", {}).get("current")
+
+    if vix9d and vix_val and vix3m:
+        if vix9d > vix_val * 1.10:
+            s = 50   # Strongly inverted = panic
+            label = f"VIX期限結構強烈倒掛(VIX9D {vix9d:.1f} >> VIX {vix_val:.1f})：短期恐慌劇烈，可能觸底"
+        elif vix9d > vix_val:
+            s = 25
+            label = f"VIX期限結構輕度倒掛(VIX9D {vix9d:.1f} > VIX {vix_val:.1f})：短期壓力偏大"
+        elif vix3m > vix6m if vix6m else False:
+            s = -10
+            label = f"VIX期限結構正常偏陡(3M>{vix3m:.1f}>6M)：市場平穩"
+        else:
+            s = -15  # Normal contango = complacency
+            label = f"VIX期限結構正常順向(VIX9D {vix9d:.1f} < VIX {vix_val:.1f} < 3M {vix3m:.1f})：市場自滿"
+        scores["term_structure"] = s * 0.15
+        details.append({"indicator": "VIX期限結構", "value": round(vix9d - vix_val, 2), "signal": s, "label": label, "weight": "15%"})
+
+    # --- CNN Fear & Greed signal (weight 15%) ---
+    cnn_score = cnn_data.get("current")
+    if cnn_score is not None:
+        if cnn_score <= 25:
+            s = 60   # Extreme Fear = buy
+            label = f"CNN極度恐懼({cnn_score:.0f}≤25)：歷史底部區域，逆向做多"
+        elif cnn_score <= 45:
+            s = 25
+            label = f"CNN恐懼({cnn_score:.0f}：26-45)：市場偏悲觀，偏多"
+        elif cnn_score <= 55:
+            s = 0
+            label = f"CNN中性({cnn_score:.0f}：46-55)：市場情緒平衡"
+        elif cnn_score <= 75:
+            s = -25
+            label = f"CNN貪婪({cnn_score:.0f}：56-75)：市場過熱，降低倉位"
+        else:
+            s = -60
+            label = f"CNN極度貪婪({cnn_score:.0f}>75)：泡沫警示，考慮避險"
+        scores["cnn"] = s * 0.15
+        details.append({"indicator": "CNN恐懼貪婪", "value": cnn_score, "signal": s, "label": label, "weight": "15%"})
+
+    # --- Institutional investor signal (weight 25%) ---
+    inst_total = institutional_data.get("total_net")
+    if inst_total is not None:
+        billions = inst_total / 100000  # 轉換為億元
+        if billions > 100:
+            s = 80
+            label = f"三大法人合計大買({billions:.1f}億)：強力護盤，多方訊號"
+        elif billions > 30:
+            s = 40
+            label = f"三大法人合計淨買({billions:.1f}億)：法人偏多"
+        elif billions > -30:
+            s = 5
+            label = f"三大法人接近中性({billions:.1f}億)：觀望"
+        elif billions > -100:
+            s = -40
+            label = f"三大法人合計淨賣({billions:.1f}億)：法人偏空"
+        else:
+            s = -70
+            label = f"三大法人大量賣出({billions:.1f}億)：空方強勢"
+        scores["institutional"] = s * 0.25
+        details.append({"indicator": "三大法人", "value": round(billions, 1), "signal": s, "label": label, "weight": "25%"})
+
+    # Total weighted score
+    total_score = sum(scores.values())
+    total_score = max(-100, min(100, total_score))
+
+    # Market outlook
+    if total_score >= 50:
+        outlook = "強力做多"
+        outlook_en = "STRONG BUY"
+        color = "#00e676"
+    elif total_score >= 20:
+        outlook = "偏多"
+        outlook_en = "BUY"
+        color = "#69f0ae"
+    elif total_score >= -20:
+        outlook = "中性觀望"
+        outlook_en = "NEUTRAL"
+        color = "#ffc107"
+    elif total_score >= -50:
+        outlook = "偏空"
+        outlook_en = "SELL"
+        color = "#ff7043"
+    else:
+        outlook = "強力做空"
+        outlook_en = "STRONG SELL"
+        color = "#f44336"
+
+    return {
+        "score": round(total_score, 1),
+        "outlook": outlook,
+        "outlook_en": outlook_en,
+        "color": color,
+        "details": details,
+        "component_scores": {k: round(v, 2) for k, v in scores.items()},
+    }
+
+
+def generate_expert_analysis(vix_data, cnn_data, institutional_data, signal):
+    """Generate natural language expert analysis in Traditional Chinese."""
+    lines = []
+
+    vixtwn = vix_data.get("vixtwn", {}).get("current")
+    vix = vix_data.get("vix", {}).get("current")
+    vix9d = vix_data.get("vix9d", {}).get("current")
+    vix3m = vix_data.get("vix3m", {}).get("current")
+    twii = vix_data.get("twii", {}).get("current")
+    cnn = cnn_data.get("current")
+    cnn_rating = cnn_data.get("rating", "")
+    inst_total = institutional_data.get("total_net")
+    foreign = institutional_data.get("foreign")
+    inv_trust = institutional_data.get("investment_trust")
+    dealer = institutional_data.get("dealer")
+
+    score = signal["score"]
+    outlook = signal["outlook"]
+
+    lines.append("【市場總覽】")
+    if twii:
+        lines.append(f"台股加權指數目前報 {twii:,.0f} 點。")
+
+    lines.append("")
+    lines.append("【波動率分析】")
+    if vixtwn:
+        level = "極度恐慌" if vixtwn >= 30 else "恐慌" if vixtwn >= 25 else "偏高" if vixtwn >= 20 else "正常" if vixtwn >= 15 else "偏低"
+        lines.append(f"台灣VIX（VIXTWN）目前為 {vixtwn:.2f}，處於{level}水準。")
+    if vix:
+        us_level = "極度恐慌" if vix >= 35 else "恐慌" if vix >= 25 else "偏高" if vix >= 18 else "正常" if vix >= 13 else "過度自滿"
+        lines.append(f"美股VIX目前為 {vix:.2f}，市場情緒{us_level}。")
+    if vix9d and vix and vix3m:
+        if vix9d > vix:
+            lines.append(f"VIX期限結構呈倒掛（VIX9D={vix9d:.2f} > VIX={vix:.2f}），代表短期市場恐慌情緒高於中期，顯示可能為短線恐慌性賣壓，歷史上此情形後續往往出現反彈。")
+        else:
+            lines.append(f"VIX期限結構正常順向（VIX9D={vix9d:.2f} < VIX={vix:.2f} < VIX3M={vix3m:.2f}），市場處於相對平靜狀態。")
+
+    lines.append("")
+    lines.append("【市場情緒分析】")
+    if cnn is not None:
+        rating_map = {
+            "extreme fear": "極度恐懼",
+            "fear": "恐懼",
+            "neutral": "中性",
+            "greed": "貪婪",
+            "extreme greed": "極度貪婪",
+        }
+        rating_zh = rating_map.get(cnn_rating.lower(), cnn_rating)
+        lines.append(f"CNN恐懼貪婪指數目前為 {cnn:.0f}（{rating_zh}）。")
+        if cnn <= 25:
+            lines.append("當前處於極度恐懼區間，歷史數據顯示此為長期買入良機，建議分批佈局。")
+        elif cnn <= 45:
+            lines.append("市場偏向悲觀，但未達極端，可逐步加碼。")
+        elif cnn <= 55:
+            lines.append("市場情緒中性，建議持倉觀望，等待方向明確。")
+        elif cnn <= 75:
+            lines.append("市場偏向貪婪，需留意回調風險，可適度降低槓桿。")
+        else:
+            lines.append("市場處於極度貪婪區間，歷史上此時回調機率大幅提升，建議減碼或避險。")
+
+    lines.append("")
+    lines.append("【三大法人動向】")
+    if inst_total is not None:
+        b = inst_total / 100000
+        lines.append(f"今日三大法人合計{'買超' if b >= 0 else '賣超'} {abs(b):.1f} 億元。")
+        if foreign is not None:
+            fb = foreign / 100000
+            lines.append(f"  • 外資：{'買超' if fb >= 0 else '賣超'} {abs(fb):.1f} 億元（市場主力，對台股方向影響最大）")
+        if inv_trust is not None:
+            ib = inv_trust / 100000
+            lines.append(f"  • 投信：{'買超' if ib >= 0 else '賣超'} {abs(ib):.1f} 億元（國內基金動向，反映內資信心）")
+        if dealer is not None:
+            db = dealer / 100000
+            lines.append(f"  • 自營商：{'買超' if db >= 0 else '賣超'} {abs(db):.1f} 億元（短線交易為主，可作輔助參考）")
+
+    lines.append("")
+    lines.append("【綜合研判】")
+    lines.append(f"綜合波動率指標、市場情緒及法人動向，本系統計算綜合信號分數為 {score:+.1f} 分（滿分 ±100），")
+    lines.append(f"目前市場判斷為「{outlook}」。")
+
+    if score >= 50:
+        lines.append("多項指標同步發出強烈買入訊號，建議積極做多，可適度提高倉位。惟請注意設置停損，市場反轉時需快速應對。")
+    elif score >= 20:
+        lines.append("整體訊號偏多，可逐步建立多頭部位，但勿過度集中，建議搭配個股選擇及風險控管。")
+    elif score >= -20:
+        lines.append("市場訊號混合，建議維持現有倉位，耐心等待更明確的方向突破。可關注成交量及外資動向變化。")
+    elif score >= -50:
+        lines.append("多項指標偏空，建議降低倉位，持有防禦性資產，謹慎操作。")
+    else:
+        lines.append("多項指標同步發出強烈賣出訊號，建議大幅降低倉位或進行避險操作，保留現金等待更佳入場時機。")
+
+    lines.append("")
+    lines.append("⚠️ 本分析僅供參考，不構成投資建議。投資有風險，入市需謹慎。")
+
+    return "\n".join(lines)
+
+
+def main():
+    print("Fetching VIX data...", file=sys.stderr)
+    vix_data, vix_history = fetch_vix_data()
+
+    print("Fetching CNN Fear & Greed...", file=sys.stderr)
+    cnn_data = fetch_cnn_fear_greed()
+
+    print("Fetching TWSE institutional data...", file=sys.stderr)
+    institutional_data = fetch_twse_institutional()
+
+    print("Computing signal...", file=sys.stderr)
+    signal = compute_market_signal(vix_data, cnn_data, institutional_data)
+
+    analysis = generate_expert_analysis(vix_data, cnn_data, institutional_data, signal)
+
+    output = {
+        "last_updated": datetime.now(TW_TZ).isoformat(),
+        "last_updated_utc": datetime.now(timezone.utc).isoformat(),
+        "vix": vix_data,
+        "vix_history": vix_history,
+        "cnn_fear_greed": cnn_data,
+        "institutional": institutional_data,
+        "signal": signal,
+        "analysis": analysis,
+    }
+
+    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+        json.dump(output, f, ensure_ascii=False, indent=2)
+
+    print(f"Done. Signal: {signal['score']:+.1f} ({signal['outlook']})", file=sys.stderr)
+    print(json.dumps({"signal": signal["score"], "outlook": signal["outlook"]}))
+
+
+if __name__ == "__main__":
+    main()

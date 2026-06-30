@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>台股市場情緒儀表板 | Taiwan Market Intelligence</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <span class="header-flag">🇹🇼</span>
+        <div>
+          <h1 class="header-title">台股市場情緒儀表板</h1>
+          <p class="header-subtitle">Taiwan Market Intelligence — VIX × 法人 × 恐懼貪婪指數</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div class="market-status" id="marketStatus">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">載入中...</span>
+        </div>
+        <div class="update-time">最後更新：<span id="lastUpdated">—</span></div>
+        <button class="refresh-btn" onclick="loadData()">↻ 重新整理</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Signal Banner -->
+    <section class="signal-banner" id="signalBanner">
+      <div class="signal-score-wrap">
+        <div class="signal-label">綜合信號分數</div>
+        <div class="signal-score" id="signalScore">—</div>
+        <div class="signal-bar-wrap">
+          <div class="signal-bar-bg">
+            <div class="signal-bar-fill" id="signalBarFill"></div>
+            <div class="signal-bar-center"></div>
+          </div>
+          <div class="signal-bar-labels">
+            <span>強力做空</span><span>偏空</span><span>中性</span><span>偏多</span><span>強力做多</span>
+          </div>
+        </div>
+      </div>
+      <div class="signal-outlook">
+        <div class="outlook-en" id="outlookEn">—</div>
+        <div class="outlook-zh" id="outlookZh">—</div>
+      </div>
+    </section>
+
+    <!-- Key Indicators Row -->
+    <section class="section">
+      <h2 class="section-title">核心指標</h2>
+      <div class="cards-grid">
+
+        <!-- TWII -->
+        <div class="card card--primary" id="card-twii">
+          <div class="card-header">
+            <span class="card-icon">📈</span>
+            <span class="card-label">加權指數</span>
+            <span class="card-symbol">^TWII</span>
+          </div>
+          <div class="card-value" id="twii-value">—</div>
+          <div class="card-change" id="twii-change">—</div>
+        </div>
+
+        <!-- VIXTWN -->
+        <div class="card" id="card-vixtwn">
+          <div class="card-header">
+            <span class="card-icon">🌡️</span>
+            <span class="card-label">台灣波動率指數</span>
+            <span class="card-symbol">VIXTWN</span>
+          </div>
+          <div class="card-value" id="vixtwn-value">—</div>
+          <div class="card-change" id="vixtwn-change">—</div>
+          <div class="card-badge" id="vixtwn-badge">—</div>
+        </div>
+
+        <!-- US VIX -->
+        <div class="card" id="card-vix">
+          <div class="card-header">
+            <span class="card-icon">🇺🇸</span>
+            <span class="card-label">美股VIX</span>
+            <span class="card-symbol">^VIX</span>
+          </div>
+          <div class="card-value" id="vix-value">—</div>
+          <div class="card-change" id="vix-change">—</div>
+          <div class="card-badge" id="vix-badge">—</div>
+        </div>
+
+        <!-- CNN Fear & Greed -->
+        <div class="card" id="card-cnn">
+          <div class="card-header">
+            <span class="card-icon">📡</span>
+            <span class="card-label">CNN恐懼貪婪指數</span>
+            <span class="card-symbol">Fear &amp; Greed</span>
+          </div>
+          <div class="card-value" id="cnn-value">—</div>
+          <div class="card-change" id="cnn-rating">—</div>
+          <div class="card-badge" id="cnn-badge">—</div>
+        </div>
+
+        <!-- Three Major Institutions Today -->
+        <div class="card" id="card-inst">
+          <div class="card-header">
+            <span class="card-icon">🏦</span>
+            <span class="card-label">三大法人合計</span>
+            <span class="card-symbol">今日買賣超</span>
+          </div>
+          <div class="card-value" id="inst-value">—</div>
+          <div class="card-change" id="inst-sub">—</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIX Term Structure + CNN Gauge -->
+    <section class="section">
+      <div class="charts-row-2">
+
+        <!-- VIX Term Structure -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>VIX期限結構（短中長期波動率）</h3>
+            <span class="chart-card-tag" id="termStructureTag">—</span>
+          </div>
+          <div class="term-structure-bars" id="termStructureBars">
+            <!-- filled by JS -->
+          </div>
+          <div class="term-structure-note" id="termStructureNote">載入中...</div>
+        </div>
+
+        <!-- CNN Fear & Greed Gauge -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>CNN 恐懼貪婪指數</h3>
+          </div>
+          <div class="gauge-wrap">
+            <canvas id="gaugeChart" width="260" height="180"></canvas>
+            <div class="gauge-center-label">
+              <div class="gauge-score" id="gaugeCenterScore">—</div>
+              <div class="gauge-rating" id="gaugeCenterRating">—</div>
+            </div>
+          </div>
+          <div class="gauge-history-row" id="cnnHistoryRow">
+            <!-- Week/Month/Year comparison filled by JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Three Major Institutional Flow Chart -->
+    <section class="section">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <h3>三大法人近期買賣超（億元）</h3>
+          <div class="chart-legend">
+            <span class="legend-dot" style="background:#2196F3"></span>外資
+            <span class="legend-dot" style="background:#4CAF50"></span>投信
+            <span class="legend-dot" style="background:#FF9800"></span>自營商
+            <span class="legend-dot" style="background:#E91E63"></span>合計
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="institutionalChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIX Historical Charts -->
+    <section class="section">
+      <div class="charts-row-2">
+        <div class="chart-card">
+          <div class="chart-card-header"><h3>VIXTWN 近60日走勢</h3></div>
+          <div class="chart-container">
+            <canvas id="vixtwChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header"><h3>美股VIX 近60日走勢</h3></div>
+          <div class="chart-container">
+            <canvas id="vixUsChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Signal Details Table -->
+    <section class="section">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <h3>信號明細分解</h3>
+        </div>
+        <div class="signal-table-wrap">
+          <table class="signal-table" id="signalTable">
+            <thead>
+              <tr>
+                <th>指標</th>
+                <th>當前值</th>
+                <th>信號強度</th>
+                <th>權重</th>
+                <th>說明</th>
+              </tr>
+            </thead>
+            <tbody id="signalTableBody">
+              <!-- filled by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Expert Analysis -->
+    <section class="section">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <h3>🔬 專業分析報告</h3>
+          <span class="analysis-timestamp" id="analysisTime">—</span>
+        </div>
+        <pre class="analysis-text" id="analysisText">載入中，請稍候...</pre>
+      </div>
+    </section>
+
+    <!-- Three Major Institutional Today Breakdown -->
+    <section class="section">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <h3>三大法人今日明細</h3>
+          <span id="instDate" class="chart-card-tag">—</span>
+        </div>
+        <div class="inst-breakdown" id="instBreakdown">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>資料來源：Yahoo Finance · CNN Business · 台灣證券交易所 (TWSE)</p>
+    <p>⚠️ 本站資訊僅供參考，不構成任何投資建議。投資有風險，請獨立判斷。</p>
+    <p>數據每小時自動更新 · <a href="https://github.com" target="_blank">GitHub</a></p>
+  </footer>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <p>載入市場數據中...</p>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
