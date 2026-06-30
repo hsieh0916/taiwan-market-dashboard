@@ -31,55 +31,98 @@ _session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; MarketDashboard
 
 def fetch_vixtwn_from_taifex():
     """
-    Fetch Taiwan VIX (VIXTWN) from TAIFEX.
-    Note: TAIFEX periodically changes their URL structure.
-    Update the URL below if data stops flowing.
-    Ref: https://www.taifex.com.tw  (look for 臺灣波動率指數/Taiwan VIX)
+    Fetch Taiwan VIX (VIXTWN) from TAIFEX MIS via Playwright.
+    The page uses WebSocket (SockJS/custom protocol) for real-time data.
+    Field mapping in the WebSocket quote message:
+      125 = 目前指數 (current)   126 = 開盤 (open)
+      129 = 昨收 (prev close)   130 = 最高 (high)   131 = 最低 (low)
+      143 = 時間 (time HHMMss)  144 = 日期 (date YYYYMMDD)
     """
-    # Candidate URLs — try in order
-    urls_to_try = [
-        # TAIFEX open API (swagger-based, may change)
-        "https://openapi.taifex.com.tw/v1/TaiwanVIX",
-        # Legacy query URL (may be restored)
-        "https://www.taifex.com.tw/cht/54/taiwanVixDateView",
-    ]
+    try:
+        import asyncio
+        return asyncio.run(_async_fetch_vixtwn())
+    except Exception as e:
+        print(f"Warning: VIXTWN Playwright fetch failed: {e}", file=sys.stderr)
+        return None
 
-    for url in urls_to_try:
+
+async def _async_fetch_vixtwn():
+    """Async implementation using Playwright to get VIXTWN from TAIFEX MIS."""
+    from playwright.async_api import async_playwright
+    import asyncio
+
+    result_holder = {}
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(
+            headless=True,
+            args=["--ignore-certificate-errors", "--no-sandbox", "--disable-dev-shm-usage"]
+        )
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+            locale="zh-TW",
+        )
+        page = await context.new_page()
+
+        ws_received = asyncio.Event()
+
+        def on_ws(ws):
+            def on_frame(payload):
+                msg = str(payload)
+                if "TAIWANVIX" in msg and "125" in msg:
+                    try:
+                        import re, json as _json
+                        # SockJS frame: a["...escaped json..."]
+                        inner = re.search(r'a\["(.+)"\]$', msg)
+                        if inner:
+                            data = _json.loads(inner.group(1).replace('\\"', '"'))
+                        else:
+                            data = _json.loads(msg)
+                        quote = data.get("quote", {})
+                        values = quote.get("values", quote.get("trueValues", {}))
+                        current  = float(values.get("125", 0) or 0)
+                        prev_cls = float(values.get("129", 0) or 0)
+                        high     = float(values.get("130", 0) or 0)
+                        low      = float(values.get("131", 0) or 0)
+                        open_    = float(values.get("126", 0) or 0)
+                        if current > 0:
+                            result_holder["data"] = {
+                                "symbol": "VIXTWN",
+                                "current": round(current, 2),
+                                "prev": round(prev_cls, 2) if prev_cls else None,
+                                "change": round(current - prev_cls, 2) if prev_cls else None,
+                                "change_pct": round((current - prev_cls) / prev_cls * 100, 2) if prev_cls else None,
+                                "open": round(open_, 2),
+                                "high": round(high, 2),
+                                "low": round(low, 2),
+                                "high_52w": None,
+                                "low_52w": None,
+                            }
+                            ws_received.set()
+                    except Exception as ex:
+                        print(f"Warning: VIXTWN parse error: {ex}", file=sys.stderr)
+            ws.on("framereceived", on_frame)
+
+        page.on("websocket", on_ws)
+
+        await page.goto("https://mis.taifex.com.tw/futures/VolatilityQuotes/", timeout=30000)
+        await page.wait_for_timeout(2000)
+
+        # Click the agree button (index 2 = primary/orange btn)
+        buttons = await page.query_selector_all("button")
+        if len(buttons) >= 3:
+            await buttons[2].scroll_into_view_if_needed()
+            await buttons[2].click()
+
+        # Wait up to 20s for WebSocket data
         try:
-            resp = _session.get(url, timeout=12)
-            if resp.status_code != 200:
-                continue
-            # Try JSON first
-            try:
-                data = resp.json()
-                if isinstance(data, list) and data:
-                    sorted_data = sorted(data, key=lambda x: x.get("Date", ""), reverse=True)
-                    latest = sorted_data[0]
-                    prev = sorted_data[1] if len(sorted_data) > 1 else None
-                    current = float(latest.get("Close", 0) or latest.get("VIX", 0) or 0)
-                    prev_val = float(prev.get("Close", 0) or prev.get("VIX", 0) or 0) if prev else None
-                    hist_entries = sorted_data[:60][::-1]
-                    dates = [e.get("Date", "") for e in hist_entries]
-                    closes = [float(e.get("Close", 0) or e.get("VIX", 0) or 0) for e in hist_entries]
-                    closes_valid = [c for c in closes if c > 0]
-                    return {
-                        "symbol": "VIXTWN",
-                        "current": round(current, 2) if current else None,
-                        "prev": round(prev_val, 2) if prev_val else None,
-                        "change": round(current - prev_val, 2) if prev_val and current else None,
-                        "change_pct": round((current - prev_val) / prev_val * 100, 2) if prev_val and current else None,
-                        "high_52w": round(max(closes_valid), 2) if closes_valid else None,
-                        "low_52w": round(min(closes_valid), 2) if closes_valid else None,
-                        "_history_dates": dates,
-                        "_history_closes": closes,
-                    }
-            except ValueError:
-                pass
-        except Exception as e:
-            print(f"Warning: VIXTWN source {url} failed: {e}", file=sys.stderr)
+            await asyncio.wait_for(ws_received.wait(), timeout=20)
+        except asyncio.TimeoutError:
+            print("Warning: VIXTWN WebSocket data timeout", file=sys.stderr)
 
-    print("Warning: VIXTWN unavailable from all sources. Using VIX as proxy.", file=sys.stderr)
-    return None
+        await browser.close()
+
+    return result_holder.get("data")
 
 
 def fetch_vix_data():
