@@ -347,19 +347,55 @@ def fetch_vix_data():
     return result, history
 
 
+def _scrape_vixtwn_taifex_closes():
+    """
+    Scrape TAIFEX vixMinNew page for current-month VIXTWN daily closing prices.
+    Returns {date_str: close_float} e.g. {"2026-06-30": 38.54, ...}
+    Each date file has 15-second ticks; last tick = closing value.
+    """
+    closes = {}
+    try:
+        page = _session.get(
+            "https://www.taifex.com.tw/cht/7/vixMinNew",
+            headers={"Referer": "https://www.taifex.com.tw/"},
+            timeout=15,
+        )
+        import re as _re
+        dates = _re.findall(r"getVixData\?filesname=(\d{8})", page.text)
+        print(f"VIXTWN history: found {len(dates)} dates on TAIFEX page", file=sys.stderr)
+        for d in dates:
+            try:
+                r = _session.get(
+                    f"https://www.taifex.com.tw/cht/7/getVixData?filesname={d}",
+                    headers={"Referer": "https://www.taifex.com.tw/cht/7/vixMinNew"},
+                    timeout=10,
+                )
+                txt = r.content.decode("big5", errors="ignore")
+                rows = [l.strip() for l in txt.split("\n") if l.strip() and l[0].isdigit()]
+                if rows:
+                    parts = rows[-1].split("\t")
+                    close = float(parts[-1].strip())
+                    date_fmt = f"{d[:4]}-{d[4:6]}-{d[6:]}"
+                    closes[date_fmt] = round(close, 2)
+            except Exception as e:
+                print(f"Warning: VIXTWN file {d} error: {e}", file=sys.stderr)
+    except Exception as e:
+        print(f"Warning: VIXTWN history scrape failed: {e}", file=sys.stderr)
+    return closes
+
+
 def _accumulate_vixtwn_history(vixtwn_today):
     """
-    Accumulate VIXTWN daily history by:
-    1. Loading existing dates/closes from market_data.json (across GitHub Actions runs)
-    2. Inserting today's close and yesterday's close (from prev field)
-    3. Returning sorted last-90-days slice
-    No external API; grows one entry per trading day.
+    Build VIXTWN daily history:
+    1. Load existing JSON history (prior months accumulated over time)
+    2. Overwrite/update with current-month data scraped from TAIFEX vixMinNew
+       (accurate closing ticks, always up to date for current month)
+    3. Fill today's live value from REST API if market still open
+    Returns sorted last-90-days slice.
     """
-    from datetime import date, timedelta
-
     existing = {}
 
-    # Load previous history from existing JSON
+    # Load previously accumulated history (prior months)
     try:
         if os.path.exists(OUTPUT_PATH):
             with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
@@ -371,18 +407,16 @@ def _accumulate_vixtwn_history(vixtwn_today):
     except Exception:
         pass
 
+    # Scrape current-month accurate closes from TAIFEX (overwrites any stale values)
+    taifex_closes = _scrape_vixtwn_taifex_closes()
+    existing.update(taifex_closes)
+
+    # Also insert today's live REST API value (in case market just closed / page not updated yet)
+    from datetime import date
     today = date.today().strftime("%Y-%m-%d")
-    yesterday = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
-
-    # Insert today's current value
     cur = vixtwn_today.get("current") if vixtwn_today else None
-    if cur:
+    if cur and today not in taifex_closes:
         existing[today] = round(cur, 2)
-
-    # Insert yesterday from prev_close (only if we don't already have it from a prior run)
-    prev = vixtwn_today.get("prev") if vixtwn_today else None
-    if prev and yesterday not in existing:
-        existing[yesterday] = round(prev, 2)
 
     # Sort and keep last 90 trading days
     sorted_dates = sorted(existing.keys())[-90:]
