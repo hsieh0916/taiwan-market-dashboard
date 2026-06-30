@@ -2,7 +2,6 @@
 'use strict';
 
 const DATA_URL = 'data/market_data.json';
-let gaugeChart = null;
 let institutionalChart = null;
 let vixtwChart = null;
 let vixUsChart = null;
@@ -193,110 +192,148 @@ function renderTermStructure(vix) {
   }
 }
 
-// ─── CNN Gauge ───────────────────────────────────────────────────────────────
+// ─── CNN Gauge (pure Canvas, CNN colour scheme + correct needle direction) ────
+// CNN colour map: left=Extreme Fear (dark red) → right=Extreme Greed (dark green)
+// Angle convention: 0-score maps to π…2π  (9 o'clock → 12 o'clock → 3 o'clock)
+const CNN_SEGS = [
+  { s: 0,  e: 25,  color: '#b22222' },   // Extreme Fear – dark red
+  { s: 25, e: 45,  color: '#e05a28' },   // Fear          – orange-red
+  { s: 45, e: 55,  color: '#f5c518' },   // Neutral       – gold
+  { s: 55, e: 75,  color: '#8bc34a' },   // Greed         – yellow-green
+  { s: 75, e: 100, color: '#2e7d32' },   // Extreme Greed – forest green
+];
+
+function cnnSegColor(score) {
+  const seg = CNN_SEGS.find(s => score <= s.e) || CNN_SEGS[CNN_SEGS.length - 1];
+  return seg.color;
+}
+
 function renderGauge(cnn) {
   if (!cnn || cnn.current == null) return;
-
   const score = cnn.current;
-  const lvl = cnnLevel(score);
+  const lvl   = cnnLevel(score);
 
-  el('gaugeCenterScore').textContent = score.toFixed(0);
-  el('gaugeCenterScore').style.color = lvl.color;
-  el('gaugeCenterRating').textContent = lvl.zh;
+  const canvas = document.getElementById('gaugeChart');
+  const ctx    = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
 
-  // Gauge colors: red→orange→yellow→light green→green
-  const gaugeColors = [
-    { pct: 0.25, color: '#f44336' },  // Extreme Fear
-    { pct: 0.45, color: '#ff7043' },  // Fear
-    { pct: 0.55, color: '#ffc107' },  // Neutral
-    { pct: 0.75, color: '#69f0ae' },  // Greed
-    { pct: 1.00, color: '#00e676' },  // Extreme Greed
-  ];
+  const cx     = W / 2;
+  const cy     = H - 6;              // pivot at bottom edge (flat of semicircle)
+  const outerR = Math.min(cx - 4, H - 10);
+  const innerR = outerR * 0.58;      // 58% cutout → CNN-width arc
 
-  // Build arc segments for the gauge (semicircle)
-  const needleAngle = -90 + (score / 100) * 180; // -90° to +90°
+  // ── 1. Dark background ring (matches card bg, creates thin gap effect) ──
+  ctx.beginPath();
+  ctx.arc(cx, cy, outerR + 3, Math.PI, 2 * Math.PI, false);
+  ctx.arc(cx, cy, innerR - 3, 2 * Math.PI, Math.PI, true);
+  ctx.closePath();
+  ctx.fillStyle = '#080c18';
+  ctx.fill();
 
-  const ctx = document.getElementById('gaugeChart').getContext('2d');
-  if (gaugeChart) { gaugeChart.destroy(); }
-
-  gaugeChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      datasets: [{
-        data: [25, 20, 10, 20, 25],  // Extreme Fear, Fear, Neutral, Greed, Extreme Greed
-        backgroundColor: ['#f44336cc', '#ff7043cc', '#ffc107cc', '#69f0aecc', '#00e676cc'],
-        borderWidth: 0,
-        circumference: 180,
-        rotation: 270,
-      }],
-    },
-    options: {
-      responsive: false,
-      cutout: '65%',
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: false },
-        annotation: {
-          annotations: {
-            needle: {
-              type: 'line',
-              borderColor: 'white',
-              borderWidth: 2,
-            }
-          }
-        }
-      },
-      animation: { duration: 800 },
-    },
-    plugins: [{
-      id: 'needlePlugin',
-      afterDraw(chart) {
-        const { ctx, chartArea } = chart;
-        const cx = (chartArea.left + chartArea.right) / 2;
-        const cy = chartArea.bottom;
-        const r = (chartArea.right - chartArea.left) / 2 * 0.72;
-
-        const angleRad = ((needleAngle) * Math.PI) / 180;
-        const nx = cx + r * Math.cos(angleRad);
-        const ny = cy + r * Math.sin(angleRad);
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(nx, ny);
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.stroke();
-
-        // Center dot
-        ctx.beginPath();
-        ctx.arc(cx, cy, 5, 0, Math.PI * 2);
-        ctx.fillStyle = 'white';
-        ctx.fill();
-        ctx.restore();
-
-        // Labels on arc
-        ctx.save();
-        ctx.font = '9px Segoe UI';
-        ctx.fillStyle = '#8fa3bf';
-        ctx.textAlign = 'center';
-        const labels = ['極度\n恐懼', '恐懼', '中性', '貪婪', '極度\n貪婪'];
-        const pcts   = [0.05, 0.28, 0.50, 0.72, 0.95];
-        pcts.forEach((p, i) => {
-          const a = (p * 180 - 90) * Math.PI / 180;
-          const rLabel = (chartArea.right - chartArea.left) / 2 * 0.95;
-          const lx = cx + rLabel * Math.cos(a);
-          const ly = cy + rLabel * Math.sin(a);
-          ctx.fillText(labels[i].split('\n')[0], lx, ly - 2);
-          if (labels[i].includes('\n')) ctx.fillText(labels[i].split('\n')[1], lx, ly + 10);
-        });
-        ctx.restore();
-      }
-    }]
+  // ── 2. Coloured arc segments ──
+  CNN_SEGS.forEach(seg => {
+    const a1 = Math.PI * (1 + seg.s  / 100);
+    const a2 = Math.PI * (1 + seg.e  / 100);
+    ctx.beginPath();
+    ctx.arc(cx, cy, outerR, a1, a2, false);   // outer arc CW
+    ctx.arc(cx, cy, innerR, a2, a1, true);    // inner arc CCW
+    ctx.closePath();
+    ctx.fillStyle = seg.color;
+    ctx.fill();
   });
 
-  // History comparison row
+  // ── 3. Thin dark dividers between zones ──
+  [0, 25, 45, 55, 75, 100].forEach(p => {
+    const a  = Math.PI * (1 + p / 100);
+    ctx.beginPath();
+    ctx.moveTo(cx + (innerR - 1) * Math.cos(a), cy + (innerR - 1) * Math.sin(a));
+    ctx.lineTo(cx + (outerR + 1) * Math.cos(a), cy + (outerR + 1) * Math.sin(a));
+    ctx.strokeStyle = '#080c18';
+    ctx.lineWidth   = 2.5;
+    ctx.stroke();
+  });
+
+  // ── 4. Small tick marks at 0/25/50/75/100 ──
+  [0, 25, 50, 75, 100].forEach(p => {
+    const a   = Math.PI * (1 + p / 100);
+    const r1  = outerR + 4;
+    const r2  = outerR + 10;
+    ctx.beginPath();
+    ctx.moveTo(cx + r1 * Math.cos(a), cy + r1 * Math.sin(a));
+    ctx.lineTo(cx + r2 * Math.cos(a), cy + r2 * Math.sin(a));
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.lineWidth   = 1.5;
+    ctx.stroke();
+
+    // Numeric labels (0 / 25 / 50 / 75 / 100)
+    const labelR = outerR + 20;
+    const lx = cx + labelR * Math.cos(a);
+    const ly = cy + labelR * Math.sin(a);
+    ctx.save();
+    ctx.font         = '9px "Roboto Mono", monospace';
+    ctx.fillStyle    = 'rgba(255,255,255,0.38)';
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(p, lx, ly);
+    ctx.restore();
+  });
+
+  // ── 5. Inner cutout fill (score + rating text live here) ──
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR - 3, Math.PI, 2 * Math.PI, false);
+  ctx.closePath();
+  ctx.fillStyle = '#111827';
+  ctx.fill();
+
+  // ── 6. Score & rating text inside the cutout ──
+  const scoreY  = cy - innerR * 0.52;
+  const ratingY = cy - innerR * 0.22;
+
+  ctx.save();
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+
+  ctx.font      = `bold ${Math.round(outerR * 0.32)}px -apple-system, "Segoe UI", sans-serif`;
+  ctx.fillStyle = cnnSegColor(score);
+  ctx.fillText(score.toFixed(0), cx, scoreY);
+
+  ctx.font      = `600 ${Math.round(outerR * 0.125)}px -apple-system, "Segoe UI", sans-serif`;
+  ctx.fillStyle = 'rgba(200,215,235,0.85)';
+  ctx.fillText(lvl.zh, cx, ratingY);
+  ctx.restore();
+
+  // ── 7. Needle (triangle) – correct angle: π + score/100 × π ──
+  const needleAngle = Math.PI * (1 + score / 100);
+  const needleLen   = outerR * 0.76;
+  const nx  = cx + needleLen * Math.cos(needleAngle);
+  const ny  = cy + needleLen * Math.sin(needleAngle);
+  const perpA = needleAngle + Math.PI / 2;
+  const base  = 5;
+
+  ctx.beginPath();
+  ctx.moveTo(nx, ny);
+  ctx.lineTo(cx + base * Math.cos(perpA), cy + base * Math.sin(perpA));
+  ctx.lineTo(cx - base * Math.cos(perpA), cy - base * Math.sin(perpA));
+  ctx.closePath();
+  ctx.fillStyle    = '#ffffff';
+  ctx.shadowColor  = 'rgba(0,0,0,0.6)';
+  ctx.shadowBlur   = 4;
+  ctx.fill();
+  ctx.shadowBlur   = 0;
+
+  // ── 8. Pivot hub ──
+  ctx.beginPath();
+  ctx.arc(cx, cy, 8, 0, 2 * Math.PI);
+  ctx.fillStyle   = '#ffffff';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
+  ctx.fillStyle   = '#1a2435';
+  ctx.fill();
+
+  // ── 9. History comparison row ──
   const histItems = [
     { label: '昨日', value: cnn.prev_close },
     { label: '上週', value: cnn.prev_1week },
@@ -305,9 +342,9 @@ function renderGauge(cnn) {
   ];
   const row = el('cnnHistoryRow');
   row.innerHTML = histItems.map(item => {
-    const v = item.value;
+    const v      = item.value;
     const change = v != null ? (score - v).toFixed(1) : null;
-    const cls = change > 0 ? 'change-up' : change < 0 ? 'change-down' : 'change-flat';
+    const cls    = change > 0 ? 'change-up' : change < 0 ? 'change-down' : 'change-flat';
     return `
       <div class="gauge-hist-item">
         <div class="gauge-hist-label">${item.label}</div>

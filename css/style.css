@@ -313,22 +313,30 @@ body {
 
 /* -------- CNN Gauge -------- */
 .gauge-wrap {
-  position: relative;
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 2px;
 }
-.gauge-center-label {
-  position: absolute;
-  top: 55%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.gauge-wrap canvas {
+  display: block;
+  max-width: 100%;
+}
+
+/* Zone labels row below the arc */
+.cnn-zone-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 0.60rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
   text-align: center;
-  pointer-events: none;
+  padding: 0 2px;
+  margin-bottom: 14px;
 }
-.gauge-score { font-size: 2rem; font-weight: 800; color: var(--text-primary); }
-.gauge-rating { font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px; }
+.cnn-zone-labels span { flex: 1; }
 
 .gauge-history-row {
   display: grid;
