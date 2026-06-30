@@ -32,10 +32,16 @@ _session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; MarketDashboard
 def fetch_vixtwn_from_taifex():
     """
     Fetch Taiwan VIX (VIXTWN) from TAIFEX MIS.
-    Strategy 1: Direct SockJS WebSocket (fast, no browser)
-    Strategy 2: Playwright browser (fallback, handles disclaimer modal)
-    Field mapping: 125=current, 126=open, 129=prev_close, 130=high, 131=low
+    Strategy 1: REST API POST /futures/api/getQuoteListVIX (fast, no browser)
+    Strategy 2: Direct SockJS WebSocket
+    Strategy 3: Playwright browser (slowest fallback)
     """
+    # Strategy 1: REST API (simplest and fastest)
+    result = _vixtwn_rest_api()
+    if result:
+        print(f"VIXTWN via REST API: {result['current']}", file=sys.stderr)
+        return result
+
     import asyncio
     try:
         result = asyncio.run(_vixtwn_direct_ws())
@@ -52,6 +58,46 @@ def fetch_vixtwn_from_taifex():
     except Exception as e:
         print(f"Warning: VIXTWN Playwright failed: {e}", file=sys.stderr)
     return None
+
+
+def _vixtwn_rest_api():
+    """Fetch VIXTWN from TAIFEX REST API (POST getQuoteListVIX)."""
+    try:
+        resp = _session.post(
+            "https://mis.taifex.com.tw/futures/api/getQuoteListVIX",
+            json={},
+            headers={"Referer": "https://mis.taifex.com.tw/futures/VolatilityQuotes/"},
+            timeout=12,
+        )
+        data = resp.json()
+        if data.get("RtCode") != "0":
+            return None
+        quote_list = data.get("RtData", {}).get("QuoteList", [])
+        if not quote_list:
+            return None
+        q = quote_list[0]
+        current = float(q.get("CLastPrice") or 0)
+        if current <= 0:
+            return None
+        prev = float(q.get("CRefPrice") or 0)
+        open_ = float(q.get("COpenPrice") or 0)
+        high  = float(q.get("CHighPrice") or 0)
+        low   = float(q.get("CLowPrice") or 0)
+        return {
+            "symbol":     "VIXTWN",
+            "current":    round(current, 2),
+            "prev":       round(prev, 2) if prev else None,
+            "change":     round(current - prev, 2) if prev else None,
+            "change_pct": round((current - prev) / prev * 100, 2) if prev else None,
+            "open":       round(open_, 2) if open_ else None,
+            "high":       round(high, 2) if high else None,
+            "low":        round(low, 2) if low else None,
+            "high_52w":   None,
+            "low_52w":    None,
+        }
+    except Exception as e:
+        print(f"Warning: VIXTWN REST API failed: {e}", file=sys.stderr)
+        return None
 
 
 def _vixtwn_parse_values(vals):
@@ -288,18 +334,62 @@ def fetch_vix_data():
             result[key] = {"symbol": symbol, "current": None, "error": str(e)}
             print(f"Warning: failed to fetch {symbol}: {e}", file=sys.stderr)
 
-    # Fetch VIXTWN from TAIFEX
+    # Fetch VIXTWN from TAIFEX (real-time)
     vixtwn_data = fetch_vixtwn_from_taifex()
     if vixtwn_data:
-        hist_dates = vixtwn_data.pop("_history_dates", [])
-        hist_closes = vixtwn_data.pop("_history_closes", [])
         result["vixtwn"] = vixtwn_data
-        if hist_dates:
-            history["vixtwn"] = {"dates": hist_dates, "closes": hist_closes}
     else:
         result["vixtwn"] = {"symbol": "VIXTWN", "current": None, "error": "TAIFEX unavailable"}
 
+    # Build VIXTWN 60-day history via daily accumulation
+    history["vixtwn"] = _accumulate_vixtwn_history(result["vixtwn"])
+
     return result, history
+
+
+def _accumulate_vixtwn_history(vixtwn_today):
+    """
+    Accumulate VIXTWN daily history by:
+    1. Loading existing dates/closes from market_data.json (across GitHub Actions runs)
+    2. Inserting today's close and yesterday's close (from prev field)
+    3. Returning sorted last-90-days slice
+    No external API; grows one entry per trading day.
+    """
+    from datetime import date, timedelta
+
+    existing = {}
+
+    # Load previous history from existing JSON
+    try:
+        if os.path.exists(OUTPUT_PATH):
+            with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
+                old = json.load(f)
+            old_h = old.get("vix_history", {}).get("vixtwn", {})
+            for d, c in zip(old_h.get("dates", []), old_h.get("closes", [])):
+                if d and c is not None:
+                    existing[d] = c
+    except Exception:
+        pass
+
+    today = date.today().strftime("%Y-%m-%d")
+    yesterday = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    # Insert today's current value
+    cur = vixtwn_today.get("current") if vixtwn_today else None
+    if cur:
+        existing[today] = round(cur, 2)
+
+    # Insert yesterday from prev_close (only if we don't already have it from a prior run)
+    prev = vixtwn_today.get("prev") if vixtwn_today else None
+    if prev and yesterday not in existing:
+        existing[yesterday] = round(prev, 2)
+
+    # Sort and keep last 90 trading days
+    sorted_dates = sorted(existing.keys())[-90:]
+    return {
+        "dates":  sorted_dates,
+        "closes": [existing[d] for d in sorted_dates],
+    }
 
 
 def fetch_cnn_fear_greed():

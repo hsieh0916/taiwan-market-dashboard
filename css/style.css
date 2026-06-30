@@ -311,6 +311,18 @@ body {
   border: 1px solid var(--border);
 }
 
+/* -------- VIXTWN accumulation notice -------- */
+.vixtwn-accum-note {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  padding: 6px 10px;
+  margin-top: 4px;
+  background: rgba(0,176,255,0.06);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0,176,255,0.15);
+}
+
 /* -------- CNN Gauge -------- */
 .gauge-wrap {
   display: flex;

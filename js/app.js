@@ -440,6 +440,19 @@ function renderInstitutionalChart(inst) {
 function renderVixCharts(history) {
   if (!history) return;
 
+  const vixtwnDates = (history.vixtwn && history.vixtwn.dates) ? history.vixtwn.dates : [];
+  const dayCount = vixtwnDates.length;
+
+  const tag = el('vixtwHistoryTag');
+  const note = el('vixtwnAccumNote');
+  if (tag && dayCount > 0) {
+    tag.textContent = `已累積 ${dayCount} 日`;
+    tag.style.display = '';
+  }
+  if (note) {
+    note.style.display = dayCount < 10 ? '' : 'none';
+  }
+
   renderLineChart('vixtwChart', vixtwChart, history.vixtwn, '台灣VIX', '#00b0ff', [15, 20, 25]);
   vixtwChart = lastChart;
 
@@ -450,12 +463,13 @@ function renderVixCharts(history) {
 let lastChart = null;
 
 function renderLineChart(canvasId, existingChart, data, label, color, thresholds) {
-  if (!data || !data.dates) return;
+  if (!data || !data.dates || data.dates.length === 0) return;
   if (existingChart) existingChart.destroy();
 
   const ctx = document.getElementById(canvasId).getContext('2d');
   const dates = data.dates.map(d => d.slice(5));
   const values = data.closes;
+  const fewPoints = dates.length < 10;
 
   const annotations = {};
   const thresholdColors = ['#ffc107', '#ff7043', '#f44336'];
@@ -490,8 +504,8 @@ function renderLineChart(canvasId, existingChart, data, label, color, thresholds
         backgroundColor: color + '22',
         borderWidth: 2,
         fill: true,
-        pointRadius: 0,
-        pointHoverRadius: 4,
+        pointRadius: fewPoints ? 4 : 0,
+        pointHoverRadius: 5,
         tension: 0.3,
       }],
     },
