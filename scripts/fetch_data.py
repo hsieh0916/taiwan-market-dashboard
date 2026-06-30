@@ -201,12 +201,13 @@ def fetch_twse_institutional():
 
         for row in rows:
             name = str(row[0]).strip()
-            # Net buy/sell is column index 3 (買賣超) in thousands NTD
-            if "外資" in name and "自營" not in name:
+            # Net buy/sell is column index 3 (買賣超) in NT$ (元)
+            # TWSE row format: 外資及陸資(不含外資自營商) / 投信 / 自營商(自行買賣)
+            if "外資及陸資" in name or ("外資" in name and "陸資" not in name and "自營商" not in name):
                 result["foreign"] = parse_num(row[3])
             elif "投信" in name:
                 result["investment_trust"] = parse_num(row[3])
-            elif "自營商" in name and "避險" not in name:
+            elif "自營商" in name and "避險" not in name and "外資" not in name:
                 result["dealer"] = parse_num(row[3])
 
         # Total net
@@ -259,11 +260,11 @@ def fetch_twse_institutional_history():
 
                 for row in rows:
                     name = str(row[0]).strip()
-                    if "外資" in name and "自營" not in name:
+                    if "外資及陸資" in name or ("外資" in name and "陸資" not in name and "自營商" not in name):
                         entry["foreign"] = parse_num(row[3])
                     elif "投信" in name:
                         entry["investment_trust"] = parse_num(row[3])
-                    elif "自營商" in name and "避險" not in name:
+                    elif "自營商" in name and "避險" not in name and "外資" not in name:
                         entry["dealer"] = parse_num(row[3])
 
                 entry["total"] = entry["foreign"] + entry["investment_trust"] + entry["dealer"]
@@ -375,7 +376,7 @@ def compute_market_signal(vix_data, cnn_data, institutional_data):
     # --- Institutional investor signal (weight 25%) ---
     inst_total = institutional_data.get("total_net")
     if inst_total is not None:
-        billions = inst_total / 100000  # 轉換為億元
+        billions = inst_total / 100000000  # 轉換為億元 (1億=1e8)
         if billions > 100:
             s = 80
             label = f"三大法人合計大買({billions:.1f}億)：強力護盤，多方訊號"
@@ -493,16 +494,16 @@ def generate_expert_analysis(vix_data, cnn_data, institutional_data, signal):
     lines.append("")
     lines.append("【三大法人動向】")
     if inst_total is not None:
-        b = inst_total / 100000
+        b = inst_total / 100000000
         lines.append(f"今日三大法人合計{'買超' if b >= 0 else '賣超'} {abs(b):.1f} 億元。")
         if foreign is not None:
-            fb = foreign / 100000
+            fb = foreign / 100000000
             lines.append(f"  • 外資：{'買超' if fb >= 0 else '賣超'} {abs(fb):.1f} 億元（市場主力，對台股方向影響最大）")
         if inv_trust is not None:
-            ib = inv_trust / 100000
+            ib = inv_trust / 100000000
             lines.append(f"  • 投信：{'買超' if ib >= 0 else '賣超'} {abs(ib):.1f} 億元（國內基金動向，反映內資信心）")
         if dealer is not None:
-            db = dealer / 100000
+            db = dealer / 100000000
             lines.append(f"  • 自營商：{'買超' if db >= 0 else '賣超'} {abs(db):.1f} 億元（短線交易為主，可作輔助參考）")
 
     lines.append("")

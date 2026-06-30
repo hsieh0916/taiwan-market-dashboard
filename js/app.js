@@ -95,7 +95,7 @@ function updateKeyIndicators(data) {
 
   // Institutions
   if (inst.total_net != null) {
-    const b = inst.total_net / 100000;
+    const b = inst.total_net / 100000000;
     el('inst-value').textContent = (b >= 0 ? '+' : '') + b.toFixed(1) + ' 億';
     el('inst-value').className = `card-value ${b >= 0 ? 'change-up' : 'change-down'}`;
     const parts = [];
@@ -323,7 +323,7 @@ function renderInstitutionalChart(inst) {
 
   const history = inst.history;
   const labels = history.map(d => d.date.slice(4, 6) + '/' + d.date.slice(6, 8));
-  const toBil = arr => arr.map(v => +(v / 100000).toFixed(1));
+  const toBil = arr => arr.map(v => +(v / 100000000).toFixed(1));
 
   const foreign  = toBil(history.map(d => d.foreign || 0));
   const invTrust = toBil(history.map(d => d.investment_trust || 0));
@@ -521,7 +521,7 @@ function renderInstitutionalBreakdown(inst) {
   el('instBreakdown').innerHTML = items.map(item => {
     const val = item.value;
     if (val == null) return '';
-    const b = val / 100000;
+    const b = val / 100000000;
     const cls = b >= 0 ? 'inst-positive' : 'inst-negative';
     const sign = b >= 0 ? '+' : '';
     return `<div class="inst-item">
@@ -542,7 +542,7 @@ function fmtNum(v) {
 }
 
 function fmtBil(v) {
-  const b = v / 100000;
+  const b = v / 100000000;
   return (b >= 0 ? '+' : '') + b.toFixed(1) + '億';
 }
 
