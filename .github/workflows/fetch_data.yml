@@ -2,9 +2,9 @@ name: Fetch Market Data
 
 on:
   schedule:
-    # Run every hour on weekdays during Taiwan market hours (01:00-09:00 UTC = 09:00-17:00 TST)
+    # Every 30 min on weekdays during Taiwan market hours (01:00-09:30 UTC = 09:00-17:30 TST)
     # Also run once overnight to update pre-market data
-    - cron: '0 1-9 * * 1-5'
+    - cron: '*/30 1-9 * * 1-5'
     - cron: '0 22 * * 0-4'
   workflow_dispatch:  # Allow manual trigger
 
