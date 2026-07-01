@@ -232,6 +232,11 @@ body {
 .badge--high          { background: rgba(255,109,0,0.2); color: var(--orange); }
 .badge--normal        { background: rgba(41,121,255,0.2); color: var(--cyan); }
 .badge--low           { background: rgba(0,230,118,0.2); color: #69f0ae; }
+.badge--bull          { background: rgba(0,230,118,0.15); color: var(--green); }
+.badge--bear          { background: rgba(244,67,54,0.15); color: var(--red); }
+
+/* US index grid: max 3 columns so it doesn't over-stretch */
+.cards-grid--us { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
 
 /* -------- Two Column Charts Row -------- */
 .charts-row-2 {

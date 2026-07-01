@@ -295,13 +295,17 @@ async def _vixtwn_playwright():
 
 
 def fetch_vix_data():
-    """Fetch VIX and VIXTWN data from Yahoo Finance."""
+    """Fetch VIX, VIXTWN, Taiwan OTC and US major index data from Yahoo Finance."""
     tickers = {
-        "vix": "^VIX",
-        "vix9d": "^VIX9D",
-        "vix3m": "^VIX3M",
-        "vix6m": "^VIX6M",
-        "twii": "^TWII",
+        "vix":    "^VIX",
+        "vix9d":  "^VIX9D",
+        "vix3m":  "^VIX3M",
+        "vix6m":  "^VIX6M",
+        "twii":   "^TWII",
+        "tpex":   "^TWO",    # 台灣櫃買指數 (GreTai OTC)
+        "sp500":  "^GSPC",   # 標普500
+        "nasdaq": "^IXIC",   # 那斯達克綜合
+        "dji":    "^DJI",    # 道瓊工業
     }
 
     result = {}

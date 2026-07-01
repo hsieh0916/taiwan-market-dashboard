@@ -30,6 +30,7 @@ async function loadData() {
 function render(data) {
   updateHeader(data);
   updateKeyIndicators(data);
+  renderUsIndices(data.vix);
   updateSignalBanner(data.signal);
   renderTermStructure(data.vix);
   renderGauge(data.cnn_fear_greed);
@@ -67,6 +68,9 @@ function updateKeyIndicators(data) {
   // TWII
   updatePriceCard('twii', vix.twii, '', '點');
 
+  // TPEX 櫃買指數
+  updatePriceCard('tpex', vix.tpex, '', '點');
+
   // VIXTWN
   if (vix.vixtwn) {
     updatePriceCard('vixtwn', vix.vixtwn, '', '');
@@ -103,6 +107,26 @@ function updateKeyIndicators(data) {
     if (inst.dealer != null) parts.push(`自營 ${fmtBil(inst.dealer)}`);
     el('inst-sub').textContent = parts.join(' | ');
   }
+}
+
+// ─── US Major Indices ─────────────────────────────────────────────────────────
+function renderUsIndices(vix) {
+  if (!vix) return;
+  [
+    { id: 'sp500',  key: 'sp500',  suffix: '' },
+    { id: 'nasdaq', key: 'nasdaq', suffix: '' },
+    { id: 'dji',    key: 'dji',    suffix: '' },
+  ].forEach(({ id, key, suffix }) => {
+    const t = vix[key];
+    if (!t || t.current == null) return;
+    updatePriceCard(id, t, '', suffix);
+    const badge = el(`${id}-badge`);
+    if (badge && t.change_pct != null) {
+      const up = t.change_pct > 0;
+      badge.textContent = (up ? '▲ ' : '▼ ') + Math.abs(t.change_pct).toFixed(2) + '%';
+      badge.className = `card-badge ${up ? 'badge--bull' : 'badge--bear'}`;
+    }
+  });
 }
 
 function updatePriceCard(id, ticker, prefix, suffix) {
