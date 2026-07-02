@@ -481,6 +481,37 @@ body {
 .inst-positive { color: var(--green); }
 .inst-negative { color: var(--red); }
 
+/* -------- Volume Row -------- */
+.vol-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.72rem;
+}
+.vol-label { color: var(--text-muted); flex-shrink: 0; }
+.vol-bar-wrap {
+  flex: 1;
+  height: 4px;
+  background: var(--bg-surface);
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.vol-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.vol-bar.vol-high { background: var(--red); }
+.vol-bar.vol-mid  { background: var(--yellow); }
+.vol-bar.vol-low  { background: var(--text-muted); }
+.vol-pct { font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.vol-pct.vol-high { color: var(--red); }
+.vol-pct.vol-mid  { color: var(--yellow); }
+.vol-pct.vol-low  { color: var(--text-muted); }
+.vol-hint { color: var(--text-muted); flex-shrink: 0; }
+
 /* -------- DRAI ETF Holdings -------- */
 .drai-subtitle { font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 2px; letter-spacing: 0.04em; }
 .drai-chips {

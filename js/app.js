@@ -69,10 +69,12 @@ function updateKeyIndicators(data) {
   // TWII
   updatePriceCard('twii', vix.twii, '', '點');
   renderMaRow('twii', vix.twii);
+  renderVolRow('twii', vix.twii);
 
   // TPEX 櫃買指數
   updatePriceCard('tpex', vix.tpex, '', '點');
   renderMaRow('tpex', vix.tpex);
+  renderVolRow('tpex', vix.tpex);
 
   // VIXTWN
   if (vix.vixtwn) {
@@ -132,6 +134,19 @@ function renderUsIndices(vix) {
     }
     renderMaRow(id, t);
   });
+}
+
+function renderVolRow(id, t) {
+  const row = el(`${id}-vol`);
+  if (!row || !t || t.volume_ratio == null) return;
+  const pct = t.volume_ratio;
+  const cls = pct >= 80 ? 'vol-high' : pct >= 40 ? 'vol-mid' : 'vol-low';
+  const bar = Math.round(pct);
+  row.innerHTML =
+    `<span class="vol-label">成交量</span>` +
+    `<span class="vol-bar-wrap"><span class="vol-bar ${cls}" style="width:${bar}%"></span></span>` +
+    `<span class="vol-pct ${cls}">${pct.toFixed(0)}%</span>` +
+    `<span class="vol-hint">近60日最大</span>`;
 }
 
 function renderMaRow(id, t) {

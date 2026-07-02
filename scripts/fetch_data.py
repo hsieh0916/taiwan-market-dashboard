@@ -475,6 +475,16 @@ def fetch_vix_data():
                 }
                 if key in MA_STAT_KEYS:
                     entry.update(_compute_ma_stats(hist["Close"], cur))
+                # Volume ratio: today vs 60-day max
+                if "Volume" in hist.columns:
+                    vols = hist["Volume"].dropna()
+                    if len(vols) >= 2:
+                        v_today = float(vols.iloc[-1])
+                        v_max   = float(vols.rolling(min(60, len(vols))).max().iloc[-1])
+                        if v_max > 0 and v_today > 0:
+                            entry["volume_today"]      = round(v_today, 0)
+                            entry["volume_max_recent"] = round(v_max,   0)
+                            entry["volume_ratio"]      = round(v_today / v_max * 100, 1)
                 result[key] = entry
                 history[key] = {
                     "dates":  [str(d.date()) for d in hist.index[-60:]],
@@ -488,6 +498,20 @@ def fetch_vix_data():
 
     # Fetch TPEX (OTC) index with history accumulation and MA stats
     tpex_entry, tpex_full_hist, tpex_hist_60d = fetch_tpex_index()
+    # Supplement TPEX entry with volume ratio via yfinance ^TWO
+    try:
+        two_hist = yf.Ticker("^TWO", session=_session).history(period="60d", interval="1d")
+        if not two_hist.empty and "Volume" in two_hist.columns:
+            vols = two_hist["Volume"].dropna()
+            if len(vols) >= 2:
+                v_today = float(vols.iloc[-1])
+                v_max   = float(vols.rolling(min(60, len(vols))).max().iloc[-1])
+                if v_max > 0 and v_today > 0:
+                    tpex_entry["volume_today"]      = round(v_today, 0)
+                    tpex_entry["volume_max_recent"] = round(v_max,   0)
+                    tpex_entry["volume_ratio"]      = round(v_today / v_max * 100, 1)
+    except Exception as e:
+        print(f"Warning: TPEX ^TWO volume failed: {e}", file=sys.stderr)
     result["tpex"]  = tpex_entry
     history["tpex"] = tpex_full_hist   # full history stored in JSON for future accumulation
 
