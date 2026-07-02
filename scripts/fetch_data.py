@@ -316,15 +316,54 @@ def _compute_ma_stats(closes, current):
     return stats
 
 
+def fetch_tpex_index():
+    """
+    Fetch Taiwan OTC (TPEX) composite index from TWSE MIS real-time API.
+    Works during Taiwan market hours (09:00-13:30 TST). Falls back to
+    accumulated history when market is closed.
+    TWSE MIS codes tried: Y9999, 0009999, OTC (all for OTC composite index).
+    """
+    codes = ["Y9999", "0009999", "9999", "OTC"]
+    for code in codes:
+        try:
+            url = f"https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=otc_{code}.tw"
+            r = _session.get(url, headers={"Referer": "https://mis.twse.com.tw/"}, timeout=8)
+            msg = r.json().get("msgArray", [{}])[0]
+            z = msg.get("z", "-")
+            if z and z != "-":
+                cur  = round(float(z), 2)
+                prev_str = msg.get("y", "-")
+                prev = round(float(prev_str), 2) if prev_str not in ["-", ""] else None
+                chg  = round(cur - prev, 2) if prev else None
+                pct  = round((cur - prev) / prev * 100, 2) if prev else None
+                print(f"TPEX via TWSE MIS ({code}): {cur}", file=sys.stderr)
+                return {"symbol": "TPEX", "current": cur, "prev": prev,
+                        "change": chg, "change_pct": pct}
+        except Exception as e:
+            print(f"Warning: TPEX TWSE MIS {code}: {e}", file=sys.stderr)
+
+    # Market closed or all codes failed — load previous value from existing JSON
+    try:
+        if os.path.exists(OUTPUT_PATH):
+            with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
+                old = json.load(f)
+            prev_tpex = old.get("vix", {}).get("tpex", {})
+            if prev_tpex.get("current"):
+                print("TPEX: using previous value from JSON history", file=sys.stderr)
+                return prev_tpex
+    except Exception:
+        pass
+    return {"symbol": "TPEX", "current": None, "error": "unavailable"}
+
+
 def fetch_vix_data():
-    """Fetch VIX, VIXTWN, Taiwan OTC and US major index data from Yahoo Finance."""
+    """Fetch VIX, VIXTWN, Taiwan indices and US major index data."""
     tickers = {
         "vix":    "^VIX",
         "vix9d":  "^VIX9D",
         "vix3m":  "^VIX3M",
         "vix6m":  "^VIX6M",
         "twii":   "^TWII",
-        "tpex":   "^TWO",    # 台灣櫃買指數 (GreTai OTC)
         "sp500":  "^GSPC",   # 標普500
         "nasdaq": "^IXIC",   # 那斯達克綜合
         "dji":    "^DJI",    # 道瓊工業
@@ -335,7 +374,6 @@ def fetch_vix_data():
     history = {}
 
     for key, symbol in tickers.items():
-        # US indices and Taiwan indices need 300d to compute MA240
         period = "300d" if key in US_INDEX_KEYS else "60d"
         try:
             ticker = yf.Ticker(symbol, session=_session)
@@ -365,6 +403,9 @@ def fetch_vix_data():
         except Exception as e:
             result[key] = {"symbol": symbol, "current": None, "error": str(e)}
             print(f"Warning: failed to fetch {symbol}: {e}", file=sys.stderr)
+
+    # Fetch TPEX (OTC) index from TWSE MIS real-time API
+    result["tpex"] = fetch_tpex_index()
 
     # Fetch VIXTWN from TAIFEX (real-time)
     vixtwn_data = fetch_vixtwn_from_taifex()
