@@ -31,6 +31,7 @@ function render(data) {
   updateHeader(data);
   updateKeyIndicators(data);
   renderUsIndices(data.vix);
+  renderDraiHoldings(data.drai);
   updateSignalBanner(data.signal);
   renderTermStructure(data.vix);
   renderGauge(data.cnn_fear_greed);
@@ -148,6 +149,22 @@ function renderMaRow(id, t) {
     const cls = up ? 'ma-item--up' : 'ma-item--down';
     const sign = up ? '+' : '';
     return `<span class="ma-item ${cls}"><span class="ma-label">${label}</span><span class="ma-val">${sign}${val.toFixed(1)}%</span></span>`;
+  }).join('');
+}
+
+function renderDraiHoldings(drai) {
+  const chips = el('drai-chips');
+  const asOf  = el('drai-as-of');
+  if (!chips) return;
+  if (!drai || !drai.holdings || !drai.holdings.length) {
+    chips.innerHTML = '<span class="drai-loading">資料暫無</span>';
+    return;
+  }
+  if (asOf) asOf.textContent = drai.as_of ? `As of ${drai.as_of}` : '—';
+  chips.innerHTML = drai.holdings.map(h => {
+    const w = h.weight;
+    const cls = w >= 15 ? 'drai-chip--lg' : w >= 5 ? 'drai-chip--md' : 'drai-chip--sm';
+    return `<span class="drai-chip ${cls}"><span class="drai-ticker">${h.ticker}</span><span class="drai-w">${w.toFixed(2)}%</span></span>`;
   }).join('');
 }
 

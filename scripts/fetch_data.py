@@ -975,6 +975,78 @@ def generate_expert_analysis(vix_data, cnn_data, institutional_data, signal):
     return "\n".join(lines)
 
 
+def fetch_drai_holdings():
+    """
+    Scrape DRAI ETF Fund Holdings from draietf.com/etf/.
+    Returns {as_of, holdings: [{ticker, weight_pct}]} or None on failure.
+    """
+    try:
+        from bs4 import BeautifulSoup
+        r = _session.get("https://draietf.com/etf/", timeout=15,
+                         headers={"Referer": "https://draietf.com/"})
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        # Find the holdings table — look for a table with a Ticker column header
+        table = None
+        for t in soup.find_all("table"):
+            headers = [th.get_text(strip=True).lower() for th in t.find_all("th")]
+            if "ticker" in headers and any("net" in h or "weight" in h or "%" in h for h in headers):
+                table = t
+                break
+            if "ticker" in headers and len(headers) >= 5:
+                table = t
+                break
+
+        if not table:
+            print("Warning: DRAI holdings table not found", file=sys.stderr)
+            return None
+
+        # Map column indices
+        headers = [th.get_text(strip=True).lower() for th in table.find_all("th")]
+        try:
+            ticker_idx = next(i for i, h in enumerate(headers) if "ticker" in h)
+        except StopIteration:
+            ticker_idx = 0
+        # % of Net Assets or weight column
+        try:
+            weight_idx = next(i for i, h in enumerate(headers) if "net" in h or "weight" in h or h.startswith("%"))
+        except StopIteration:
+            weight_idx = len(headers) - 2  # second-to-last fallback
+        # Effective date column
+        try:
+            date_idx = next(i for i, h in enumerate(headers) if "date" in h or "effective" in h)
+        except StopIteration:
+            date_idx = None
+
+        holdings = []
+        as_of = None
+        for row in table.find("tbody").find_all("tr"):
+            cells = [td.get_text(strip=True) for td in row.find_all("td")]
+            if not cells or len(cells) <= max(ticker_idx, weight_idx):
+                continue
+            ticker = cells[ticker_idx].strip()
+            if not ticker:
+                continue
+            try:
+                weight = float(cells[weight_idx].replace("%", "").replace(",", ""))
+            except ValueError:
+                continue
+            holdings.append({"ticker": ticker, "weight": round(weight, 2)})
+            if date_idx and not as_of and date_idx < len(cells):
+                as_of = cells[date_idx].strip()
+
+        if not holdings:
+            return None
+
+        holdings.sort(key=lambda x: x["weight"], reverse=True)
+        print(f"DRAI holdings: {len(holdings)} positions, as_of={as_of}", file=sys.stderr)
+        return {"as_of": as_of, "holdings": holdings}
+
+    except Exception as e:
+        print(f"Warning: fetch_drai_holdings failed: {e}", file=sys.stderr)
+        return None
+
+
 def main():
     print("Fetching VIX data...", file=sys.stderr)
     vix_data, vix_history = fetch_vix_data()
@@ -984,6 +1056,9 @@ def main():
 
     print("Fetching TWSE institutional data...", file=sys.stderr)
     institutional_data = fetch_twse_institutional()
+
+    print("Fetching DRAI ETF holdings...", file=sys.stderr)
+    drai_data = fetch_drai_holdings()
 
     print("Computing signal...", file=sys.stderr)
     signal = compute_market_signal(vix_data, cnn_data, institutional_data)
@@ -999,6 +1074,7 @@ def main():
         "institutional": institutional_data,
         "signal": signal,
         "analysis": analysis,
+        "drai": drai_data,
     }
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)

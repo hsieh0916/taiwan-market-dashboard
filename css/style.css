@@ -481,6 +481,34 @@ body {
 .inst-positive { color: var(--green); }
 .inst-negative { color: var(--red); }
 
+/* -------- DRAI ETF Holdings -------- */
+.drai-subtitle { font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 2px; letter-spacing: 0.04em; }
+.drai-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.drai-loading { color: var(--text-muted); font-size: 0.82rem; }
+.drai-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface);
+  padding: 5px 10px;
+  transition: background 0.2s;
+}
+.drai-chip:hover { background: var(--bg-card-hover); }
+.drai-ticker { font-size: 0.78rem; font-weight: 700; color: var(--text-primary); letter-spacing: 0.04em; }
+.drai-w { font-size: 0.78rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.drai-chip--lg { border-color: var(--blue); background: var(--blue-dim); }
+.drai-chip--lg .drai-w { color: var(--cyan); }
+.drai-chip--md { border-color: var(--border-light); }
+.drai-chip--md .drai-w { color: var(--text-secondary); }
+.drai-chip--sm .drai-w { color: var(--text-muted); }
+
 /* -------- Analysis Text -------- */
 .analysis-text {
   font-family: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
