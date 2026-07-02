@@ -15,7 +15,7 @@ Chart.defaults.font.family = "'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', s
 async function loadData() {
   showLoading(true);
   try {
-    const res = await fetch(`${DATA_URL}?_=${Date.now()}`);
+    const res = await fetch(DATA_URL, { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     render(data);
@@ -45,7 +45,21 @@ function render(data) {
 // ─── Header ──────────────────────────────────────────────────────────────────
 function updateHeader(data) {
   const dt = new Date(data.last_updated || data.last_updated_utc);
-  el('lastUpdated').textContent = isNaN(dt) ? '—' : dt.toLocaleString('zh-TW');
+  const updEl = el('lastUpdated');
+  if (isNaN(dt)) {
+    updEl.textContent = '—';
+  } else {
+    updEl.textContent = dt.toLocaleString('zh-TW');
+    // Flag stale data: warn if last update is more than 45 min ago
+    const ageMin = (Date.now() - dt.getTime()) / 60000;
+    const updateRow = el('update-time');
+    if (updateRow) {
+      updateRow.classList.toggle('update-stale', ageMin > 45);
+      updateRow.title = ageMin > 45
+        ? `資料已超過 ${Math.floor(ageMin)} 分鐘未更新（GitHub Actions 排程可能延誤）`
+        : `資料更新於 ${Math.floor(ageMin)} 分鐘前`;
+    }
+  }
 
   // Market status heuristic (Taiwan market 09:00–13:30 TST Mon–Fri)
   const now = new Date();

@@ -113,7 +113,9 @@ body {
   50% { opacity: 0.4; }
 }
 
-.update-time { font-size: 0.8rem; color: var(--text-muted); }
+.update-time { font-size: 0.8rem; color: var(--text-muted); cursor: default; }
+.update-time.update-stale { color: var(--yellow); }
+.update-time.update-stale::after { content: ' ⚠'; font-size: 0.75rem; }
 .refresh-btn {
   padding: 6px 14px;
   border: 1px solid var(--border-light);

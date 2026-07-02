@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TMI · 台股情報儀表板 | Taiwan Market Intelligence</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="stylesheet" href="css/style.css?v=20260702c" />
+  <link rel="stylesheet" href="css/style.css?v=20260702d" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 </head>
@@ -51,7 +51,7 @@
           <span class="status-dot" id="statusDot"></span>
           <span id="statusText">載入中...</span>
         </div>
-        <div class="update-time">最後更新：<span id="lastUpdated">—</span></div>
+        <div class="update-time" id="update-time">最後更新：<span id="lastUpdated">—</span></div>
         <button class="refresh-btn" onclick="loadData()">↻ 重新整理</button>
       </div>
     </div>
@@ -421,6 +421,6 @@
     <p>載入市場數據中...</p>
   </div>
 
-  <script src="js/app.js?v=20260702c"></script>
+  <script src="js/app.js?v=20260702d"></script>
 </body>
 </html>
