@@ -609,35 +609,73 @@ def _accumulate_vixtwn_history(vixtwn_today):
 
 def fetch_cnn_fear_greed():
     """Fetch CNN Fear & Greed Index."""
-    url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (compatible; MarketDashboard/1.0)",
-        "Referer": "https://www.cnn.com/",
+    # Use a real browser UA — CNN's CDN returns 418 for bot-like UAs.
+    # The dataviz endpoint updates ~hourly during US market hours (not at close).
+    # Use the date-range variant to pull the most recent data point.
+    now_ts = int(datetime.now(timezone.utc).timestamp())
+    browser_ua = (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    )
+    req_headers = {
+        "User-Agent": browser_ua,
+        "Referer": "https://edition.cnn.com/markets/fear-and-greed",
+        "Origin": "https://edition.cnn.com",
+        "Accept": "application/json, */*",
+        "Accept-Language": "en-US,en;q=0.9",
     }
-    try:
-        resp = _session.get(url, headers={"Referer": "https://www.cnn.com/"}, timeout=15)
-        resp.raise_for_status()
-        data = resp.json()
-        fg = data.get("fear_and_greed", {})
-        historical = data.get("fear_and_greed_historical", {}).get("data", [])
+    # Try date-range (freshest data), fall back to no-arg endpoint
+    urls = [
+        f"https://production.dataviz.cnn.io/index/fearandgreed/graphdata/{now_ts - 86400}/{now_ts}",
+        "https://production.dataviz.cnn.io/index/fearandgreed/graphdata",
+    ]
+    data = None
+    for url in urls:
+        try:
+            resp = _session.get(url, headers=req_headers, timeout=15)
+            if resp.status_code == 200:
+                data = resp.json()
+                break
+            print(f"Warning: CNN F&G {url} → HTTP {resp.status_code}", file=sys.stderr)
+        except Exception as e:
+            print(f"Warning: CNN F&G {url} error: {e}", file=sys.stderr)
 
-        # Trim historical to last 60 days
-        hist_dates = [item["x"] for item in historical[-60:]]
-        hist_values = [round(item["y"], 1) for item in historical[-60:]]
+    if data is None:
+        return {"current": None, "rating": "unknown", "error": "all endpoints failed"}
 
-        return {
-            "current": round(fg.get("score", 0), 1),
-            "rating": fg.get("rating", "unknown"),
-            "prev_close": round(fg.get("previous_close", 0), 1),
-            "prev_1week": round(fg.get("previous_1_week", 0), 1),
-            "prev_1month": round(fg.get("previous_1_month", 0), 1),
-            "prev_1year": round(fg.get("previous_1_year", 0), 1),
-            "history_dates": hist_dates,
-            "history_values": hist_values,
-        }
-    except Exception as e:
-        print(f"Warning: failed to fetch CNN F&G: {e}", file=sys.stderr)
-        return {"current": None, "rating": "unknown", "error": str(e)}
+    fg = data.get("fear_and_greed", {})
+    historical = data.get("fear_and_greed_historical", {}).get("data", [])
+
+    # Use the most recent historical data point (may be newer than fg.score)
+    score = fg.get("score")
+    rating = fg.get("rating", "unknown")
+    data_ts = fg.get("timestamp")
+    if historical:
+        last = max(historical, key=lambda p: p.get("x", 0))
+        if last.get("y") is not None:
+            score = last["y"]
+            rating = last.get("rating", rating)
+            # Convert ms timestamp to ISO string
+            last_ts_s = last["x"] / 1000
+            import datetime as _dt
+            data_ts = _dt.datetime.utcfromtimestamp(last_ts_s).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # Trim historical to last 60 daily data points
+    hist_dates  = [item["x"] for item in historical[-60:]]
+    hist_values = [round(item["y"], 1) for item in historical[-60:]]
+
+    return {
+        "current": round(score, 1) if score is not None else None,
+        "rating": rating,
+        "data_timestamp": data_ts,
+        "prev_close":  round(fg.get("previous_close",  0), 1),
+        "prev_1week":  round(fg.get("previous_1_week",  0), 1),
+        "prev_1month": round(fg.get("previous_1_month", 0), 1),
+        "prev_1year":  round(fg.get("previous_1_year",  0), 1),
+        "history_dates":  hist_dates,
+        "history_values": hist_values,
+    }
 
 
 def fetch_twse_institutional():

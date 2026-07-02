@@ -306,6 +306,17 @@ function renderGauge(cnn) {
   const score = cnn.current;
   const lvl   = cnnLevel(score);
 
+  // Show data's own timestamp so users can see it's not live
+  const tsEl = el('cnnDataTs');
+  if (tsEl && cnn.data_timestamp) {
+    try {
+      const dt = new Date(cnn.data_timestamp);
+      const hhmm = dt.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', timeZone: 'America/New_York', hour12: false });
+      tsEl.textContent = `資料截至 ET ${hhmm}`;
+      tsEl.style.display = '';
+    } catch (_) {}
+  }
+
   const canvas = document.getElementById('gaugeChart');
   const ctx    = canvas.getContext('2d');
   const W = canvas.width;
