@@ -308,66 +308,6 @@ body {
 .ma-item--up  .ma-val { color: var(--green); }
 .ma-item--down .ma-val { color: var(--red); }
 
-/* ── Market Concentration Card ─────────────────────── */
-.conc-rows { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
-.conc-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 10px;
-  background: var(--bg-surface);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  gap: 8px;
-}
-.conc-row--hhi { flex-wrap: wrap; }
-.conc-label { font-size: 0.78rem; color: var(--text-secondary); flex-shrink: 0; }
-.conc-val {
-  font-size: 0.95rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-primary);
-}
-.conc-high { color: var(--red); }
-.conc-mid  { color: var(--yellow); }
-.conc-low  { color: var(--green); }
-.conc-badge {
-  font-size: 0.68rem;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 99px;
-  letter-spacing: 0.04em;
-}
-.conc-badge.conc-high { background: var(--red-dim);    color: var(--red); }
-.conc-badge.conc-mid  { background: var(--yellow-dim); color: var(--yellow); }
-.conc-badge.conc-low  { background: var(--green-dim);  color: var(--green); }
-
-.conc-top10-list {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin-top: 10px;
-  max-height: 180px;
-  overflow-y: auto;
-}
-.conc-stock {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  padding: 3px 0;
-  border-bottom: 1px solid var(--border);
-}
-.conc-stock:last-child { border-bottom: none; }
-.conc-rank {
-  width: 16px;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.7rem;
-  flex-shrink: 0;
-}
-.conc-sname { flex: 1; color: var(--text-secondary); }
-.conc-sw { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--cyan); }
 
 /* -------- Two Column Charts Row -------- */
 .charts-row-2 {
