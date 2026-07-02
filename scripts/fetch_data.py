@@ -438,6 +438,140 @@ def fetch_tpex_index():
     return entry, full_history, history_60d
 
 
+# ── TWSE Market Concentration ──────────────────────────────────────────────────
+# Shares outstanding in 億股 (100M shares). Last verified: 2026-Q2.
+# Top ~30 stocks cover ~85%+ of TWSE market cap, sufficient for HHI approximation.
+_TWSE_SHARES = {  # code: 億股
+    "2330": 259.3,  "2454": 15.6,   "2317": 138.6,  "2881": 106.0,
+    "2882": 141.2,  "2891": 193.2,  "3711": 75.8,   "2886": 97.4,
+    "2308": 25.9,   "2303": 242.4,  "2412": 77.6,   "1301": 63.6,
+    "1303": 78.1,   "2002": 157.5,  "2884": 182.1,  "2885": 152.9,
+    "2892": 112.1,  "5880": 161.6,  "2357": 13.5,   "2382": 25.2,
+    "3008": 1.34,   "2603": 37.9,   "2609": 30.2,   "3231": 38.3,
+    "2324": 42.5,   "1216": 56.8,   "3045": 33.6,   "4904": 33.6,
+    "2379": 10.5,   "2345": 8.3,
+}
+_TWSE_NAMES = {
+    "2330": "台積電",  "2454": "聯發科",  "2317": "鴻海",    "2881": "富邦金",
+    "2882": "國泰金",  "2891": "中信金",  "3711": "日月光",  "2886": "兆豐金",
+    "2308": "台達電",  "2303": "聯電",    "2412": "中華電",  "1301": "台塑",
+    "1303": "南亞",    "2002": "中鋼",    "2884": "玉山金",  "2885": "元大金",
+    "2892": "第一金",  "5880": "合庫金",  "2357": "華碩",    "2382": "廣達",
+    "3008": "大立光",  "2603": "長榮",    "2609": "陽明",    "3231": "緯創",
+    "2324": "仁寶",    "1216": "統一",    "3045": "台灣大",  "4904": "遠傳",
+    "2379": "瑞昱",    "2345": "智邦",
+}
+
+
+def fetch_twse_market_concentration():
+    """
+    Returns turnover rate, top-10 weight, and HHI for TWSE market.
+    Uses:
+      - TWSE STOCK_DAY_ALL for today's closing prices (all listed stocks)
+      - TWSE MI_INDEX for total market cap and total trading value
+      - _TWSE_SHARES for shares outstanding of top ~30 stocks
+    """
+    today_str = datetime.now(TW_TZ).strftime("%Y%m%d")
+    headers = {"Referer": "https://www.twse.com.tw/"}
+
+    # 1. All-stock daily prices + aggregate trading value
+    stock_prices = {}
+    total_trading_value = 0.0
+    try:
+        r = _session.get(
+            "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY_ALL",
+            params={"response": "json"},
+            headers=headers, timeout=15,
+        )
+        d = r.json()
+        for row in d.get("data", []):
+            try:
+                code = str(row[0]).strip()
+                price = float(str(row[8]).replace(",", ""))
+                value = float(str(row[4]).replace(",", ""))  # 成交金額 (元)
+                if price > 0:
+                    stock_prices[code] = price
+                total_trading_value += value
+            except Exception:
+                pass
+    except Exception as e:
+        print(f"Warning: STOCK_DAY_ALL failed: {e}", file=sys.stderr)
+
+    if not stock_prices:
+        return None
+
+    # 2. Total market cap from MI_INDEX
+    total_market_cap_twd = None
+    try:
+        r2 = _session.get(
+            "https://www.twse.com.tw/rwd/zh/afterTrading/MI_INDEX",
+            params={"response": "json", "date": today_str},
+            headers=headers, timeout=12,
+        )
+        mi = r2.json()
+        # Search all tables for '總市值' row
+        for tbl in mi.get("tables", []):
+            for row in tbl.get("data", []):
+                if row and "總市值" in str(row[0]):
+                    try:
+                        val_str = str(row[1]).replace(",", "")
+                        total_market_cap_twd = float(val_str) * 1e8  # 億元 → 元
+                        break
+                    except Exception:
+                        pass
+            if total_market_cap_twd:
+                break
+    except Exception as e:
+        print(f"Warning: MI_INDEX failed: {e}", file=sys.stderr)
+
+    # Fallback: estimate from our top-stock caps (they cover ~85% of market)
+    top_caps = {}
+    for code, shares_100M in _TWSE_SHARES.items():
+        if code in stock_prices:
+            top_caps[code] = shares_100M * 1e8 * stock_prices[code]
+
+    if not total_market_cap_twd and top_caps:
+        total_market_cap_twd = sum(top_caps.values()) / 0.82  # adjust for ~82% coverage
+
+    if not total_market_cap_twd or total_market_cap_twd <= 0:
+        return None
+
+    # Recompute all caps (some may differ if MI_INDEX total was used)
+    if not top_caps:
+        return None
+
+    # 3. Weights relative to full market cap
+    weights = {code: cap / total_market_cap_twd for code, cap in top_caps.items()}
+    sorted_stocks = sorted(weights.items(), key=lambda x: x[1], reverse=True)
+
+    top10_weight = round(sum(w for _, w in sorted_stocks[:10]) * 100, 1)
+
+    # HHI over full market (remaining stocks treated as tiny, negligible contribution)
+    hhi = round(sum(w * w for w in weights.values()) * 10000, 0)
+
+    # 4. Turnover rate = daily trading value / total market cap
+    turnover_rate = None
+    if total_trading_value > 0:
+        turnover_rate = round(total_trading_value / total_market_cap_twd * 100, 3)
+
+    top10_list = [
+        {"code": c, "name": _TWSE_NAMES.get(c, c), "weight": round(w * 100, 2)}
+        for c, w in sorted_stocks[:10]
+    ]
+
+    print(
+        f"TWSE concentration: turnover={turnover_rate}% top10={top10_weight}% HHI={hhi}",
+        file=sys.stderr,
+    )
+    return {
+        "turnover_rate": turnover_rate,
+        "top10_weight": top10_weight,
+        "hhi": int(hhi),
+        "top10_list": top10_list,
+        "total_market_cap_100B": round(total_market_cap_twd / 1e11, 1),  # 千億
+    }
+
+
 def fetch_vix_data():
     """Fetch VIX, VIXTWN, Taiwan indices and US major index data."""
     tickers = {
@@ -985,6 +1119,9 @@ def main():
     print("Fetching TWSE institutional data...", file=sys.stderr)
     institutional_data = fetch_twse_institutional()
 
+    print("Fetching TWSE market concentration...", file=sys.stderr)
+    concentration_data = fetch_twse_market_concentration()
+
     print("Computing signal...", file=sys.stderr)
     signal = compute_market_signal(vix_data, cnn_data, institutional_data)
 
@@ -999,6 +1136,7 @@ def main():
         "institutional": institutional_data,
         "signal": signal,
         "analysis": analysis,
+        "concentration": concentration_data,
     }
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)

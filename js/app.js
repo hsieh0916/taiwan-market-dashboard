@@ -64,6 +64,7 @@ function updateKeyIndicators(data) {
   const vix = data.vix || {};
   const cnn = data.cnn_fear_greed || {};
   const inst = data.institutional || {};
+  updateConcentration(data.concentration);
 
   // TWII
   updatePriceCard('twii', vix.twii, '', '點');
@@ -149,6 +150,39 @@ function renderMaRow(id, t) {
     const sign = up ? '+' : '';
     return `<span class="ma-item ${cls}"><span class="ma-label">${label}</span><span class="ma-val">${sign}${val.toFixed(1)}%</span></span>`;
   }).join('');
+}
+
+function updateConcentration(c) {
+  if (!c) return;
+  const turnoverEl = el('conc-turnover');
+  const top10El    = el('conc-top10');
+  const hhiEl      = el('conc-hhi');
+  const hhiBadge   = el('conc-hhi-badge');
+  const listEl     = el('conc-top10-list');
+
+  if (turnoverEl && c.turnover_rate != null) {
+    turnoverEl.textContent = c.turnover_rate.toFixed(3) + '%';
+  }
+  if (top10El && c.top10_weight != null) {
+    top10El.textContent = c.top10_weight.toFixed(1) + '%';
+    top10El.className = 'conc-val ' + (c.top10_weight > 70 ? 'conc-high' : 'conc-mid');
+  }
+  if (hhiEl && c.hhi != null) {
+    hhiEl.textContent = c.hhi.toLocaleString();
+    const level = c.hhi >= 2500 ? { label: '高度集中', cls: 'conc-high' }
+                : c.hhi >= 1500 ? { label: '中度集中', cls: 'conc-mid' }
+                :                  { label: '分散',     cls: 'conc-low' };
+    if (hhiBadge) {
+      hhiBadge.textContent = level.label;
+      hhiBadge.className = `conc-badge ${level.cls}`;
+    }
+    hhiEl.className = `conc-val ${level.cls}`;
+  }
+  if (listEl && c.top10_list && c.top10_list.length) {
+    listEl.innerHTML = c.top10_list.map((s, i) =>
+      `<span class="conc-stock"><span class="conc-rank">${i + 1}</span><span class="conc-sname">${s.name}</span><span class="conc-sw">${s.weight.toFixed(1)}%</span></span>`
+    ).join('');
+  }
 }
 
 function updatePriceCard(id, ticker, prefix, suffix) {
