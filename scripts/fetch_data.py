@@ -398,8 +398,8 @@ def _fetch_tpex_realtime():
     2. Previous value from existing JSON (fallback)
     Returns (current_price, prev_price) or (None, None).
     """
-    # TWSE MIS codes for OTC composite index (try all candidates)
-    for code in ["Y9999", "0009999", "9999", "OTC", "IX0044", "LY", "TPEX", "0001"]:
+    # TWSE MIS codes for OTC composite index; IX0044 confirmed working 2026-07-02
+    for code in ["IX0044", "Y9999", "0009999"]:
         try:
             url = f"https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=otc_{code}.tw"
             r = _session.get(url, headers={"Referer": "https://mis.twse.com.tw/"}, timeout=8)
