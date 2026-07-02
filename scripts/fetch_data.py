@@ -294,7 +294,8 @@ async def _vixtwn_playwright():
     return result_holder.get("data")
 
 
-US_INDEX_KEYS = {"sp500", "nasdaq", "dji", "sox"}
+MA_STAT_KEYS = {"sp500", "nasdaq", "dji", "sox", "twii"}
+US_INDEX_KEYS = MA_STAT_KEYS  # kept for any reference elsewhere
 
 
 def _compute_ma_stats(closes, current):
@@ -316,15 +317,89 @@ def _compute_ma_stats(closes, current):
     return stats
 
 
-def fetch_tpex_index():
+def _fetch_tpex_stooq_closes():
+    """Fetch TPEX (^TWO) historical daily closes from stooq.com. Returns {date_str: close}."""
+    try:
+        url = "https://stooq.com/q/d/l/?s=%5Etwo&i=d"
+        r = _session.get(url, timeout=15, headers={"Referer": "https://stooq.com/"})
+        lines = r.text.strip().split('\n')
+        if len(lines) < 3 or 'Date' not in lines[0]:
+            return {}
+        data = {}
+        for line in lines[1:]:
+            parts = line.split(',')
+            if len(parts) >= 5:
+                try:
+                    data[parts[0]] = round(float(parts[4]), 2)
+                except (ValueError, IndexError):
+                    pass
+        if data:
+            print(f"TPEX stooq: {len(data)} days", file=sys.stderr)
+        return data
+    except Exception as e:
+        print(f"Warning: TPEX stooq: {e}", file=sys.stderr)
+        return {}
+
+
+def _accumulate_tpex_history(current_price, old_history):
     """
-    Fetch Taiwan OTC (TPEX) composite index from TWSE MIS real-time API.
-    Works during Taiwan market hours (09:00-13:30 TST). Falls back to
-    accumulated history when market is closed.
-    TWSE MIS codes tried: Y9999, 0009999, OTC (all for OTC composite index).
+    Build TPEX daily history from:
+    1. Previously accumulated data in JSON (old_history from vix_history.tpex)
+    2. Stooq historical data (fills in gaps, works from GitHub Actions)
+    3. Today's live value
+    Returns (history_60d_dict, ma_stats_dict).
     """
-    codes = ["Y9999", "0009999", "9999", "OTC"]
-    for code in codes:
+    import pandas as pd
+    from datetime import date
+
+    existing = {}
+    # Load from previous JSON history
+    for d, c in zip(old_history.get("dates", []), old_history.get("closes", [])):
+        if d and c is not None:
+            existing[d] = c
+
+    # Try stooq for full history (overrides accumulated data where available)
+    stooq = _fetch_tpex_stooq_closes()
+    if stooq:
+        existing.update(stooq)
+
+    # Insert today's live value
+    today = date.today().strftime("%Y-%m-%d")
+    if current_price:
+        existing[today] = round(current_price, 2)
+
+    sorted_dates = sorted(existing.keys())[-300:]
+    closes_list  = [existing[d] for d in sorted_dates]
+
+    # Compute MA stats if sufficient history
+    ma_stats = {}
+    if len(sorted_dates) >= 20:
+        closes_series = pd.Series(closes_list)
+        cur = closes_list[-1] if closes_list else current_price
+        if cur:
+            ma_stats = _compute_ma_stats(closes_series, cur)
+
+    history_60d = {
+        "dates":  sorted_dates[-60:],
+        "closes": closes_list[-60:],
+    }
+    # Full history returned to be saved back into vix_history
+    full_history = {
+        "dates":  sorted_dates,
+        "closes": closes_list,
+    }
+    return full_history, history_60d, ma_stats
+
+
+def _fetch_tpex_realtime():
+    """
+    Try multiple sources for TPEX real-time value.
+    1. TWSE MIS getStockInfo with known OTC composite codes (market hours only)
+    2. Previous value from existing JSON (fallback)
+    Returns (current_price, prev_price) or (None, None).
+    """
+    # TWSE MIS codes for OTC composite index (try all candidates)
+    for code in ["Y9999", "0009999", "9999", "OTC", "IX0044", "LY", "TPEX", "0001"]:
         try:
             url = f"https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=otc_{code}.tw"
             r = _session.get(url, headers={"Referer": "https://mis.twse.com.tw/"}, timeout=8)
@@ -334,26 +409,50 @@ def fetch_tpex_index():
                 cur  = round(float(z), 2)
                 prev_str = msg.get("y", "-")
                 prev = round(float(prev_str), 2) if prev_str not in ["-", ""] else None
-                chg  = round(cur - prev, 2) if prev else None
-                pct  = round((cur - prev) / prev * 100, 2) if prev else None
-                print(f"TPEX via TWSE MIS ({code}): {cur}", file=sys.stderr)
-                return {"symbol": "TPEX", "current": cur, "prev": prev,
-                        "change": chg, "change_pct": pct}
+                print(f"TPEX TWSE MIS ({code}): {cur}", file=sys.stderr)
+                return cur, prev
         except Exception as e:
             print(f"Warning: TPEX TWSE MIS {code}: {e}", file=sys.stderr)
+    return None, None
 
-    # Market closed or all codes failed — load previous value from existing JSON
+
+def fetch_tpex_index():
+    """
+    Fetch TPEX (Taiwan OTC/GRETAI) composite index with MA stats.
+    Real-time: TWSE MIS API during market hours (09:00-13:30 TST).
+    History: stooq + daily accumulation → MA20/60/240 + 近高.
+    Falls back to last known value when market is closed.
+    """
+    # Step 1: get current price
+    cur, prev = _fetch_tpex_realtime()
+
+    # Step 2: load old accumulated history from existing JSON
+    old_history = {}
+    old_entry   = {}
     try:
         if os.path.exists(OUTPUT_PATH):
             with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
-                old = json.load(f)
-            prev_tpex = old.get("vix", {}).get("tpex", {})
-            if prev_tpex.get("current"):
-                print("TPEX: using previous value from JSON history", file=sys.stderr)
-                return prev_tpex
+                old_json = json.load(f)
+            old_history = old_json.get("vix_history", {}).get("tpex", {})
+            old_entry   = old_json.get("vix", {}).get("tpex", {})
     except Exception:
         pass
-    return {"symbol": "TPEX", "current": None, "error": "unavailable"}
+
+    # Fall back to last known price if real-time unavailable
+    if cur is None and old_entry.get("current"):
+        cur  = old_entry["current"]
+        prev = old_entry.get("prev")
+        print("TPEX: using previous JSON value (market closed)", file=sys.stderr)
+
+    # Step 3: accumulate history and compute MA stats
+    full_history, history_60d, ma_stats = _accumulate_tpex_history(cur, old_history)
+
+    chg = round(cur - prev, 2) if (cur and prev) else None
+    pct = round((cur - prev) / prev * 100, 2) if (cur and prev) else None
+    entry = {"symbol": "TPEX", "current": cur, "prev": prev,
+             "change": chg, "change_pct": pct}
+    entry.update(ma_stats)
+    return entry, full_history, history_60d
 
 
 def fetch_vix_data():
@@ -364,17 +463,17 @@ def fetch_vix_data():
         "vix3m":  "^VIX3M",
         "vix6m":  "^VIX6M",
         "twii":   "^TWII",
-        "sp500":  "^GSPC",   # 標普500
-        "nasdaq": "^IXIC",   # 那斯達克綜合
-        "dji":    "^DJI",    # 道瓊工業
-        "sox":    "^SOX",    # 費城半導體指數
+        "sp500":  "^GSPC",
+        "nasdaq": "^IXIC",
+        "dji":    "^DJI",
+        "sox":    "^SOX",
     }
 
     result = {}
     history = {}
 
     for key, symbol in tickers.items():
-        period = "300d" if key in US_INDEX_KEYS else "60d"
+        period = "300d" if key in MA_STAT_KEYS else "60d"
         try:
             ticker = yf.Ticker(symbol, session=_session)
             hist = ticker.history(period=period, interval="1d")
@@ -391,7 +490,7 @@ def fetch_vix_data():
                     "high_52w":   round(float(hist["Close"].max()), 2),
                     "low_52w":    round(float(hist["Close"].min()), 2),
                 }
-                if key in US_INDEX_KEYS:
+                if key in MA_STAT_KEYS:
                     entry.update(_compute_ma_stats(hist["Close"], cur))
                 result[key] = entry
                 history[key] = {
@@ -404,8 +503,10 @@ def fetch_vix_data():
             result[key] = {"symbol": symbol, "current": None, "error": str(e)}
             print(f"Warning: failed to fetch {symbol}: {e}", file=sys.stderr)
 
-    # Fetch TPEX (OTC) index from TWSE MIS real-time API
-    result["tpex"] = fetch_tpex_index()
+    # Fetch TPEX (OTC) index with history accumulation and MA stats
+    tpex_entry, tpex_full_hist, tpex_hist_60d = fetch_tpex_index()
+    result["tpex"]  = tpex_entry
+    history["tpex"] = tpex_full_hist   # full history stored in JSON for future accumulation
 
     # Fetch VIXTWN from TAIFEX (real-time)
     vixtwn_data = fetch_vixtwn_from_taifex()

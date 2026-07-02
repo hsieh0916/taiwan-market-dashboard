@@ -67,9 +67,11 @@ function updateKeyIndicators(data) {
 
   // TWII
   updatePriceCard('twii', vix.twii, '', '點');
+  renderMaRow('twii', vix.twii);
 
   // TPEX 櫃買指數
   updatePriceCard('tpex', vix.tpex, '', '點');
+  renderMaRow('tpex', vix.tpex);
 
   // VIXTWN
   if (vix.vixtwn) {
