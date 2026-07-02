@@ -135,7 +135,7 @@ function renderUsIndices(vix) {
 
 function renderMaRow(id, t) {
   const row = el(`${id}-ma`);
-  if (!row) return;
+  if (!row || !t) return;
   const items = [
     { label: '月線', val: t.ma20_diff_pct },
     { label: '季線', val: t.ma60_diff_pct },
