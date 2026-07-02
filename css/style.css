@@ -633,6 +633,22 @@ body {
   margin-bottom: 16px;
 }
 
+/* -------- Heatmap -------- */
+.heatmap-as-of {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.heatmap-wrap {
+  position: relative;
+  height: 300px;
+}
+
 /* -------- Responsive -------- */
 @media (max-width: 768px) {
   .main { padding: 16px; }
@@ -640,6 +656,7 @@ body {
   .signal-score { font-size: 2.8rem; }
   .cards-grid { grid-template-columns: repeat(2, 1fr); }
   .header-inner { padding: 12px 16px; }
+  .heatmap-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
   .cards-grid { grid-template-columns: 1fr; }

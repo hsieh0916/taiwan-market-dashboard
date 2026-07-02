@@ -1071,6 +1071,193 @@ def fetch_drai_holdings():
         return None
 
 
+# ─── TWSE / TPEX Heatmap ─────────────────────────────────────────────────────
+
+# Top TWSE (上市) stocks: code → (shares_billions, display_name, sector)
+_HM_TWSE = {
+    "2330": (259.3, "台積電", "半導體"),
+    "2454": ( 15.6, "聯發科", "半導體"),
+    "2303": (242.4, "聯電",   "半導體"),
+    "3711": ( 75.8, "日月光", "半導體"),
+    "3008": (  1.34,"大立光", "半導體"),
+    "2379": ( 10.5, "瑞昱",   "半導體"),
+    "2317": (138.6, "鴻海",   "電子"),
+    "2308": ( 25.9, "台達電", "電子"),
+    "2382": ( 25.2, "廣達",   "電子"),
+    "2357": ( 13.5, "華碩",   "電子"),
+    "3231": ( 38.3, "緯創",   "電子"),
+    "2324": ( 42.5, "仁寶",   "電子"),
+    "2345": (  8.3, "智邦",   "電子"),
+    "2881": (106.0, "富邦金", "金融"),
+    "2882": (141.2, "國泰金", "金融"),
+    "2891": (193.2, "中信金", "金融"),
+    "2886": ( 97.4, "兆豐金", "金融"),
+    "2884": (182.1, "玉山金", "金融"),
+    "2885": (152.9, "元大金", "金融"),
+    "2892": (112.1, "第一金", "金融"),
+    "5880": (161.6, "合庫金", "金融"),
+    "1301": ( 63.6, "台塑",   "石化"),
+    "1303": ( 78.1, "南亞",   "石化"),
+    "2002": (157.5, "中鋼",   "鋼鐵"),
+    "2412": ( 77.6, "中華電", "電信"),
+    "3045": ( 33.6, "台灣大", "電信"),
+    "4904": ( 33.6, "遠傳",   "電信"),
+    "2603": ( 37.9, "長榮",   "航運"),
+    "2609": ( 30.2, "陽明",   "航運"),
+    "1216": ( 56.8, "統一",   "消費"),
+}
+
+# Top TPEX (上櫃) stocks: code → (shares_billions, display_name, sector)
+_HM_TPEX = {
+    "3034": (1.26, "聯詠",  "半導體"),
+    "6415": (0.72, "矽力",  "半導體"),
+    "3529": (0.55, "力旺",  "半導體"),
+    "6223": (1.00, "旺矽",  "半導體"),
+    "5274": (0.30, "信驊",  "半導體"),
+    "5269": (0.46, "祥碩",  "半導體"),
+    "3661": (0.53, "世芯",  "半導體"),
+    "8299": (0.42, "群聯",  "半導體"),
+    "4919": (0.54, "新唐",  "半導體"),
+    "3702": (0.86, "大聯大","通路"),
+    "3596": (0.46, "智易",  "網通"),
+    "5388": (0.45, "中磊",  "網通"),
+    "3533": (0.56, "嘉澤",  "連接器"),
+    "6269": (0.84, "台郡",  "軟板"),
+    "3081": (0.27, "聯亞",  "半導體"),
+}
+
+
+def _fetch_twse_all_stocks():
+    """
+    Fetch all TWSE daily data from STOCK_DAY_ALL.
+    The endpoint returns CSV (not JSON) regardless of ?response=json.
+    Columns: 日期, 代號, 名稱, 成交股數, 成交金額, 開盤, 最高, 最低, 收盤, 漲跌價差, 成交筆數
+    Returns (dict: code → {close, change_pct, vol_value}, as_of_str)
+    """
+    import csv, io
+    url = "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY_ALL"
+    try:
+        r = _session.get(url, timeout=25)
+        r.raise_for_status()
+        text = r.content.decode("utf-8-sig", errors="replace")
+        reader = csv.reader(io.StringIO(text))
+        result = {}
+        as_of = None
+        for row in reader:
+            if len(row) < 10:
+                continue
+            date_field = row[0].strip()
+            # Skip header rows (non-numeric first field)
+            if not date_field[:3].replace('"', '').isdigit():
+                continue
+            code = row[1].strip()
+            # Only 4-digit numeric codes starting 1-9 (exclude ETFs like 0050)
+            if not (len(code) == 4 and code.isdigit() and code[0] != '0'):
+                continue
+            try:
+                close = float(row[8].replace(",", ""))
+                change_str = row[9].replace(",", "").replace("+", "").strip()
+                if change_str in ("", "X", "--", "—", "除息", "除權"):
+                    change = 0.0
+                else:
+                    change = float(change_str)
+                vol_value = float(row[4].replace(",", ""))
+                prev = close - change
+                change_pct = round(change / prev * 100, 2) if abs(prev) > 0.01 else 0.0
+                result[code] = {
+                    "close": close,
+                    "change_pct": change_pct,
+                    "vol_value": vol_value,
+                }
+                # Parse ROC date to CE date once
+                if not as_of and len(date_field) == 7 and date_field.isdigit():
+                    yr = int(date_field[:3]) + 1911
+                    as_of = f"{yr}/{date_field[3:5]}/{date_field[5:7]}"
+            except (ValueError, ZeroDivisionError):
+                continue
+        print(f"TWSE STOCK_DAY_ALL: parsed {len(result)} stocks, as_of={as_of}", file=sys.stderr)
+        return result, as_of
+    except Exception as e:
+        print(f"Warning: _fetch_twse_all_stocks failed: {e}", file=sys.stderr)
+        return {}, None
+
+
+def _fetch_tpex_stocks_yf():
+    """
+    Fetch TPEX top stocks via yfinance (.TWO suffix), one ticker at a time.
+    Returns dict: code → {close, change_pct, vol_value (TWD)}
+    """
+    result = {}
+    for code in _HM_TPEX:
+        ticker = f"{code}.TWO"
+        try:
+            hist = yf.Ticker(ticker, session=_session).history(
+                period="5d", interval="1d", auto_adjust=True
+            )
+            if hist.empty or "Close" not in hist.columns:
+                continue
+            hist = hist.dropna(subset=["Close"])
+            if len(hist) < 2:
+                continue
+            close = float(hist["Close"].iloc[-1])
+            prev  = float(hist["Close"].iloc[-2])
+            if abs(prev) < 0.01:
+                continue
+            change = close - prev
+            change_pct = round(change / prev * 100, 2)
+            vol_shares = float(hist["Volume"].iloc[-1]) if "Volume" in hist.columns else 0.0
+            vol_value = vol_shares * close
+            result[code] = {
+                "close": round(close, 2),
+                "change_pct": change_pct,
+                "vol_value": round(vol_value, 0),
+            }
+        except Exception as e:
+            print(f"Warning: TPEX {ticker}: {e}", file=sys.stderr)
+    print(f"TPEX yfinance: got {len(result)}/{len(_HM_TPEX)} stocks", file=sys.stderr)
+    return result
+
+
+def fetch_heatmap_data():
+    """
+    Build heatmap data for TWSE and TPEX top stocks.
+    cap/vol stored in 億元 (100 million TWD).
+    Returns {as_of, twse: [...], tpex: [...]}
+    """
+    twse_raw, as_of = _fetch_twse_all_stocks()
+    tpex_raw = _fetch_tpex_stocks_yf()
+
+    twse_list = []
+    for code, (shares_b, name, sector) in _HM_TWSE.items():
+        if code not in twse_raw:
+            continue
+        d = twse_raw[code]
+        cap = round(shares_b * 1e8 * d["close"] / 1e8, 1)   # 億元
+        vol = round(d["vol_value"] / 1e8, 2)                  # 億元
+        twse_list.append({
+            "code": code, "name": name, "sector": sector,
+            "close": d["close"], "change_pct": d["change_pct"],
+            "cap": cap, "vol": vol,
+        })
+    twse_list.sort(key=lambda x: x["cap"], reverse=True)
+
+    tpex_list = []
+    for code, (shares_b, name, sector) in _HM_TPEX.items():
+        if code not in tpex_raw:
+            continue
+        d = tpex_raw[code]
+        cap = round(shares_b * 1e8 * d["close"] / 1e8, 1)
+        vol = round(d["vol_value"] / 1e8, 2)
+        tpex_list.append({
+            "code": code, "name": name, "sector": sector,
+            "close": round(d["close"], 2), "change_pct": d["change_pct"],
+            "cap": cap, "vol": vol,
+        })
+    tpex_list.sort(key=lambda x: x["cap"], reverse=True)
+
+    return {"as_of": as_of, "twse": twse_list, "tpex": tpex_list}
+
+
 def main():
     print("Fetching VIX data...", file=sys.stderr)
     vix_data, vix_history = fetch_vix_data()
@@ -1083,6 +1270,9 @@ def main():
 
     print("Fetching DRAI ETF holdings...", file=sys.stderr)
     drai_data = fetch_drai_holdings()
+
+    print("Fetching Taiwan stock heatmap data...", file=sys.stderr)
+    heatmap_data = fetch_heatmap_data()
 
     print("Computing signal...", file=sys.stderr)
     signal = compute_market_signal(vix_data, cnn_data, institutional_data)
@@ -1099,6 +1289,7 @@ def main():
         "signal": signal,
         "analysis": analysis,
         "drai": drai_data,
+        "heatmap": heatmap_data,
     }
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)

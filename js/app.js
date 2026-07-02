@@ -30,6 +30,7 @@ async function loadData() {
 function render(data) {
   updateHeader(data);
   updateKeyIndicators(data);
+  renderHeatmaps(data.heatmap);
   renderUsIndices(data.vix);
   renderDraiHoldings(data.drai);
   updateSignalBanner(data.signal);
@@ -720,6 +721,97 @@ function cnnLevel(v) {
   if (v <= 55) return { zh: '中性',     cls: 'badge--neutral',       color: '#ffc107', changeClass: 'change-flat' };
   if (v <= 75) return { zh: '貪婪',     cls: 'badge--greed',         color: '#69f0ae', changeClass: 'change-up' };
   return              { zh: '極度貪婪', cls: 'badge--extreme-greed', color: '#00e676', changeClass: 'change-up' };
+}
+
+// ─── Taiwan Stock Heatmaps ───────────────────────────────────────────────────
+const _hmCharts = {};
+
+function heatColor(pct) {
+  const c = Math.max(-7, Math.min(7, pct || 0));
+  if (c > 0) {
+    const t = c / 7;
+    return `rgb(${Math.round(17+(0-17)*t)},${Math.round(94+(230-94)*t)},${Math.round(35+(118-35)*t)})`;
+  }
+  if (c < 0) {
+    const t = -c / 7;
+    return `rgb(${Math.round(60+(244-60)*t)},${Math.round(15+(67-15)*t)},${Math.round(15+(54-15)*t)})`;
+  }
+  return 'rgb(35,52,70)';
+}
+
+function buildHeatmap(canvasId, stocks, sizeKey, label) {
+  const canvas = el(canvasId);
+  if (!canvas) return;
+  if (_hmCharts[canvasId]) { _hmCharts[canvasId].destroy(); }
+
+  const items = stocks.filter(s => (s[sizeKey] || 0) > 0);
+  if (!items.length) {
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+
+  _hmCharts[canvasId] = new Chart(canvas.getContext('2d'), {
+    type: 'treemap',
+    data: {
+      datasets: [{
+        label,
+        tree: items,
+        key: sizeKey,
+        labels: {
+          display: true,
+          font: [{ size: 12, weight: '600' }, { size: 10 }],
+          color: ['#fff', '#ddeeff'],
+          formatter(ctx) {
+            if (ctx.type !== 'data') return '';
+            const d = ctx.raw._data;
+            const sign = d.change_pct >= 0 ? '+' : '';
+            return [d.code, `${sign}${d.change_pct}%`];
+          },
+        },
+        backgroundColor(ctx) {
+          if (ctx.type !== 'data') return 'transparent';
+          return heatColor(ctx.raw._data?.change_pct);
+        },
+        borderColor: '#0d1424',
+        borderWidth: 2,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title(items) {
+              const d = items[0]?.raw?._data;
+              return d ? `${d.name} (${d.code})` : '';
+            },
+            label(item) {
+              const d = item.raw._data;
+              const sign = d.change_pct >= 0 ? '+' : '';
+              return [
+                `漲跌：${sign}${d.change_pct}%`,
+                `收盤：${d.close?.toLocaleString()} 元`,
+                `市值：${d.cap?.toLocaleString()} 億`,
+                `成交額：${d.vol?.toLocaleString()} 億`,
+              ];
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+function renderHeatmaps(hm) {
+  if (!hm) return;
+  const asOf = el('heatmap-as-of');
+  if (asOf && hm.as_of) asOf.textContent = `資料日期：${hm.as_of}`;
+  buildHeatmap('hm-twse-cap', hm.twse || [], 'cap', '上市市值');
+  buildHeatmap('hm-twse-vol', hm.twse || [], 'vol', '上市成交額');
+  buildHeatmap('hm-tpex-cap', hm.tpex || [], 'cap', '上市（TPEX）市值');
+  buildHeatmap('hm-tpex-vol', hm.tpex || [], 'vol', '上市（TPEX）成交額');
 }
 
 function showLoading(show) {

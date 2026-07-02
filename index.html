@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TMI · 台股情報儀表板 | Taiwan Market Intelligence</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="stylesheet" href="css/style.css?v=20260702d" />
+  <link rel="stylesheet" href="css/style.css?v=20260702e" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap@3.1.0/dist/chartjs-chart-treemap.umd.min.js"></script>
 </head>
 <body>
   <!-- Header -->
@@ -161,6 +162,45 @@
           <div class="card-change" id="inst-sub">—</div>
         </div>
 
+      </div>
+    </section>
+
+    <!-- Taiwan Stock Heatmaps -->
+    <section class="section">
+      <div class="section-hd">
+        <h2 class="section-title">台股熱力圖</h2>
+        <span class="section-en">Market Heatmaps</span>
+        <span class="heatmap-as-of" id="heatmap-as-of"></span>
+      </div>
+      <div class="heatmap-grid">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>上市 市值</h3>
+            <span class="chart-card-tag">TWSE · Market Cap</span>
+          </div>
+          <div class="heatmap-wrap"><canvas id="hm-twse-cap"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>上市 成交額</h3>
+            <span class="chart-card-tag">TWSE · Volume</span>
+          </div>
+          <div class="heatmap-wrap"><canvas id="hm-twse-vol"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>上市（TPEX）市值</h3>
+            <span class="chart-card-tag">TPEX · Market Cap</span>
+          </div>
+          <div class="heatmap-wrap"><canvas id="hm-tpex-cap"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>上市（TPEX）成交額</h3>
+            <span class="chart-card-tag">TPEX · Volume</span>
+          </div>
+          <div class="heatmap-wrap"><canvas id="hm-tpex-vol"></canvas></div>
+        </div>
       </div>
     </section>
 
@@ -421,6 +461,6 @@
     <p>載入市場數據中...</p>
   </div>
 
-  <script src="js/app.js?v=20260702d"></script>
+  <script src="js/app.js?v=20260702e"></script>
 </body>
 </html>
