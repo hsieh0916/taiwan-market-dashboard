@@ -294,6 +294,28 @@ async def _vixtwn_playwright():
     return result_holder.get("data")
 
 
+US_INDEX_KEYS = {"sp500", "nasdaq", "dji", "sox"}
+
+
+def _compute_ma_stats(closes, current):
+    """Compute MA20/60/240 and 60-day high, with % distance from current."""
+    n = len(closes)
+    stats = {}
+    for days, key in [(20, "ma20"), (60, "ma60"), (240, "ma240")]:
+        if n >= days:
+            ma = round(float(closes.rolling(days).mean().iloc[-1]), 2)
+            stats[key] = ma
+            stats[f"{key}_diff_pct"] = round((current - ma) / ma * 100, 2)
+        else:
+            stats[key] = None
+            stats[f"{key}_diff_pct"] = None
+    if n >= 20:
+        high60 = round(float(closes.rolling(min(60, n)).max().iloc[-1]), 2)
+        stats["high_recent"] = high60
+        stats["high_recent_diff_pct"] = round((current - high60) / high60 * 100, 2)
+    return stats
+
+
 def fetch_vix_data():
     """Fetch VIX, VIXTWN, Taiwan OTC and US major index data from Yahoo Finance."""
     tickers = {
@@ -306,31 +328,37 @@ def fetch_vix_data():
         "sp500":  "^GSPC",   # 標普500
         "nasdaq": "^IXIC",   # 那斯達克綜合
         "dji":    "^DJI",    # 道瓊工業
+        "sox":    "^SOX",    # 費城半導體指數
     }
 
     result = {}
     history = {}
 
     for key, symbol in tickers.items():
+        # US indices and Taiwan indices need 300d to compute MA240
+        period = "300d" if key in US_INDEX_KEYS else "60d"
         try:
             ticker = yf.Ticker(symbol, session=_session)
-            hist = ticker.history(period="60d", interval="1d")
+            hist = ticker.history(period=period, interval="1d")
 
             if not hist.empty:
-                result[key] = {
-                    "symbol": symbol,
-                    "current": round(float(hist["Close"].iloc[-1]), 2),
-                    "prev": round(float(hist["Close"].iloc[-2]), 2) if len(hist) > 1 else None,
-                    "change": round(float(hist["Close"].iloc[-1]) - float(hist["Close"].iloc[-2]), 2) if len(hist) > 1 else 0,
-                    "change_pct": round(
-                        (float(hist["Close"].iloc[-1]) - float(hist["Close"].iloc[-2])) / float(hist["Close"].iloc[-2]) * 100, 2
-                    ) if len(hist) > 1 else 0,
-                    "high_52w": round(float(hist["Close"].max()), 2),
-                    "low_52w": round(float(hist["Close"].min()), 2),
+                cur  = round(float(hist["Close"].iloc[-1]), 2)
+                prev = round(float(hist["Close"].iloc[-2]), 2) if len(hist) > 1 else None
+                entry = {
+                    "symbol":     symbol,
+                    "current":    cur,
+                    "prev":       prev,
+                    "change":     round(cur - prev, 2) if prev else 0,
+                    "change_pct": round((cur - prev) / prev * 100, 2) if prev else 0,
+                    "high_52w":   round(float(hist["Close"].max()), 2),
+                    "low_52w":    round(float(hist["Close"].min()), 2),
                 }
+                if key in US_INDEX_KEYS:
+                    entry.update(_compute_ma_stats(hist["Close"], cur))
+                result[key] = entry
                 history[key] = {
-                    "dates": [str(d.date()) for d in hist.index],
-                    "closes": [round(float(v), 2) for v in hist["Close"].tolist()],
+                    "dates":  [str(d.date()) for d in hist.index[-60:]],
+                    "closes": [round(float(v), 2) for v in hist["Close"].tolist()[-60:]],
                 }
             else:
                 result[key] = {"symbol": symbol, "current": None, "error": "no data"}

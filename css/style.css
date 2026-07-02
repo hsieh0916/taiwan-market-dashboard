@@ -235,8 +235,32 @@ body {
 .badge--bull          { background: rgba(0,230,118,0.15); color: var(--green); }
 .badge--bear          { background: rgba(244,67,54,0.15); color: var(--red); }
 
-/* US index grid: max 3 columns so it doesn't over-stretch */
+/* US index grid */
 .cards-grid--us { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+
+/* MA distance row inside US index cards */
+.index-ma-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 8px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.ma-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+.ma-item--up  { background: rgba(0,230,118,0.08); }
+.ma-item--down{ background: rgba(244,67,54,0.08); }
+.ma-label { color: var(--text-secondary); }
+.ma-val   { font-weight: 700; font-variant-numeric: tabular-nums; }
+.ma-item--up  .ma-val { color: var(--green); }
+.ma-item--down .ma-val { color: var(--red); }
 
 /* -------- Two Column Charts Row -------- */
 .charts-row-2 {

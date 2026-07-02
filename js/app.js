@@ -113,20 +113,40 @@ function updateKeyIndicators(data) {
 function renderUsIndices(vix) {
   if (!vix) return;
   [
-    { id: 'sp500',  key: 'sp500',  suffix: '' },
-    { id: 'nasdaq', key: 'nasdaq', suffix: '' },
-    { id: 'dji',    key: 'dji',    suffix: '' },
-  ].forEach(({ id, key, suffix }) => {
+    { id: 'sp500',  key: 'sp500'  },
+    { id: 'nasdaq', key: 'nasdaq' },
+    { id: 'dji',    key: 'dji'   },
+    { id: 'sox',    key: 'sox'   },
+  ].forEach(({ id, key }) => {
     const t = vix[key];
     if (!t || t.current == null) return;
-    updatePriceCard(id, t, '', suffix);
+    updatePriceCard(id, t, '', '');
     const badge = el(`${id}-badge`);
     if (badge && t.change_pct != null) {
       const up = t.change_pct > 0;
       badge.textContent = (up ? '▲ ' : '▼ ') + Math.abs(t.change_pct).toFixed(2) + '%';
       badge.className = `card-badge ${up ? 'badge--bull' : 'badge--bear'}`;
     }
+    renderMaRow(id, t);
   });
+}
+
+function renderMaRow(id, t) {
+  const row = el(`${id}-ma`);
+  if (!row) return;
+  const items = [
+    { label: '月線', val: t.ma20_diff_pct },
+    { label: '季線', val: t.ma60_diff_pct },
+    { label: '年線', val: t.ma240_diff_pct },
+    { label: '近高', val: t.high_recent_diff_pct },
+  ];
+  row.innerHTML = items.map(({ label, val }) => {
+    if (val == null) return '';
+    const up = val >= 0;
+    const cls = up ? 'ma-item--up' : 'ma-item--down';
+    const sign = up ? '+' : '';
+    return `<span class="ma-item ${cls}"><span class="ma-label">${label}</span><span class="ma-val">${sign}${val.toFixed(1)}%</span></span>`;
+  }).join('');
 }
 
 function updatePriceCard(id, ticker, prefix, suffix) {
