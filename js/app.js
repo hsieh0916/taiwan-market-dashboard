@@ -875,7 +875,10 @@ function buildHeatmap(canvasId, stocks, sizeKey, label) {
 function renderHeatmaps(hm) {
   if (!hm) return;
   const asOf = el('heatmap-as-of');
-  if (asOf && hm.as_of) asOf.textContent = `資料日期：${hm.as_of}`;
+  if (asOf && hm.as_of) {
+    const hasTime = hm.as_of.includes(' ');
+    asOf.textContent = (hasTime ? '資料時間：' : '資料日期：') + hm.as_of;
+  }
   buildHeatmap('hm-twse-cap', hm.twse || [], 'cap', '上市市值');
   buildHeatmap('hm-twse-vol', hm.twse || [], 'vol', '上市成交額');
   buildHeatmap('hm-tpex-cap', hm.tpex || [], 'cap', '櫃買市值');

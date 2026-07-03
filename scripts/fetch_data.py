@@ -1222,30 +1222,36 @@ def _fetch_twse_all_stocks():
         return {}, None
 
 
-def _fetch_tpex_stocks_mis():
+def _fetch_hm_stocks_mis():
     """
-    Fetch specific TPEX stocks via mis.twse.com.tw getStockInfo API (fallback).
-    Uses ex_ch=otc_XXXX.tw format; returns intraday data during market hours.
-    Returns dict: code → {close, change_pct, vol_value (TWD)}
+    Fetch real-time quotes for all curated heatmap stocks via mis.twse.com.tw.
+    Single request covering TWSE stocks (tse_) and TPEX stocks (both tse_ and
+    otc_ prefixes, since some _HM_TPEX stocks have been promoted to TWSE).
+    Returns (dict: code → {close, change_pct, vol_value (TWD)}, as_of_str or None)
     """
-    codes = list(_HM_TPEX.keys())
-    ex_ch = "|".join(f"otc_{c}.tw" for c in codes)
+    parts  = [f"tse_{c}.tw" for c in _HM_TWSE]
+    for c in _HM_TPEX:
+        parts.append(f"tse_{c}.tw")   # needed if promoted to TWSE main board
+        parts.append(f"otc_{c}.tw")   # original OTC listing
+    ex_ch = "|".join(parts)
+
     url = "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
     try:
         r = _session.get(url, params={"ex_ch": ex_ch, "json": "1", "delay": "0"}, timeout=20)
         r.raise_for_status()
         data = r.json()
     except Exception as e:
-        print(f"Warning: TPEX mis API failed: {e}", file=sys.stderr)
-        return {}
+        print(f"Warning: MIS heatmap API failed: {e}", file=sys.stderr)
+        return {}, None
 
     result = {}
+    as_of  = None
     for item in data.get("msgArray", []):
-        code = item.get("c", "")
-        if code not in _HM_TPEX:
+        code  = item.get("c") or ""
+        if not code:
             continue
-        y_str = item.get("y", "")
-        z_str = item.get("z", "")
+        y_str = item.get("y") or ""
+        z_str = item.get("z") or ""
         if not y_str or y_str in ("-", "N/A"):
             continue
         try:
@@ -1253,20 +1259,34 @@ def _fetch_tpex_stocks_mis():
             close = float(z_str.replace(",", "")) if z_str and z_str not in ("-", "N/A") else prev
         except (ValueError, AttributeError):
             continue
+        if close <= 0 or prev <= 0:
+            continue
         change_pct = round((close - prev) / prev * 100, 2) if abs(prev) > 0.01 else 0.0
-        v_str = item.get("v", "0")
+        v_str = item.get("v") or "0"
         try:
-            vol_lots = float(v_str.replace(",", ""))
+            vol_lots  = float(str(v_str).replace(",", ""))
             vol_value = vol_lots * 1000 * close
         except (ValueError, AttributeError):
             vol_value = 0.0
-        result[code] = {
-            "close": round(close, 2),
-            "change_pct": change_pct,
-            "vol_value": round(vol_value, 0),
-        }
-    print(f"TPEX mis: got {len(result)}/{len(_HM_TPEX)} stocks", file=sys.stderr)
-    return result
+        # Keep first hit per code (tse_ wins over otc_ for promoted stocks)
+        if code not in result:
+            result[code] = {
+                "close":      round(close, 2),
+                "change_pct": change_pct,
+                "vol_value":  round(vol_value, 0),
+            }
+        if not as_of:
+            d_str = item.get("d") or ""
+            t_str = item.get("t") or ""
+            if d_str and len(d_str) == 8 and d_str.isdigit():
+                as_of = f"{d_str[:4]}/{d_str[4:6]}/{d_str[6:]}"
+                if t_str and len(t_str) >= 5:
+                    as_of += f" {t_str[:5]}"
+
+    n_tw = sum(1 for c in _HM_TWSE if c in result)
+    n_tp = sum(1 for c in _HM_TPEX if c in result)
+    print(f"MIS heatmap: TWSE {n_tw}/{len(_HM_TWSE)}, TPEX {n_tp}/{len(_HM_TPEX)}, as_of={as_of}", file=sys.stderr)
+    return result, as_of
 
 
 def _fetch_tpex_stk_d():
@@ -1325,20 +1345,39 @@ def _fetch_tpex_stk_d():
 
 def fetch_heatmap_data():
     """
-    Build heatmap data for TWSE and TPEX (櫃買) top stocks.
+    Build heatmap data for TWSE and TPEX top stocks.
+    Primary source: MIS real-time API (every 30-min during trading hours).
+    Fallback:       TWSE STOCK_DAY_ALL (post-market) when MIS coverage is poor.
+    Extra 上櫃 stocks: TPEX stk_d.php (for dynamic top-vol selection).
     cap/vol stored in 億元 (100 million TWD).
     Returns {as_of, twse: [...], tpex: [...]}
     """
-    twse_raw, as_of  = _fetch_twse_all_stocks()
-    tpex_stk_d       = _fetch_tpex_stk_d()       # official 成交金額 for all 上櫃 stocks
-    tpex_raw         = _fetch_tpex_stocks_mis()   # fallback: mis intraday API
+    mis_raw, mis_as_of = _fetch_hm_stocks_mis()
+
+    # Only call the heavy STOCK_DAY_ALL endpoint if MIS misses most TWSE stocks
+    twse_fb, post_as_of = {}, None
+    if sum(1 for c in _HM_TWSE if c in mis_raw) < len(_HM_TWSE) // 2:
+        twse_fb, post_as_of = _fetch_twse_all_stocks()
+
+    tpex_stk_d = _fetch_tpex_stk_d()   # extra top-vol 上櫃 stocks
+
+    as_of = mis_as_of or post_as_of
+
+    def best(code, is_tpex=False):
+        if code in mis_raw:
+            return mis_raw[code]
+        if code in twse_fb:
+            return twse_fb[code]
+        if is_tpex and code in tpex_stk_d:
+            return tpex_stk_d[code]
+        return None
 
     twse_list = []
     for code, (shares_b, name, sector) in _HM_TWSE.items():
-        if code not in twse_raw:
+        d = best(code)
+        if not d:
             continue
-        d = twse_raw[code]
-        cap = round(shares_b * d["close"], 1)    # shares_b (億股) × close = 億元
+        cap = round(shares_b * d["close"], 1)
         vol = round(d["vol_value"] / 1e8, 2)
         twse_list.append({
             "code": code, "name": name, "sector": sector,
@@ -1350,15 +1389,9 @@ def fetch_heatmap_data():
     tpex_seen = set()
     tpex_list = []
 
-    # Curated stocks with known shares outstanding → full cap + vol
     for code, (shares_b, name, sector) in _HM_TPEX.items():
-        if code in twse_raw:
-            d = twse_raw[code]           # promoted to TWSE main board
-        elif code in tpex_stk_d:
-            d = tpex_stk_d[code]         # genuine 上櫃, official data
-        elif code in tpex_raw:
-            d = tpex_raw[code]           # fallback to mis
-        else:
+        d = best(code, is_tpex=True)
+        if not d:
             continue
         cap = round(shares_b * d["close"], 1)
         vol = round(d["vol_value"] / 1e8, 2)
@@ -1369,7 +1402,7 @@ def fetch_heatmap_data():
         })
         tpex_seen.add(code)
 
-    # Top-volume 上櫃 stocks not already included; cap=0 → invisible in cap heatmap
+    # Extra top-volume 上櫃 stocks; cap=0 → invisible in market-cap heatmap
     extra = sorted(
         ((c, d) for c, d in tpex_stk_d.items() if c not in tpex_seen and d["vol_value"] > 0),
         key=lambda x: x[1]["vol_value"], reverse=True,
