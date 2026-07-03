@@ -1205,9 +1205,10 @@ def _fetch_twse_all_stocks():
                 prev = close - change
                 change_pct = round(change / prev * 100, 2) if abs(prev) > 0.01 else 0.0
                 result[code] = {
-                    "close": close,
+                    "close":      close,
                     "change_pct": change_pct,
-                    "vol_value": vol_value,
+                    "vol_value":  vol_value,
+                    "name":       row[2].strip(),
                 }
                 # Parse ROC date to CE date once
                 if not as_of and len(date_field) == 7 and date_field.isdigit():
@@ -1220,6 +1221,109 @@ def _fetch_twse_all_stocks():
     except Exception as e:
         print(f"Warning: _fetch_twse_all_stocks failed: {e}", file=sys.stderr)
         return {}, None
+
+
+def _fetch_twse_inst_per_stock():
+    """
+    Fetch per-stock institutional buy/sell from TWSE T86 (today or latest available day).
+    Returns dict: code → {foreign_net, trust_net, total_net}  (shares, positive = net buy)
+    """
+    url = "https://www.twse.com.tw/rwd/zh/fund/T86"
+    try:
+        r = _session.get(url, params={"response": "json", "selectType": "ALL"}, timeout=20)
+        r.raise_for_status()
+        data = r.json()
+    except Exception as e:
+        print(f"Warning: T86 per-stock failed: {e}", file=sys.stderr)
+        return {}
+
+    if data.get("stat") != "OK":
+        return {}
+
+    fields = [f.replace(" ", "").replace("\n", "") for f in data.get("fields", [])]
+
+    def find_col(*keywords):
+        for i, f in enumerate(fields):
+            if all(k in f for k in keywords):
+                return i
+        return None
+
+    # 外資淨 (excluding 外資自營): first col whose name has 外資+淨 but NOT 自營
+    col_foreign = None
+    for i, f in enumerate(fields):
+        if "外資" in f and "淨" in f and "自營" not in f:
+            col_foreign = i
+            break
+    col_trust = find_col("投信", "淨")
+    col_total = find_col("三大法人")
+    if col_foreign is None: col_foreign = 4
+    if col_trust   is None: col_trust   = 10
+    if col_total   is None: col_total   = 17
+
+    def parse_shares(s):
+        try:
+            return int(float(str(s).replace(",", "").replace("+", "").strip()))
+        except (ValueError, AttributeError):
+            return 0
+
+    result = {}
+    for row in data.get("data", []):
+        if len(row) < 3:
+            continue
+        code = str(row[0]).strip()
+        if not (len(code) == 4 and code.isdigit()):
+            continue
+        try:
+            f_net = parse_shares(row[col_foreign]) if col_foreign < len(row) else 0
+            t_net = parse_shares(row[col_trust])   if col_trust   < len(row) else 0
+            total = parse_shares(row[col_total])   if col_total   < len(row) else f_net + t_net
+            result[code] = {"foreign_net": f_net, "trust_net": t_net, "total_net": total}
+        except (IndexError, ValueError):
+            continue
+
+    print(f"T86 per-stock: {len(result)} stocks", file=sys.stderr)
+    return result
+
+
+def _fetch_twse_valuation():
+    """
+    Fetch P/E, dividend yield, P/B for all TWSE stocks from BWIBBU_d.
+    Returns dict: code → {pe, div_yield, pb}
+    """
+    url = "https://www.twse.com.tw/rwd/zh/afterTrading/BWIBBU_d"
+    try:
+        r = _session.get(url, params={"response": "json", "selectType": "ALL"}, timeout=20)
+        r.raise_for_status()
+        data = r.json()
+    except Exception as e:
+        print(f"Warning: BWIBBU_d failed: {e}", file=sys.stderr)
+        return {}
+
+    if data.get("stat") != "OK":
+        return {}
+
+    def parse_num(s):
+        try:
+            v = float(str(s).replace(",", "").strip())
+            return v if v > 0 else None
+        except (ValueError, AttributeError):
+            return None
+
+    result = {}
+    for row in data.get("data", []):
+        if len(row) < 5:
+            continue
+        code = str(row[0]).strip()
+        if not (len(code) == 4 and code.isdigit() and code[0] != '0'):
+            continue
+        result[code] = {
+            "pe":        parse_num(row[2]),
+            "div_yield": parse_num(row[3]),
+            "pb":        parse_num(row[4]),
+        }
+
+    print(f"BWIBBU_d: {len(result)} stocks", file=sys.stderr)
+    return result
 
 
 def _fetch_hm_stocks_mis():
@@ -1343,13 +1447,14 @@ def _fetch_tpex_stk_d():
     return result
 
 
-def fetch_heatmap_data():
+def fetch_heatmap_data(twse_raw_override=None):
     """
     Build heatmap data for TWSE and TPEX top stocks.
     Primary source: MIS real-time API (every 30-min during trading hours).
     Fallback:       TWSE STOCK_DAY_ALL (post-market) when MIS coverage is poor.
     Extra 上櫃 stocks: TPEX stk_d.php (for dynamic top-vol selection).
     cap/vol stored in 億元 (100 million TWD).
+    twse_raw_override: pre-fetched STOCK_DAY_ALL dict to avoid double-fetching.
     Returns {as_of, twse: [...], tpex: [...]}
     """
     mis_raw, mis_as_of = _fetch_hm_stocks_mis()
@@ -1357,7 +1462,10 @@ def fetch_heatmap_data():
     # Only call the heavy STOCK_DAY_ALL endpoint if MIS misses most TWSE stocks
     twse_fb, post_as_of = {}, None
     if sum(1 for c in _HM_TWSE if c in mis_raw) < len(_HM_TWSE) // 2:
-        twse_fb, post_as_of = _fetch_twse_all_stocks()
+        if twse_raw_override is not None:
+            twse_fb, post_as_of = twse_raw_override, None
+        else:
+            twse_fb, post_as_of = _fetch_twse_all_stocks()
 
     tpex_stk_d = _fetch_tpex_stk_d()   # extra top-vol 上櫃 stocks
 
@@ -1419,6 +1527,162 @@ def fetch_heatmap_data():
     return {"as_of": as_of, "twse": twse_list, "tpex": tpex_list}
 
 
+def scan_stock_opportunities(twse_raw):
+    """
+    Post-market stock scan. Scores each stock on:
+      Technical  (0-50): MA trend, RSI, MACD, volume breakout, 20d momentum
+      Chip       (0-30): foreign/trust institutional net buy from T86
+      Valuation  (0-20): P/E and dividend yield from BWIBBU_d
+    Returns {as_of, candidates: [top 20 sorted by total score]}
+    """
+    import pandas as pd
+
+    if not twse_raw:
+        return {"as_of": None, "candidates": []}
+
+    # Universe: top 120 liquid stocks (close ≥ 20 TWD, 成交金額 ≥ 2億)
+    universe = sorted(
+        [c for c, d in twse_raw.items()
+         if d.get("close", 0) >= 20 and d.get("vol_value", 0) >= 2e8],
+        key=lambda c: twse_raw[c]["vol_value"], reverse=True
+    )[:120]
+    print(f"[Scan] Universe: {len(universe)} stocks", file=sys.stderr)
+    if not universe:
+        return {"as_of": None, "candidates": []}
+
+    # Batch-download 90d Close + Volume via yfinance
+    tickers  = [f"{c}.TW" for c in universe]
+    hist_data = {}
+    try:
+        df = yf.download(tickers, period="90d", interval="1d",
+                         auto_adjust=True, progress=False)
+        if not df.empty:
+            if isinstance(df.columns, pd.MultiIndex):
+                lvl      = df.columns.get_level_values(0)
+                close_df = df.xs("Close",  axis=1, level=0) if "Close"  in lvl else pd.DataFrame()
+                vol_df   = df.xs("Volume", axis=1, level=0) if "Volume" in lvl else pd.DataFrame()
+            else:
+                close_df = df[["Close" ]].rename(columns={"Close" : tickers[0]}) if "Close"  in df.columns else pd.DataFrame()
+                vol_df   = df[["Volume"]].rename(columns={"Volume": tickers[0]}) if "Volume" in df.columns else pd.DataFrame()
+
+            for code, ticker in zip(universe, tickers):
+                try:
+                    c = close_df[ticker].dropna() if ticker in close_df.columns else pd.Series(dtype=float)
+                    v = vol_df[ticker].dropna()   if ticker in vol_df.columns   else pd.Series(dtype=float)
+                    if len(c) >= 20:
+                        hist_data[code] = {"close": c, "vol": v}
+                except (KeyError, AttributeError):
+                    pass
+    except Exception as e:
+        print(f"[Scan] Batch history error: {e}", file=sys.stderr)
+
+    print(f"[Scan] History for {len(hist_data)}/{len(universe)} stocks", file=sys.stderr)
+
+    inst_data = _fetch_twse_inst_per_stock()
+    val_data  = _fetch_twse_valuation()
+    candidates = []
+
+    for code in universe:
+        if code not in hist_data:
+            continue
+        d      = twse_raw[code]
+        closes = hist_data[code]["close"]
+        vols   = hist_data[code]["vol"]
+        n      = len(closes)
+        cur    = float(closes.iloc[-1])
+
+        # ── Technical (max 50) ──
+        tech = 0; tech_sigs = []
+        ma20 = float(closes.iloc[-20:].mean()) if n >= 20 else None
+        ma60 = float(closes.iloc[-60:].mean()) if n >= 60 else None
+
+        if ma20 and cur > ma20: tech += 5
+        if ma60 and cur > ma60: tech += 5
+        if ma20 and ma60 and ma20 > ma60:
+            tech += 8; tech_sigs.append("多頭排列")
+
+        if n >= 16:
+            delta = closes.diff().dropna()
+            gain  = delta.clip(lower=0).rolling(14).mean().iloc[-1]
+            loss  = (-delta).clip(lower=0).rolling(14).mean().iloc[-1]
+            if loss > 0:
+                rsi = 100 - 100 / (1 + gain / loss)
+                if   50 <= rsi <= 70: tech += 10; tech_sigs.append(f"RSI{rsi:.0f}")
+                elif 45 <= rsi < 50:  tech += 5
+
+        if n >= 30:
+            ema12 = float(closes.ewm(span=12, adjust=False).mean().iloc[-1])
+            ema26 = float(closes.ewm(span=26, adjust=False).mean().iloc[-1])
+            if ema12 > ema26: tech += 4; tech_sigs.append("MACD↑")
+
+        if len(vols) >= 21:
+            v0 = float(vols.iloc[-1])
+            va = float(vols.iloc[-21:-1].mean())
+            if va > 0 and v0 > va * 1.5:
+                tech += 8; tech_sigs.append(f"量增{v0/va:.1f}×")
+
+        if n >= 21:
+            ret20 = (cur / float(closes.iloc[-21]) - 1) * 100
+            if   ret20 > 8: tech += 10; tech_sigs.append(f"↑{ret20:.0f}%")
+            elif ret20 > 4: tech += 6
+            elif ret20 > 0: tech += 3
+
+        tech = min(50, tech)
+
+        # ── Chip (max 30) ──
+        chip = 0; chip_sigs = []
+        inst  = inst_data.get(code, {})
+        f_net = inst.get("foreign_net", 0)
+        t_net = inst.get("trust_net",   0)
+
+        if f_net > 0:        chip += 8;  chip_sigs.append("外資↑")
+        if f_net >= 500_000: chip += 4
+        if t_net > 0:        chip += 8;  chip_sigs.append("投信↑")
+        if t_net >= 100_000: chip += 4
+        if f_net > 0 and t_net > 0:
+            chip += 6; chip_sigs.append("法人雙買")
+        chip = min(30, chip)
+
+        # ── Valuation (max 20) ──
+        val = 0; val_sigs = []
+        vd  = val_data.get(code, {})
+        pe  = vd.get("pe")
+        div = vd.get("div_yield")
+
+        if pe is not None:
+            if   0 < pe <= 15:  val += 10; val_sigs.append(f"PE{pe:.0f}")
+            elif 15 < pe <= 25: val += 5
+        if div is not None:
+            if   div >= 4:  val += 10; val_sigs.append(f"殖{div:.1f}%")
+            elif div >= 2:  val += 5
+        val = min(20, val)
+
+        total = tech + chip + val
+        if total < 35 or tech < 15:
+            continue
+
+        candidates.append({
+            "code":        code,
+            "name":        d.get("name", code),
+            "close":       d["close"],
+            "change_pct":  d["change_pct"],
+            "vol_b":       round(d["vol_value"] / 1e8, 1),
+            "tech_score":  tech,
+            "chip_score":  chip,
+            "val_score":   val,
+            "total_score": total,
+            "signals":     tech_sigs + chip_sigs + val_sigs,
+            "pe":          pe,
+            "div_yield":   div,
+        })
+
+    candidates.sort(key=lambda x: x["total_score"], reverse=True)
+    print(f"[Scan] {len(candidates)} candidates → top 20", file=sys.stderr)
+
+    as_of = datetime.now(TW_TZ).strftime("%Y/%m/%d %H:%M")
+    return {"as_of": as_of, "candidates": candidates[:20]}
+
+
 def main():
     print("Fetching VIX data...", file=sys.stderr)
     vix_data, vix_history = fetch_vix_data()
@@ -1432,8 +1696,14 @@ def main():
     print("Fetching DRAI ETF holdings...", file=sys.stderr)
     drai_data = fetch_drai_holdings()
 
+    print("Fetching TWSE all-stock data...", file=sys.stderr)
+    twse_all, _ = _fetch_twse_all_stocks()
+
     print("Fetching Taiwan stock heatmap data...", file=sys.stderr)
-    heatmap_data = fetch_heatmap_data()
+    heatmap_data = fetch_heatmap_data(twse_raw_override=twse_all)
+
+    print("Running post-market stock scan...", file=sys.stderr)
+    scan_data = scan_stock_opportunities(twse_all)
 
     print("Computing signal...", file=sys.stderr)
     signal = compute_market_signal(vix_data, cnn_data, institutional_data)
@@ -1451,6 +1721,7 @@ def main():
         "analysis": analysis,
         "drai": drai_data,
         "heatmap": heatmap_data,
+        "scan": scan_data,
     }
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)

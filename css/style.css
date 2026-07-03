@@ -649,6 +649,127 @@ body {
   height: 300px;
 }
 
+/* -------- Daily Stock Scan -------- */
+.scan-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+.scan-list { overflow-x: hidden; }
+.scan-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.scan-item:hover { background: var(--bg-card-hover); }
+.scan-item:last-child { border-bottom: none; }
+.scan-item-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.scan-rank {
+  width: 22px;
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.scan-stock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 90px;
+}
+.scan-code {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cyan);
+  text-decoration: none;
+}
+.scan-code:hover { text-decoration: underline; }
+.scan-name {
+  font-size: 0.73rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.scan-price {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 72px;
+}
+.scan-close {
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+.scan-score-block {
+  flex: 1 1 160px;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.scan-bar-bg {
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.scan-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+.scan-score-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.scan-score-item {
+  font-size: 0.72rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.scan-score-item.s-tech { background: rgba(41,121,255,0.14); color: #6ba3ff; }
+.scan-score-item.s-chip { background: rgba(255,193,7,0.12);  color: #ffd740; }
+.scan-score-item.s-val  { background: rgba(0,230,118,0.10);  color: var(--green); }
+.scan-total {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+.scan-total small { font-size: 0.65rem; color: var(--text-muted); font-weight: 400; }
+.scan-signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+  padding-left: 34px;
+}
+.scan-sig {
+  font-size: 0.71rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.scan-empty,
+.scan-loading {
+  padding: 36px 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
 /* -------- Responsive -------- */
 @media (max-width: 768px) {
   .main { padding: 16px; }

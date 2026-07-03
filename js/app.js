@@ -44,6 +44,7 @@ function render(data) {
   safe(() => renderInstitutionalChart(data.institutional), 'instChart');
   safe(() => renderVixCharts(data.vix_history),       'vixCharts');
   safe(() => renderSignalTable(data.signal),          'signalTable');
+  safe(() => renderScanResults(data.scan),            'scanResults');
   safe(() => renderAnalysis(data.analysis, data.last_updated), 'analysis');
   safe(() => renderInstitutionalBreakdown(data.institutional), 'instBreakdown');
 }
@@ -871,6 +872,68 @@ function buildHeatmap(canvasId, stocks, sizeKey, label) {
     },
   });
 }
+
+// ─── Daily Post-Market Stock Scan ────────────────────────────────────────────
+function renderScanResults(scan) {
+  const asOf = el('scan-as-of');
+  const list = el('scan-list');
+  if (!list) return;
+
+  if (!scan || !scan.candidates || scan.candidates.length === 0) {
+    if (asOf && scan && scan.as_of) asOf.textContent = scan.as_of;
+    list.innerHTML = '<div class="scan-empty">今日暫無符合條件的候選股（盤後資料更新後顯示）</div>';
+    return;
+  }
+
+  if (asOf && scan.as_of) asOf.textContent = '掃描時間：' + scan.as_of;
+
+  const rows = scan.candidates.map((c, i) => {
+    const up  = c.change_pct > 0;
+    const dn  = c.change_pct < 0;
+    const cls = up ? 'change-up' : dn ? 'change-down' : '';
+    const sgn = up ? '+' : '';
+    const pct = Math.min(100, c.total_score);
+    const barColor = c.total_score >= 65 ? 'var(--red)'
+                   : c.total_score >= 45 ? 'var(--yellow)'
+                   : 'var(--text-muted)';
+
+    const sigs = (c.signals || [])
+      .map(s => `<span class="scan-sig">${s}</span>`)
+      .join('');
+
+    return `
+      <div class="scan-item">
+        <div class="scan-item-top">
+          <span class="scan-rank">${i + 1}</span>
+          <div class="scan-stock">
+            <a class="scan-code"
+               href="https://www.wantgoo.com/stock/${c.code}/technical-chart"
+               target="_blank" rel="noopener">${c.code}</a>
+            <span class="scan-name">${c.name}</span>
+          </div>
+          <div class="scan-price">
+            <span class="scan-close">${c.close.toLocaleString()}</span>
+            <span class="${cls}">${sgn}${c.change_pct.toFixed(2)}%</span>
+          </div>
+          <div class="scan-score-block">
+            <div class="scan-bar-bg">
+              <div class="scan-bar-fill" style="width:${pct}%;background:${barColor}"></div>
+            </div>
+            <div class="scan-score-row">
+              <span class="scan-score-item s-tech" title="技術面">技 ${c.tech_score}</span>
+              <span class="scan-score-item s-chip" title="籌碼面">籌 ${c.chip_score}</span>
+              <span class="scan-score-item s-val"  title="估值面">估 ${c.val_score}</span>
+              <span class="scan-total">${c.total_score}<small>/100</small></span>
+            </div>
+          </div>
+        </div>
+        ${sigs ? `<div class="scan-signals">${sigs}</div>` : ''}
+      </div>`;
+  });
+
+  list.innerHTML = rows.join('');
+}
+
 
 function renderHeatmaps(hm) {
   if (!hm) return;
