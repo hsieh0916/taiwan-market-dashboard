@@ -783,7 +783,7 @@ function buildHeatmap(canvasId, stocks, sizeKey, label) {
             const d = ctx.raw?._data;
             if (!d) return '';
             const sign = (d.change_pct || 0) >= 0 ? '+' : '';
-            return [d.code || '', `${sign}${d.change_pct ?? 0}%`];
+            return [d.name || d.code || '', `${sign}${d.change_pct ?? 0}%`];
           },
         },
         backgroundColor(ctx) {
