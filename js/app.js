@@ -142,6 +142,8 @@ function renderUsIndices(vix) {
     { id: 'nasdaq', key: 'nasdaq' },
     { id: 'dji',    key: 'dji'   },
     { id: 'sox',    key: 'sox'   },
+    { id: 'nikkei', key: 'nikkei' },
+    { id: 'kospi',  key: 'kospi'  },
   ].forEach(({ id, key }) => {
     const t = vix[key];
     if (!t || t.current == null) return;

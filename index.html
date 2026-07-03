@@ -14,7 +14,7 @@
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
-  <link rel="stylesheet" href="css/style.css?v=20260703i" />
+  <link rel="stylesheet" href="css/style.css?v=20260703j" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap@3.1.0/dist/chartjs-chart-treemap.min.js"></script>
@@ -276,6 +276,43 @@
       </div>
     </section>
 
+    <!-- Japan & Korea Indices -->
+    <section class="section">
+      <div class="section-hd">
+        <h2 class="section-title">日韓股市</h2>
+        <span class="section-en">Japan &amp; Korea</span>
+      </div>
+      <div class="cards-grid cards-grid--us">
+
+        <!-- Nikkei 225 -->
+        <div class="card" id="card-nikkei">
+          <div class="card-header">
+            <span class="card-icon">🇯🇵</span>
+            <span class="card-label">日經225</span>
+            <span class="card-symbol">N225</span>
+          </div>
+          <div class="card-value" id="nikkei-value">—</div>
+          <div class="card-change" id="nikkei-change">—</div>
+          <div class="card-badge" id="nikkei-badge"></div>
+          <div class="index-ma-row" id="nikkei-ma"></div>
+        </div>
+
+        <!-- KOSPI -->
+        <div class="card" id="card-kospi">
+          <div class="card-header">
+            <span class="card-icon">🇰🇷</span>
+            <span class="card-label">韓綜KOSPI</span>
+            <span class="card-symbol">KOSPI</span>
+          </div>
+          <div class="card-value" id="kospi-value">—</div>
+          <div class="card-change" id="kospi-change">—</div>
+          <div class="card-badge" id="kospi-badge"></div>
+          <div class="index-ma-row" id="kospi-ma"></div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- DRAI ETF Holdings -->
     <section class="section">
       <div class="chart-card" id="card-drai">
@@ -471,6 +508,6 @@
     <p>載入市場數據中...</p>
   </div>
 
-  <script src="js/app.js?v=20260703i"></script>
+  <script src="js/app.js?v=20260703j"></script>
 </body>
 </html>

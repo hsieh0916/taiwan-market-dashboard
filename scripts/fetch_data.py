@@ -294,7 +294,7 @@ async def _vixtwn_playwright():
     return result_holder.get("data")
 
 
-MA_STAT_KEYS = {"sp500", "nasdaq", "dji", "sox", "twii"}
+MA_STAT_KEYS = {"sp500", "nasdaq", "dji", "sox", "twii", "nikkei", "kospi"}
 US_INDEX_KEYS = MA_STAT_KEYS  # kept for any reference elsewhere
 
 
@@ -450,6 +450,8 @@ def fetch_vix_data():
         "nasdaq": "^IXIC",
         "dji":    "^DJI",
         "sox":    "^SOX",
+        "nikkei": "^N225",
+        "kospi":  "^KS11",
     }
 
     result = {}
