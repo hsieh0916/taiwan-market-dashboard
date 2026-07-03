@@ -32,19 +32,20 @@ async function loadData() {
 }
 
 function render(data) {
-  updateHeader(data);
-  updateKeyIndicators(data);
-  renderHeatmaps(data.heatmap);
-  renderUsIndices(data.vix);
-  renderDraiHoldings(data.drai);
-  updateSignalBanner(data.signal);
-  renderTermStructure(data.vix);
-  renderGauge(data.cnn_fear_greed);
-  renderInstitutionalChart(data.institutional);
-  renderVixCharts(data.vix_history);
-  renderSignalTable(data.signal);
-  renderAnalysis(data.analysis, data.last_updated);
-  renderInstitutionalBreakdown(data.institutional);
+  const safe = (fn, name) => { try { fn(); } catch (e) { console.error(`[render:${name}]`, e); } };
+  safe(() => updateHeader(data),                      'header');
+  safe(() => updateKeyIndicators(data),               'keyIndicators');
+  safe(() => renderHeatmaps(data.heatmap),            'heatmaps');
+  safe(() => renderUsIndices(data.vix),               'usIndices');
+  safe(() => renderDraiHoldings(data.drai),           'draiHoldings');
+  safe(() => updateSignalBanner(data.signal),         'signalBanner');
+  safe(() => renderTermStructure(data.vix),           'termStructure');
+  safe(() => renderGauge(data.cnn_fear_greed),        'gauge');
+  safe(() => renderInstitutionalChart(data.institutional), 'instChart');
+  safe(() => renderVixCharts(data.vix_history),       'vixCharts');
+  safe(() => renderSignalTable(data.signal),          'signalTable');
+  safe(() => renderAnalysis(data.analysis, data.last_updated), 'analysis');
+  safe(() => renderInstitutionalBreakdown(data.institutional), 'instBreakdown');
 }
 
 // ─── Header ──────────────────────────────────────────────────────────────────
@@ -779,14 +780,15 @@ function buildHeatmap(canvasId, stocks, sizeKey, label) {
           color: ['#fff', '#ddeeff'],
           formatter(ctx) {
             if (ctx.type !== 'data') return '';
-            const d = ctx.raw._data;
-            const sign = d.change_pct >= 0 ? '+' : '';
-            return [d.code, `${sign}${d.change_pct}%`];
+            const d = ctx.raw?._data;
+            if (!d) return '';
+            const sign = (d.change_pct || 0) >= 0 ? '+' : '';
+            return [d.code || '', `${sign}${d.change_pct ?? 0}%`];
           },
         },
         backgroundColor(ctx) {
           if (ctx.type !== 'data') return 'transparent';
-          return heatColor(ctx.raw._data?.change_pct);
+          return heatColor(ctx.raw?._data?.change_pct);
         },
         borderColor: '#0d1424',
         borderWidth: 2,
@@ -804,13 +806,14 @@ function buildHeatmap(canvasId, stocks, sizeKey, label) {
               return d ? `${d.name} (${d.code})` : '';
             },
             label(item) {
-              const d = item.raw._data;
-              const sign = d.change_pct >= 0 ? '+' : '';
+              const d = item.raw?._data;
+              if (!d) return '';
+              const sign = (d.change_pct || 0) >= 0 ? '+' : '';
               return [
-                `漲跌：${sign}${d.change_pct}%`,
-                `收盤：${d.close?.toLocaleString()} 元`,
-                `市值：${d.cap?.toLocaleString()} 億`,
-                `成交額：${d.vol?.toLocaleString()} 億`,
+                `漲跌：${sign}${d.change_pct ?? 0}%`,
+                `收盤：${d.close?.toLocaleString() ?? '—'} 元`,
+                `市值：${d.cap?.toLocaleString() ?? '—'} 億`,
+                `成交額：${d.vol?.toLocaleString() ?? '—'} 億`,
               ];
             },
           },
