@@ -1220,39 +1220,51 @@ def _fetch_twse_all_stocks():
         return {}, None
 
 
-def _fetch_tpex_stocks_yf():
+def _fetch_tpex_stocks_mis():
     """
-    Fetch TPEX top stocks via yfinance (.TWO suffix), one ticker at a time.
+    Fetch TPEX top stocks via mis.twse.com.tw getStockInfo API.
+    Uses ex_ch=otc_XXXX.tw format (official TWSE mis endpoint for OTC stocks).
     Returns dict: code → {close, change_pct, vol_value (TWD)}
     """
+    codes = list(_HM_TPEX.keys())
+    ex_ch = "|".join(f"otc_{c}.tw" for c in codes)
+    url = "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
+    try:
+        r = _session.get(url, params={"ex_ch": ex_ch, "json": "1", "delay": "0"}, timeout=20)
+        r.raise_for_status()
+        data = r.json()
+    except Exception as e:
+        print(f"Warning: TPEX mis API failed: {e}", file=sys.stderr)
+        return {}
+
     result = {}
-    for code in _HM_TPEX:
-        ticker = f"{code}.TWO"
+    for item in data.get("msgArray", []):
+        code = item.get("c", "")
+        if code not in _HM_TPEX:
+            continue
+        y_str = item.get("y", "")   # yesterday's close
+        z_str = item.get("z", "")   # latest trade price ("-" if no trade yet)
+        if not y_str or y_str in ("-", "N/A"):
+            continue
         try:
-            hist = yf.Ticker(ticker, session=_session).history(
-                period="5d", interval="1d", auto_adjust=True
-            )
-            if hist.empty or "Close" not in hist.columns:
-                continue
-            hist = hist.dropna(subset=["Close"])
-            if len(hist) < 2:
-                continue
-            close = float(hist["Close"].iloc[-1])
-            prev  = float(hist["Close"].iloc[-2])
-            if abs(prev) < 0.01:
-                continue
-            change = close - prev
-            change_pct = round(change / prev * 100, 2)
-            vol_shares = float(hist["Volume"].iloc[-1]) if "Volume" in hist.columns else 0.0
-            vol_value = vol_shares * close
-            result[code] = {
-                "close": round(close, 2),
-                "change_pct": change_pct,
-                "vol_value": round(vol_value, 0),
-            }
-        except Exception as e:
-            print(f"Warning: TPEX {ticker}: {e}", file=sys.stderr)
-    print(f"TPEX yfinance: got {len(result)}/{len(_HM_TPEX)} stocks", file=sys.stderr)
+            prev  = float(y_str.replace(",", ""))
+            close = float(z_str.replace(",", "")) if z_str and z_str not in ("-", "N/A") else prev
+        except (ValueError, AttributeError):
+            continue
+        change_pct = round((close - prev) / prev * 100, 2) if abs(prev) > 0.01 else 0.0
+        # v = cumulative volume in 張 (1張 = 1000 shares) for OTC stocks
+        v_str = item.get("v", "0")
+        try:
+            vol_lots = float(v_str.replace(",", ""))
+            vol_value = vol_lots * 1000 * close
+        except (ValueError, AttributeError):
+            vol_value = 0.0
+        result[code] = {
+            "close": round(close, 2),
+            "change_pct": change_pct,
+            "vol_value": round(vol_value, 0),
+        }
+    print(f"TPEX mis: got {len(result)}/{len(_HM_TPEX)} stocks", file=sys.stderr)
     return result
 
 
@@ -1263,7 +1275,7 @@ def fetch_heatmap_data():
     Returns {as_of, twse: [...], tpex: [...]}
     """
     twse_raw, as_of = _fetch_twse_all_stocks()
-    tpex_raw = _fetch_tpex_stocks_yf()
+    tpex_raw = _fetch_tpex_stocks_mis()
 
     twse_list = []
     for code, (shares_b, name, sector) in _HM_TWSE.items():
