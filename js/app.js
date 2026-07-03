@@ -745,12 +745,14 @@ const _hmCharts = {};
 function heatColor(pct) {
   const c = Math.max(-7, Math.min(7, pct || 0));
   if (c > 0) {
+    // 漲：紅色
     const t = c / 7;
-    return `rgb(${Math.round(17+(0-17)*t)},${Math.round(94+(230-94)*t)},${Math.round(35+(118-35)*t)})`;
+    return `rgb(${Math.round(60+(244-60)*t)},${Math.round(15+(67-15)*t)},${Math.round(15+(54-15)*t)})`;
   }
   if (c < 0) {
+    // 跌：綠色
     const t = -c / 7;
-    return `rgb(${Math.round(60+(244-60)*t)},${Math.round(15+(67-15)*t)},${Math.round(15+(54-15)*t)})`;
+    return `rgb(${Math.round(17+(0-17)*t)},${Math.round(94+(230-94)*t)},${Math.round(35+(118-35)*t)})`;
   }
   return 'rgb(35,52,70)';
 }
