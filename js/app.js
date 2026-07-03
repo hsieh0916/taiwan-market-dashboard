@@ -795,7 +795,7 @@ function _hmTipShow(chart, tooltip) {
     </div>
     <div>漲跌&ensp;<b style="color:${color}">${sign}${d.change_pct ?? 0}%</b></div>
     <div>收盤&ensp;<span style="color:#ddeeff">${d.close?.toLocaleString() ?? '—'} 元</span></div>
-    <div>市值&ensp;<span style="color:#ddeeff">${d.cap?.toLocaleString() ?? '—'} 億</span></div>
+    <div>市值&ensp;<span style="color:#ddeeff">${d.cap > 0 ? d.cap.toLocaleString() + ' 億' : '—'}</span></div>
     <div style="margin-bottom:10px">成交額&ensp;<span style="color:#ddeeff">${d.vol?.toLocaleString() ?? '—'} 億</span></div>
     <a href="${url}" target="_blank" rel="noopener noreferrer"
        style="display:block;text-align:center;background:#08162e;
@@ -876,8 +876,8 @@ function renderHeatmaps(hm) {
   if (asOf && hm.as_of) asOf.textContent = `資料日期：${hm.as_of}`;
   buildHeatmap('hm-twse-cap', hm.twse || [], 'cap', '上市市值');
   buildHeatmap('hm-twse-vol', hm.twse || [], 'vol', '上市成交額');
-  buildHeatmap('hm-tpex-cap', hm.tpex || [], 'cap', '上市（TPEX）市值');
-  buildHeatmap('hm-tpex-vol', hm.tpex || [], 'vol', '上市（TPEX）成交額');
+  buildHeatmap('hm-tpex-cap', hm.tpex || [], 'cap', '櫃買市值');
+  buildHeatmap('hm-tpex-vol', hm.tpex || [], 'vol', '櫃買成交額');
 }
 
 function showLoading(show) {

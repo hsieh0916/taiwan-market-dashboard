@@ -1222,8 +1222,8 @@ def _fetch_twse_all_stocks():
 
 def _fetch_tpex_stocks_mis():
     """
-    Fetch TPEX top stocks via mis.twse.com.tw getStockInfo API.
-    Uses ex_ch=otc_XXXX.tw format (official TWSE mis endpoint for OTC stocks).
+    Fetch specific TPEX stocks via mis.twse.com.tw getStockInfo API (fallback).
+    Uses ex_ch=otc_XXXX.tw format; returns intraday data during market hours.
     Returns dict: code → {close, change_pct, vol_value (TWD)}
     """
     codes = list(_HM_TPEX.keys())
@@ -1242,8 +1242,8 @@ def _fetch_tpex_stocks_mis():
         code = item.get("c", "")
         if code not in _HM_TPEX:
             continue
-        y_str = item.get("y", "")   # yesterday's close
-        z_str = item.get("z", "")   # latest trade price ("-" if no trade yet)
+        y_str = item.get("y", "")
+        z_str = item.get("z", "")
         if not y_str or y_str in ("-", "N/A"):
             continue
         try:
@@ -1252,7 +1252,6 @@ def _fetch_tpex_stocks_mis():
         except (ValueError, AttributeError):
             continue
         change_pct = round((close - prev) / prev * 100, 2) if abs(prev) > 0.01 else 0.0
-        # v = cumulative volume in 張 (1張 = 1000 shares) for OTC stocks
         v_str = item.get("v", "0")
         try:
             vol_lots = float(v_str.replace(",", ""))
@@ -1268,22 +1267,77 @@ def _fetch_tpex_stocks_mis():
     return result
 
 
+def _fetch_tpex_stk_d():
+    """
+    Fetch all TPEX (上櫃) mainboard daily close data from TPEX stk_d API.
+    Provides official 成交金額 (櫃買成交額) for every 上櫃 stock.
+    Returns dict: code → {close, change_pct, vol_value (元, official), name}
+    """
+    url = "https://www.tpex.org.tw/web/stock/aftertrading/daily_close_quotes/stk_d.php"
+    try:
+        r = _session.get(url, params={"l": "zh-tw", "o": "json"}, timeout=25)
+        r.raise_for_status()
+        data = r.json()
+    except Exception as e:
+        print(f"Warning: TPEX stk_d failed: {e}", file=sys.stderr)
+        return {}
+
+    result = {}
+    for row in data.get("aaData", []):
+        if len(row) < 9:
+            continue
+        code = str(row[0]).strip()
+        if not (len(code) == 4 and code.isdigit()):
+            continue
+        try:
+            close_str = str(row[2]).replace(",", "").strip()
+            if not close_str or close_str in ("--", "---"):
+                continue
+            close = float(close_str)
+            if close <= 0:
+                continue
+            # 漲跌 field may use △/▲/▼ prefixes or +/-
+            change_str = (str(row[3]).replace(",", "")
+                          .replace("▲", "").replace("△", "").replace("+", "")
+                          .replace("▼", "-").strip())
+            if change_str in ("", "---", "--", "除息", "除權", "X"):
+                change = 0.0
+            else:
+                change = float(change_str)
+            prev = close - change
+            change_pct = round(change / prev * 100, 2) if abs(prev) > 0.01 else 0.0
+            # col[8]: 成交金額 in 元 (official 櫃買成交額)
+            vol_value = float(str(row[8]).replace(",", "") or "0")
+            result[code] = {
+                "close":      round(close, 2),
+                "change_pct": change_pct,
+                "vol_value":  vol_value,
+                "name":       str(row[1]).strip(),
+            }
+        except (ValueError, ZeroDivisionError, IndexError):
+            continue
+
+    print(f"TPEX stk_d: parsed {len(result)} stocks", file=sys.stderr)
+    return result
+
+
 def fetch_heatmap_data():
     """
-    Build heatmap data for TWSE and TPEX top stocks.
+    Build heatmap data for TWSE and TPEX (櫃買) top stocks.
     cap/vol stored in 億元 (100 million TWD).
     Returns {as_of, twse: [...], tpex: [...]}
     """
-    twse_raw, as_of = _fetch_twse_all_stocks()
-    tpex_raw = _fetch_tpex_stocks_mis()
+    twse_raw, as_of  = _fetch_twse_all_stocks()
+    tpex_stk_d       = _fetch_tpex_stk_d()       # official 成交金額 for all 上櫃 stocks
+    tpex_raw         = _fetch_tpex_stocks_mis()   # fallback: mis intraday API
 
     twse_list = []
     for code, (shares_b, name, sector) in _HM_TWSE.items():
         if code not in twse_raw:
             continue
         d = twse_raw[code]
-        cap = round(shares_b * 1e8 * d["close"] / 1e8, 1)   # 億元
-        vol = round(d["vol_value"] / 1e8, 2)                  # 億元
+        cap = round(shares_b * d["close"], 1)    # shares_b (億股) × close = 億元
+        vol = round(d["vol_value"] / 1e8, 2)
         twse_list.append({
             "code": code, "name": name, "sector": sector,
             "close": d["close"], "change_pct": d["change_pct"],
@@ -1291,24 +1345,42 @@ def fetch_heatmap_data():
         })
     twse_list.sort(key=lambda x: x["cap"], reverse=True)
 
+    tpex_seen = set()
     tpex_list = []
+
+    # Curated stocks with known shares outstanding → full cap + vol
     for code, (shares_b, name, sector) in _HM_TPEX.items():
-        # Some TPEX stocks have been promoted to TWSE main board; use TWSE data if available
         if code in twse_raw:
-            d = twse_raw[code]
+            d = twse_raw[code]           # promoted to TWSE main board
+        elif code in tpex_stk_d:
+            d = tpex_stk_d[code]         # genuine 上櫃, official data
         elif code in tpex_raw:
-            d = tpex_raw[code]
+            d = tpex_raw[code]           # fallback to mis
         else:
             continue
-        cap = round(shares_b * 1e8 * d["close"] / 1e8, 1)
+        cap = round(shares_b * d["close"], 1)
         vol = round(d["vol_value"] / 1e8, 2)
         tpex_list.append({
             "code": code, "name": name, "sector": sector,
             "close": round(d["close"], 2), "change_pct": d["change_pct"],
             "cap": cap, "vol": vol,
         })
-    tpex_list.sort(key=lambda x: x["cap"], reverse=True)
+        tpex_seen.add(code)
 
+    # Top-volume 上櫃 stocks not already included; cap=0 → invisible in cap heatmap
+    extra = sorted(
+        ((c, d) for c, d in tpex_stk_d.items() if c not in tpex_seen and d["vol_value"] > 0),
+        key=lambda x: x[1]["vol_value"], reverse=True,
+    )
+    for code, d in extra[:15]:
+        tpex_list.append({
+            "code": code, "name": d["name"], "sector": "上櫃",
+            "close": d["close"], "change_pct": d["change_pct"],
+            "cap": 0,
+            "vol": round(d["vol_value"] / 1e8, 2),
+        })
+
+    tpex_list.sort(key=lambda x: x["cap"], reverse=True)
     return {"as_of": as_of, "twse": twse_list, "tpex": tpex_list}
 
 
