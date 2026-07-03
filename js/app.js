@@ -757,6 +757,66 @@ function heatColor(pct) {
   return 'rgb(35,52,70)';
 }
 
+// ─── Heatmap external HTML tooltip (supports clickable links) ────────────────
+let _hmTipTimer = null;
+const _hmTip = (() => {
+  const t = document.createElement('div');
+  t.id = 'hm-tip';
+  t.style.cssText = [
+    'position:fixed','z-index:9999','display:none','pointer-events:auto',
+    'background:#0c1a30','border:1px solid #1e3a6e','border-radius:10px',
+    'padding:12px 15px','min-width:190px','max-width:240px',
+    'font-size:13px','line-height:1.65','color:#b8cfe0',
+    'box-shadow:0 8px 32px rgba(0,0,0,0.65)',
+  ].join(';');
+  t.addEventListener('mouseenter', () => clearTimeout(_hmTipTimer));
+  t.addEventListener('mouseleave', () => { t.style.display = 'none'; });
+  document.body.appendChild(t);
+  return t;
+})();
+
+function _hmTipShow(chart, tooltip) {
+  if (tooltip.opacity === 0) {
+    _hmTipTimer = setTimeout(() => { _hmTip.style.display = 'none'; }, 180);
+    return;
+  }
+  clearTimeout(_hmTipTimer);
+
+  const d = tooltip.dataPoints?.[0]?.raw?._data;
+  if (!d) { _hmTip.style.display = 'none'; return; }
+
+  const sign  = (d.change_pct || 0) >= 0 ? '+' : '';
+  const color = (d.change_pct || 0) >= 0 ? '#f44336' : '#00c853';
+  const url   = `https://www.wantgoo.com/stock/${d.code}`;
+
+  _hmTip.innerHTML = `
+    <div style="font-size:14px;font-weight:700;color:#e6f2ff;margin-bottom:7px">
+      ${d.name}<span style="font-weight:400;font-size:12px;color:#4a7fa5;margin-left:6px">${d.code}</span>
+    </div>
+    <div>漲跌&ensp;<b style="color:${color}">${sign}${d.change_pct ?? 0}%</b></div>
+    <div>收盤&ensp;<span style="color:#ddeeff">${d.close?.toLocaleString() ?? '—'} 元</span></div>
+    <div>市值&ensp;<span style="color:#ddeeff">${d.cap?.toLocaleString() ?? '—'} 億</span></div>
+    <div style="margin-bottom:10px">成交額&ensp;<span style="color:#ddeeff">${d.vol?.toLocaleString() ?? '—'} 億</span></div>
+    <a href="${url}" target="_blank" rel="noopener noreferrer"
+       style="display:block;text-align:center;background:#08162e;
+              color:#00b4ff;text-decoration:none;padding:5px 0;
+              border-radius:6px;border:1px solid #1e3a6e;font-size:12px;
+              transition:background .15s">
+      玩股網查看 ↗
+    </a>`;
+
+  _hmTip.style.display = 'block';
+
+  const rect = chart.canvas.getBoundingClientRect();
+  let x = rect.left + tooltip.caretX + 18;
+  let y = rect.top  + tooltip.caretY - _hmTip.offsetHeight / 2;
+  if (x + _hmTip.offsetWidth  > window.innerWidth  - 8) x = rect.left + tooltip.caretX - _hmTip.offsetWidth - 18;
+  if (y + _hmTip.offsetHeight > window.innerHeight - 8) y = window.innerHeight - _hmTip.offsetHeight - 8;
+  if (y < 8) y = 8;
+  _hmTip.style.left = x + 'px';
+  _hmTip.style.top  = y + 'px';
+}
+
 function buildHeatmap(canvasId, stocks, sizeKey, label) {
   const canvas = el(canvasId);
   if (!canvas) return;
@@ -802,23 +862,8 @@ function buildHeatmap(canvasId, stocks, sizeKey, label) {
       plugins: {
         legend: { display: false },
         tooltip: {
-          callbacks: {
-            title(items) {
-              const d = items[0]?.raw?._data;
-              return d ? `${d.name} (${d.code})` : '';
-            },
-            label(item) {
-              const d = item.raw?._data;
-              if (!d) return '';
-              const sign = (d.change_pct || 0) >= 0 ? '+' : '';
-              return [
-                `漲跌：${sign}${d.change_pct ?? 0}%`,
-                `收盤：${d.close?.toLocaleString() ?? '—'} 元`,
-                `市值：${d.cap?.toLocaleString() ?? '—'} 億`,
-                `成交額：${d.vol?.toLocaleString() ?? '—'} 億`,
-              ];
-            },
-          },
+          enabled: false,
+          external: ({ chart, tooltip }) => _hmTipShow(chart, tooltip),
         },
       },
     },
