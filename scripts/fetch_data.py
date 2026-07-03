@@ -1293,9 +1293,13 @@ def fetch_heatmap_data():
 
     tpex_list = []
     for code, (shares_b, name, sector) in _HM_TPEX.items():
-        if code not in tpex_raw:
+        # Some TPEX stocks have been promoted to TWSE main board; use TWSE data if available
+        if code in twse_raw:
+            d = twse_raw[code]
+        elif code in tpex_raw:
+            d = tpex_raw[code]
+        else:
             continue
-        d = tpex_raw[code]
         cap = round(shares_b * 1e8 * d["close"] / 1e8, 1)
         vol = round(d["vol_value"] / 1e8, 2)
         tpex_list.append({
