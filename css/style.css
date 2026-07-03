@@ -248,8 +248,8 @@ body {
 .card:hover { transform: translateY(-2px); border-color: var(--border-light); }
 
 .card--primary::before { background: linear-gradient(90deg, var(--blue), var(--cyan)); }
-.card--bull::before { background: var(--green); }
-.card--bear::before { background: var(--red); }
+.card--bull::before { background: var(--red); }
+.card--bear::before { background: var(--green); }
 .card--neutral::before { background: var(--yellow); }
 
 .card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
@@ -259,8 +259,8 @@ body {
 
 .card-value { font-size: 2.2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text-primary); line-height: 1; }
 .card-change { font-size: 0.85rem; margin-top: 6px; font-variant-numeric: tabular-nums; }
-.change-up { color: var(--green); }
-.change-down { color: var(--red); }
+.change-up { color: var(--red); }
+.change-down { color: var(--green); }
 .change-flat { color: var(--text-muted); }
 
 .card-badge {
@@ -280,8 +280,8 @@ body {
 .badge--high          { background: rgba(255,109,0,0.2); color: var(--orange); }
 .badge--normal        { background: rgba(41,121,255,0.2); color: var(--cyan); }
 .badge--low           { background: rgba(0,230,118,0.2); color: #69f0ae; }
-.badge--bull          { background: rgba(0,230,118,0.15); color: var(--green); }
-.badge--bear          { background: rgba(244,67,54,0.15); color: var(--red); }
+.badge--bull          { background: rgba(244,67,54,0.15); color: var(--red); }
+.badge--bear          { background: rgba(0,230,118,0.15); color: var(--green); }
 
 /* US index grid */
 .cards-grid--us { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
@@ -303,12 +303,12 @@ body {
   padding: 2px 5px;
   border-radius: 4px;
 }
-.ma-item--up  { background: rgba(0,230,118,0.08); }
-.ma-item--down{ background: rgba(244,67,54,0.08); }
+.ma-item--up  { background: rgba(244,67,54,0.08); }
+.ma-item--down{ background: rgba(0,230,118,0.08); }
 .ma-label { color: var(--text-secondary); }
 .ma-val   { font-weight: 700; font-variant-numeric: tabular-nums; }
-.ma-item--up  .ma-val { color: var(--green); }
-.ma-item--down .ma-val { color: var(--red); }
+.ma-item--up  .ma-val { color: var(--red); }
+.ma-item--down .ma-val { color: var(--green); }
 
 
 /* -------- Two Column Charts Row -------- */
@@ -465,8 +465,8 @@ body {
   margin-right: 6px;
 }
 .signal-strength-num { font-size: 0.85rem; font-variant-numeric: tabular-nums; }
-.signal-positive { color: var(--green); }
-.signal-negative { color: var(--red); }
+.signal-positive { color: var(--red); }
+.signal-negative { color: var(--green); }
 .signal-neutral  { color: var(--yellow); }
 
 /* -------- Institutional Breakdown -------- */

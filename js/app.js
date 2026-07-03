@@ -643,7 +643,7 @@ function renderSignalTable(signal) {
     const s = d.signal;
     const cls = s > 10 ? 'signal-positive' : s < -10 ? 'signal-negative' : 'signal-neutral';
     const barWidth = Math.min(80, Math.abs(s)) + '%';
-    const barColor = s > 0 ? '#00e676' : s < 0 ? '#f44336' : '#ffc107';
+    const barColor = s > 0 ? '#f44336' : s < 0 ? '#00c853' : '#ffc107';
     return `<tr>
       <td><strong>${d.indicator}</strong></td>
       <td style="font-variant-numeric:tabular-nums">${typeof d.value === 'number' ? (d.value % 1 === 0 ? d.value : d.value.toFixed(2)) : d.value}</td>
