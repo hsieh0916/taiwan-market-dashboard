@@ -18,7 +18,11 @@ async function loadData() {
     const res = await fetch(DATA_URL, { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    render(data);
+    try {
+      render(data);
+    } catch (renderErr) {
+      console.error('Render error:', renderErr);
+    }
   } catch (err) {
     console.error('Failed to load data:', err);
     showError('無法載入市場數據。請確認 GitHub Actions 已執行並生成 data/market_data.json。\n' + err.message);
@@ -753,7 +757,8 @@ function heatColor(pct) {
 function buildHeatmap(canvasId, stocks, sizeKey, label) {
   const canvas = el(canvasId);
   if (!canvas) return;
-  if (_hmCharts[canvasId]) { _hmCharts[canvasId].destroy(); }
+  const existing = Chart.getChart(canvas);
+  if (existing) existing.destroy();
 
   const items = stocks.filter(s => (s[sizeKey] || 0) > 0);
   if (!items.length) {
