@@ -1672,7 +1672,21 @@ def scan_stock_opportunities(twse_raw):
     print(f"[Scan] {len(candidates)} candidates → top 20", file=sys.stderr)
 
     as_of = datetime.now(TW_TZ).strftime("%Y/%m/%d %H:%M")
-    return {"as_of": as_of, "candidates": candidates[:20]}
+    if candidates:
+        return {"as_of": as_of, "candidates": candidates[:20], "is_cached": False}
+
+    # No candidates (e.g. non-trading day or data unavailable) — return last saved result
+    try:
+        with open(OUTPUT_PATH, "r", encoding="utf-8") as fh:
+            saved = json.load(fh)
+        prev = saved.get("scan", {})
+        if prev.get("candidates"):
+            print(f"[Scan] 0 new candidates; using cached scan from {prev.get('as_of')}", file=sys.stderr)
+            return {**prev, "is_cached": True}
+    except Exception as e:
+        print(f"[Scan] Could not load cached scan: {e}", file=sys.stderr)
+
+    return {"as_of": as_of, "candidates": [], "is_cached": False}
 
 
 def main():

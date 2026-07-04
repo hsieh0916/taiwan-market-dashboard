@@ -940,11 +940,16 @@ function renderScanResults(scan) {
 
   if (!scan || !scan.candidates || scan.candidates.length === 0) {
     if (asOf && scan && scan.as_of) asOf.textContent = scan.as_of;
-    list.innerHTML = '<div class="scan-empty">今日暫無符合條件的候選股（盤後資料更新後顯示）</div>';
+    list.innerHTML = '<div class="scan-empty">暫無符合條件的候選股（盤後資料更新後顯示）</div>';
     return;
   }
 
-  if (asOf && scan.as_of) asOf.textContent = '掃描時間：' + scan.as_of;
+  if (asOf) {
+    asOf.textContent = (scan.is_cached ? '最近一次掃描：' : '掃描時間：') + scan.as_of;
+    if (scan.is_cached) {
+      asOf.style.cssText = 'background:rgba(255,180,0,0.15);border:1px solid rgba(255,180,0,0.35);border-radius:4px;padding:1px 7px;';
+    }
+  }
 
   const rows = scan.candidates.map((c, i) => {
     const up  = c.change_pct > 0;
