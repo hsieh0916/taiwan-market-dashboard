@@ -466,6 +466,7 @@ def fetch_vix_data():
             if not hist.empty:
                 cur  = round(float(hist["Close"].iloc[-1]), 2)
                 prev = round(float(hist["Close"].iloc[-2]), 2) if len(hist) > 1 else None
+                last_date = str(hist.index[-1].date())
                 entry = {
                     "symbol":     symbol,
                     "current":    cur,
@@ -474,6 +475,7 @@ def fetch_vix_data():
                     "change_pct": round((cur - prev) / prev * 100, 2) if prev else 0,
                     "high_52w":   round(float(hist["Close"].max()), 2),
                     "low_52w":    round(float(hist["Close"].min()), 2),
+                    "data_date":  last_date,
                 }
                 if key in MA_STAT_KEYS:
                     entry.update(_compute_ma_stats(hist["Close"], cur))

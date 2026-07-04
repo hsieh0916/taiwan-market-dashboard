@@ -191,6 +191,22 @@ function renderUsIndices(vix) {
     }
     renderMaRow(id, t);
   });
+
+  // Show data date label when US market data is from a previous session
+  const dateEl = el('us-data-date');
+  if (dateEl && vix.sp500 && vix.sp500.data_date) {
+    const dataDate = vix.sp500.data_date; // "YYYY-MM-DD"
+    // Convert to Taiwan local date string for comparison
+    const tst = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Taipei' }));
+    const todayTST = `${tst.getFullYear()}-${String(tst.getMonth()+1).padStart(2,'0')}-${String(tst.getDate()).padStart(2,'0')}`;
+    if (dataDate !== todayTST) {
+      const [y, m, d] = dataDate.split('-');
+      dateEl.textContent = `資料截至 ${m}/${d}`;
+      dateEl.style.display = '';
+    } else {
+      dateEl.style.display = 'none';
+    }
+  }
 }
 
 function renderVolRow(id, t) {
