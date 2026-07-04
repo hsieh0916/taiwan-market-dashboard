@@ -737,55 +737,60 @@ def fetch_twse_institutional():
 
 
 def fetch_twse_institutional_history():
-    """Fetch last 20 trading days of institutional data."""
+    """
+    Fetch last 20 trading days of institutional net buy/sell from BFI82U.
+    Queries each trading day individually using the correct `date` parameter.
+    """
+    import time
     from datetime import date, timedelta
+
+    def parse_num(s):
+        try:
+            return int(str(s).replace(",", "").replace("+", ""))
+        except Exception:
+            return 0
 
     results = []
     today = date.today()
-    checked = 0
     day = today
+    checked = 0
 
     while len(results) < 20 and checked < 60:
         checked += 1
-        if day.weekday() >= 5:
+        if day.weekday() >= 5:        # skip weekends
             day -= timedelta(days=1)
             continue
 
         date_str = day.strftime("%Y%m%d")
-        url = "https://www.twse.com.tw/fund/BFI82U"
-        params = {"response": "json", "type": "day", "dayDate": date_str}
-        headers = {"User-Agent": "Mozilla/5.0", "Referer": "https://www.twse.com.tw/"}
-
         try:
-            resp = _session.get(url, params=params, headers={"Referer": "https://www.twse.com.tw/"}, timeout=10)
+            resp = _session.get(
+                "https://www.twse.com.tw/fund/BFI82U",
+                params={"response": "json", "type": "day", "date": date_str},
+                headers={"Referer": "https://www.twse.com.tw/"},
+                timeout=10,
+            )
             data = resp.json()
             rows = data.get("data", [])
             if rows:
                 entry = {"date": date_str, "foreign": 0, "investment_trust": 0, "dealer": 0}
-
-                def parse_num(s):
-                    try:
-                        return int(str(s).replace(",", "").replace("+", ""))
-                    except Exception:
-                        return 0
-
                 for row in rows:
                     name = str(row[0]).strip()
-                    if "外資及陸資" in name or ("外資" in name and "陸資" not in name and "自營商" not in name):
+                    if "外資及陸資" in name and "自營商" not in name:
                         entry["foreign"] = parse_num(row[3])
                     elif "投信" in name:
                         entry["investment_trust"] = parse_num(row[3])
                     elif "自營商" in name and "避險" not in name and "外資" not in name:
                         entry["dealer"] = parse_num(row[3])
-
                 entry["total"] = entry["foreign"] + entry["investment_trust"] + entry["dealer"]
                 results.append(entry)
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Warning: BFI82U {date_str}: {e}", file=sys.stderr)
 
         day -= timedelta(days=1)
+        time.sleep(0.15)   # avoid rate-limiting
 
     results.reverse()
+    print(f"BFI82U history: {len(results)} days", file=sys.stderr)
     return results
 
 
