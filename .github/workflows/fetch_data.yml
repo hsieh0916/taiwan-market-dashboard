@@ -3,9 +3,11 @@ name: Fetch Market Data
 on:
   schedule:
     # Every 30 min on weekdays during Taiwan market hours (01:00-09:30 UTC = 09:00-17:30 TST)
-    # Also run once overnight to update pre-market data
     - cron: '*/30 1-9 * * 1-5'
+    # Pre-market update (22:00 UTC Sun–Thu = 06:00 TST Mon–Fri)
     - cron: '0 22 * * 0-4'
+    # Post-market Friday evening (10:00 UTC Fri = 18:00 TST) — so weekend shows latest Friday data
+    - cron: '0 10 * * 5'
   workflow_dispatch:  # Allow manual trigger
 
 permissions:

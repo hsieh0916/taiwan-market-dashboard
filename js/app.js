@@ -51,34 +51,68 @@ function render(data) {
 
 // ─── Header ──────────────────────────────────────────────────────────────────
 function updateHeader(data) {
+  // Derive current Taiwan time once — reused for both stale check and market status
+  const now   = new Date();
+  const tst   = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Taipei' }));
+  const twDay = tst.getDay();           // 0=Sun, 6=Sat
+  const twH   = tst.getHours();
+  const twM   = tst.getMinutes();
+  const twNum = twH * 100 + twM;
+
+  const isWeekday      = twDay >= 1 && twDay <= 5;
+  const isMarketHours  = isWeekday && twNum >= 900  && twNum < 1330;
+  // "Active window": weekday, 09:00–18:00 TST — cron runs during this window
+  const isActiveWindow = isWeekday && twNum >= 900  && twNum < 1800;
+
+  // ── Last updated label ──
   const dt = new Date(data.last_updated || data.last_updated_utc);
   const updEl = el('lastUpdated');
   if (isNaN(dt)) {
     updEl.textContent = '—';
   } else {
-    updEl.textContent = dt.toLocaleString('zh-TW');
-    // Flag stale data: warn if last update is more than 45 min ago
-    const ageMin = (Date.now() - dt.getTime()) / 60000;
+    // Show date + time; add context tag when outside active window
+    const dtLabel = dt.toLocaleString('zh-TW', {
+      month: 'numeric', day: 'numeric',
+      hour: 'numeric', minute: '2-digit',
+    });
+    const ageMin = (now - dt) / 60000;
+
+    let tag = '';
+    let stale = false;
+    let tip = '';
+
+    if (!isWeekday) {
+      // Weekend — expected, data is from last trading day
+      tag   = ' (非交易日)';
+      tip   = '週末非交易日，顯示最後交易日盤後資料，下次更新於週一開盤前';
+    } else if (!isActiveWindow) {
+      // Weekday but outside cron window (before 9am or after 6pm)
+      tag   = ' (盤後)';
+      tip   = '盤後資料，下次排程更新於隔日開盤前';
+    } else if (ageMin > 45) {
+      // Within active window but stale — something may be wrong
+      stale = true;
+      tip   = `資料已超過 ${Math.floor(ageMin)} 分鐘未更新，排程可能延誤`;
+    } else {
+      tip = `資料更新於 ${Math.floor(ageMin)} 分鐘前`;
+    }
+
+    updEl.textContent = dtLabel + tag;
     const updateRow = el('update-time');
     if (updateRow) {
-      updateRow.classList.toggle('update-stale', ageMin > 45);
-      updateRow.title = ageMin > 45
-        ? `資料已超過 ${Math.floor(ageMin)} 分鐘未更新（GitHub Actions 排程可能延誤）`
-        : `資料更新於 ${Math.floor(ageMin)} 分鐘前`;
+      updateRow.classList.toggle('update-stale', stale);
+      updateRow.title = tip;
     }
   }
 
-  // Market status heuristic (Taiwan market 09:00–13:30 TST Mon–Fri)
-  const now = new Date();
-  const tst = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Taipei' }));
-  const day = tst.getDay(); // 0=Sun, 6=Sat
-  const hour = tst.getHours(), min = tst.getMinutes();
-  const timeNum = hour * 100 + min;
-  const isOpen = day >= 1 && day <= 5 && timeNum >= 900 && timeNum < 1330;
-
+  // ── Market status dot ──
+  const isOpen = isMarketHours;
   const dot = el('statusDot');
   dot.className = `status-dot ${isOpen ? 'open' : 'closed'}`;
-  el('statusText').textContent = isOpen ? '台灣市場交易中' : '市場休市';
+  el('statusText').textContent = isOpen ? '台灣市場交易中'
+    : !isWeekday ? '週末休市'
+    : twNum < 900 ? '開盤前'
+    : '盤後';
 }
 
 // ─── Key Indicators ───────────────────────────────────────────────────────────
