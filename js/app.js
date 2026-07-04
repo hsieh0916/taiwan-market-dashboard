@@ -2,6 +2,7 @@
 'use strict';
 
 const DATA_URL = 'data/market_data.json';
+const DATA_URL_ABS = 'https://hsieh0916.github.io/taiwan-market-dashboard/data/market_data.json';
 let institutionalChart = null;
 let vixtwChart = null;
 let vixUsChart = null;
@@ -14,21 +15,29 @@ Chart.defaults.font.family = "'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', s
 // ─── Entry point ─────────────────────────────────────────────────────────────
 async function loadData() {
   showLoading(true);
-  try {
-    const res = await fetch(DATA_URL, { cache: 'no-store' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+  let lastErr = null;
+  // Try relative URL first (works on GitHub Pages); fall back to absolute URL
+  // (handles cases where the page is opened via file:// or a local server)
+  for (const url of [DATA_URL, DATA_URL_ABS]) {
     try {
-      render(data);
-    } catch (renderErr) {
-      console.error('Render error:', renderErr);
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      try { render(data); } catch (renderErr) { console.error('Render error:', renderErr); }
+      showLoading(false);
+      return;
+    } catch (err) {
+      console.warn(`fetch failed (${url}):`, err);
+      lastErr = err;
     }
-  } catch (err) {
-    console.error('Failed to load data:', err);
-    showError('無法載入市場數據。請確認 GitHub Actions 已執行並生成 data/market_data.json。\n' + err.message);
-  } finally {
-    showLoading(false);
   }
+  showLoading(false);
+  showError(
+    '無法載入市場數據。\n' +
+    '請確認網路連線正常，或直接訪問 GitHub Pages：\n' +
+    'https://hsieh0916.github.io/taiwan-market-dashboard/\n\n' +
+    '錯誤：' + (lastErr && lastErr.message)
+  );
 }
 
 function render(data) {
