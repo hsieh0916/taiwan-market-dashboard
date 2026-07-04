@@ -775,7 +775,7 @@ def fetch_twse_institutional_history():
                 entry = {"date": date_str, "foreign": 0, "investment_trust": 0, "dealer": 0}
                 for row in rows:
                     name = str(row[0]).strip()
-                    if "外資及陸資" in name and "自營商" not in name:
+                    if "外資及陸資" in name or ("外資" in name and "陸資" not in name and "自營商" not in name):
                         entry["foreign"] = parse_num(row[3])
                     elif "投信" in name:
                         entry["investment_trust"] = parse_num(row[3])
