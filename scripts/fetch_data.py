@@ -766,6 +766,13 @@ def fetch_twse_institutional_history(today_entry=None):
                               + (today_entry.get("dealer")           or 0),
         })
 
+    # Discard history if all entries share the same foreign value — sign of stale API data
+    if len(saved_history) > 2:
+        foreign_vals = {e.get("foreign", 0) for e in saved_history}
+        if len(foreign_vals) == 1:
+            print("BFI82U: uniform history detected (bad data), resetting", file=sys.stderr)
+            saved_history = [e for e in saved_history if today_entry and e.get("date") == today_entry.get("date")]
+
     saved_history.sort(key=lambda x: x.get("date", ""))
     result = saved_history[-30:]
     print(f"BFI82U history: {len(result)} days (accumulated)", file=sys.stderr)
