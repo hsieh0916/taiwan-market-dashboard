@@ -725,8 +725,8 @@ def fetch_twse_institutional():
         vals = [v for v in [result["foreign"], result["investment_trust"], result["dealer"]] if v is not None]
         result["total_net"] = sum(vals) if vals else None
 
-        # Fetch 30-day history (weekly is enough for trends)
-        history = fetch_twse_institutional_history()
+        # Accumulate history: append today to saved JSON
+        history = fetch_twse_institutional_history(today_entry=result)
         result["history"] = history
 
         return result
@@ -736,62 +736,40 @@ def fetch_twse_institutional():
         return {"error": str(e), "foreign": None, "investment_trust": None, "dealer": None, "total_net": None}
 
 
-def fetch_twse_institutional_history():
+def fetch_twse_institutional_history(today_entry=None):
     """
-    Fetch last 20 trading days of institutional net buy/sell from BFI82U.
-    Queries each trading day individually using the correct `date` parameter.
+    Rolling 30-day institutional history maintained by accumulation.
+    The BFI82U API ignores the `date` parameter and always returns today's data,
+    so we accumulate history by appending each day's result to the saved JSON.
+    today_entry: the dict already parsed from fetch_twse_institutional().
     """
-    import time
-    from datetime import date, timedelta
+    # Load existing history from saved JSON
+    saved_history = []
+    try:
+        with open(OUTPUT_PATH, "r", encoding="utf-8") as fh:
+            saved = json.load(fh)
+        saved_history = saved.get("institutional", {}).get("history", []) or []
+    except Exception:
+        pass
 
-    def parse_num(s):
-        try:
-            return int(str(s).replace(",", "").replace("+", ""))
-        except Exception:
-            return 0
+    # Append today's entry (replace if same date already exists)
+    if today_entry and today_entry.get("date"):
+        today_date = today_entry["date"]
+        saved_history = [e for e in saved_history if e.get("date") != today_date]
+        saved_history.append({
+            "date":             today_date,
+            "foreign":          today_entry.get("foreign")          or 0,
+            "investment_trust": today_entry.get("investment_trust") or 0,
+            "dealer":           today_entry.get("dealer")           or 0,
+            "total":            (today_entry.get("foreign")          or 0)
+                              + (today_entry.get("investment_trust") or 0)
+                              + (today_entry.get("dealer")           or 0),
+        })
 
-    results = []
-    today = date.today()
-    day = today
-    checked = 0
-
-    while len(results) < 20 and checked < 60:
-        checked += 1
-        if day.weekday() >= 5:        # skip weekends
-            day -= timedelta(days=1)
-            continue
-
-        date_str = day.strftime("%Y%m%d")
-        try:
-            resp = _session.get(
-                "https://www.twse.com.tw/fund/BFI82U",
-                params={"response": "json", "type": "day", "date": date_str},
-                headers={"Referer": "https://www.twse.com.tw/"},
-                timeout=10,
-            )
-            data = resp.json()
-            rows = data.get("data", [])
-            if rows:
-                entry = {"date": date_str, "foreign": 0, "investment_trust": 0, "dealer": 0}
-                for row in rows:
-                    name = str(row[0]).strip()
-                    if "外資及陸資" in name or ("外資" in name and "陸資" not in name and "自營商" not in name):
-                        entry["foreign"] = parse_num(row[3])
-                    elif "投信" in name:
-                        entry["investment_trust"] = parse_num(row[3])
-                    elif "自營商" in name and "避險" not in name and "外資" not in name:
-                        entry["dealer"] = parse_num(row[3])
-                entry["total"] = entry["foreign"] + entry["investment_trust"] + entry["dealer"]
-                results.append(entry)
-        except Exception as e:
-            print(f"Warning: BFI82U {date_str}: {e}", file=sys.stderr)
-
-        day -= timedelta(days=1)
-        time.sleep(0.15)   # avoid rate-limiting
-
-    results.reverse()
-    print(f"BFI82U history: {len(results)} days", file=sys.stderr)
-    return results
+    saved_history.sort(key=lambda x: x.get("date", ""))
+    result = saved_history[-30:]
+    print(f"BFI82U history: {len(result)} days (accumulated)", file=sys.stderr)
+    return result
 
 
 def compute_market_signal(vix_data, cnn_data, institutional_data):
