@@ -740,9 +740,11 @@ def fetch_twse_institutional():
 
 def fetch_twse_institutional_history(today_entry=None):
     """
-    Rolling 30-day institutional history maintained by accumulation.
+    Rolling 60-day institutional history maintained by accumulation.
     The BFI82U API ignores the `date` parameter and always returns today's data,
     so we accumulate history by appending each day's result to the saved JSON.
+    (Older days may be backfilled estimates from scripts/backfill_institutional_history.py,
+    tagged "estimated": true; today's entry from this function is always the real figure.)
     today_entry: the dict already parsed from fetch_twse_institutional().
     """
     # Load existing history from saved JSON
@@ -776,7 +778,7 @@ def fetch_twse_institutional_history(today_entry=None):
             saved_history = [e for e in saved_history if today_entry and e.get("date") == today_entry.get("date")]
 
     saved_history.sort(key=lambda x: x.get("date", ""))
-    result = saved_history[-30:]
+    result = saved_history[-60:]
     print(f"BFI82U history: {len(result)} days (accumulated)", file=sys.stderr)
     return result
 

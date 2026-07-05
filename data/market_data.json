@@ -2197,6 +2197,190 @@
     "total_net": -67446839076,
     "history": [
       {
+        "date": "20260601",
+        "estimated": true,
+        "foreign": 33725676305,
+        "investment_trust": 7653798001,
+        "dealer": 285753287,
+        "total": 41665227593
+      },
+      {
+        "date": "20260602",
+        "estimated": true,
+        "foreign": 18699733711,
+        "investment_trust": 2722796706,
+        "dealer": -7712230683,
+        "total": 13710299733
+      },
+      {
+        "date": "20260603",
+        "estimated": true,
+        "foreign": 40005854422,
+        "investment_trust": 4472943359,
+        "dealer": 2594168649,
+        "total": 47072966430
+      },
+      {
+        "date": "20260604",
+        "estimated": true,
+        "foreign": -67530286295,
+        "investment_trust": 3626105093,
+        "dealer": -6096697624,
+        "total": -70000878827
+      },
+      {
+        "date": "20260605",
+        "estimated": true,
+        "foreign": -73844902077,
+        "investment_trust": 1802511756,
+        "dealer": -14113211239,
+        "total": -86155601560
+      },
+      {
+        "date": "20260608",
+        "estimated": true,
+        "foreign": -91822625710,
+        "investment_trust": 9032282234,
+        "dealer": -23176750226,
+        "total": -105967093702
+      },
+      {
+        "date": "20260609",
+        "estimated": true,
+        "foreign": -94754573915,
+        "investment_trust": 23009068858,
+        "dealer": -4341142499,
+        "total": -76086647556
+      },
+      {
+        "date": "20260610",
+        "estimated": true,
+        "foreign": -82245169981,
+        "investment_trust": 16141438513,
+        "dealer": -21014699972,
+        "total": -87118431441
+      },
+      {
+        "date": "20260611",
+        "estimated": true,
+        "foreign": -33385614714,
+        "investment_trust": 12943166467,
+        "dealer": 1545442140,
+        "total": -18897006108
+      },
+      {
+        "date": "20260612",
+        "estimated": true,
+        "foreign": 22126682199,
+        "investment_trust": 13271757947,
+        "dealer": 7676263070,
+        "total": 43074703216
+      },
+      {
+        "date": "20260615",
+        "estimated": true,
+        "foreign": 36313481211,
+        "investment_trust": 5883604573,
+        "dealer": 12233178854,
+        "total": 54430264637
+      },
+      {
+        "date": "20260616",
+        "estimated": true,
+        "foreign": 36703658144,
+        "investment_trust": 11464863665,
+        "dealer": 1717392629,
+        "total": 49885914438
+      },
+      {
+        "date": "20260617",
+        "estimated": true,
+        "foreign": -22081694504,
+        "investment_trust": -310001966,
+        "dealer": 1651437494,
+        "total": -20740258976
+      },
+      {
+        "date": "20260618",
+        "estimated": true,
+        "foreign": 8146683937,
+        "investment_trust": -5341951682,
+        "dealer": 10706671141,
+        "total": 13511403396
+      },
+      {
+        "date": "20260622",
+        "estimated": true,
+        "foreign": 64579955487,
+        "investment_trust": -10850588601,
+        "dealer": 9521188385,
+        "total": 63250555270
+      },
+      {
+        "date": "20260623",
+        "estimated": true,
+        "foreign": -33651485098,
+        "investment_trust": 6793346891,
+        "dealer": -5938096809,
+        "total": -32796235017
+      },
+      {
+        "date": "20260624",
+        "estimated": true,
+        "foreign": -165958276999,
+        "investment_trust": 2916898781,
+        "dealer": -4373227846,
+        "total": -167414606063
+      },
+      {
+        "date": "20260625",
+        "estimated": true,
+        "foreign": -42813579535,
+        "investment_trust": 17463816509,
+        "dealer": -2602202977,
+        "total": -27951966004
+      },
+      {
+        "date": "20260626",
+        "estimated": true,
+        "foreign": -122587745917,
+        "investment_trust": 10133852727,
+        "dealer": -28664520796,
+        "total": -141118413986
+      },
+      {
+        "date": "20260629",
+        "estimated": true,
+        "foreign": -5075478520,
+        "investment_trust": 14253485073,
+        "dealer": 567728243,
+        "total": 9745734797
+      },
+      {
+        "date": "20260630",
+        "estimated": true,
+        "foreign": -12220915403,
+        "investment_trust": 277167397,
+        "dealer": 11892005276,
+        "total": -51742729
+      },
+      {
+        "date": "20260701",
+        "estimated": true,
+        "foreign": 24694520612,
+        "investment_trust": 15269597827,
+        "dealer": -2698015431,
+        "total": 37266103008
+      },
+      {
+        "date": "20260702",
+        "estimated": true,
+        "foreign": -82264896958,
+        "investment_trust": 10096602062,
+        "dealer": 3528693642,
+        "total": -68639601254
+      },
+      {
         "date": "20260703",
         "foreign": -77782612615,
         "investment_trust": 7502170019,

@@ -36,6 +36,7 @@ index.html + js/app.js + css/style.css
 | File | Purpose |
 |---|---|
 | `scripts/fetch_data.py` | All data fetching logic (1 742 lines). One `main()` writes the JSON. |
+| `scripts/backfill_institutional_history.py` | One-time/rerunnable backfill for `institutional.history` via T86 + MI_INDEX (BFI82U has no historical query). Run manually, not part of the cron. |
 | `data/market_data.json` | Output — committed by GitHub Actions, never edited by hand. |
 | `index.html` | All HTML structure (~530 lines). Cache-bust version: `v=20260705c`. |
 | `js/app.js` | All rendering logic (~1 030 lines). One `loadData()` entry point. |
@@ -97,7 +98,11 @@ index.html + js/app.js + css/style.css
   "institutional": {
     "date", "foreign", "investment_trust", "dealer", "total",
     "history": [ { "date", "foreign", "investment_trust", "dealer", "total" }, ... ]
-    // history is accumulated across runs; currently 1 day, grows ~1/trading day
+    // history is accumulated across runs, rolling 60-day window (fetch_data.py caps at [-60:]).
+    // Days backfilled by scripts/backfill_institutional_history.py carry "estimated": true
+    // (computed as net_shares(T86) * closing_price(MI_INDEX), since BFI82U itself has no
+    // historical query — see "Known state" below). Today's entry from the normal cron run
+    // is always the real BFI82U figure and has no "estimated" key.
   },
   "heatmap": { "as_of", "twse": [...], "tpex": [...] },
   "scan": {
@@ -172,7 +177,7 @@ gh workflow run deploy_pages.yml --ref main
 
 | Item | Status |
 |---|---|
-| `institutional.history` | Only 1 day (2026-07-03). Grows 1 entry per trading day. Needs ~4 weeks to reach 20 days. This is expected — the TWSE API does not support historical queries. |
+| `institutional.history` | 24 days as of 2026-07-05 (2026-06-01 → 2026-07-03): 23 backfilled estimates + 1 real day. Backfilled via `scripts/backfill_institutional_history.py` (T86 shares × MI_INDEX closing price — validated against the real 7/3 BFI82U figure: foreign/trust within ~0.2%, total within ~1.2%). Rolling window is now 60 days (`fetch_data.py` caps at `[-60:]`); grows 1 real entry per trading day going forward. Backfill run got blocked by TWSE's WAF (HiNetCDN "operation too frequent") after ~60 requests going further back than 2026-06-01 — rerun the script later (it skips dates already present) to fill in more history if needed. |
 | `scan` (weekend) | Returns Friday's data with `is_cached: true`. Works as designed. |
 | `vix.sp500.data_date` | Shows `2026-07-02` — correct, US markets closed Jul 3–4 (Independence Day + observed). |
 | Frontend "資料截至 MM/DD" badge | Shows in US indices section header when `data_date ≠ today (TST)`. |
