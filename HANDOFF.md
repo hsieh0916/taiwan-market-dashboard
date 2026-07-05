@@ -50,11 +50,13 @@ index.html + js/app.js + css/style.css
 
 | Cron | UTC | Taiwan (TST = UTC+8) | Purpose |
 |---|---|---|---|
-| `*/30 1-9 * * 1-5` | Mon–Fri 01:00–09:30 | Mon–Fri 09:00–17:30 | Taiwan market hours, every 30 min |
-| `0 22 * * 0-5` | Sun–Fri 22:00 | Mon–Sat 06:00 | Pre-Taiwan-open; also captures prior-night US close (US closes ~20:00–21:00 UTC) |
-| `0 10 * * 5` | Fri 10:00 | Fri 18:00 | Friday Taiwan post-close (institutional data) |
+| `7,37 1-9 * * 1-5` | Mon–Fri 01:07–09:37 | Mon–Fri 09:07–17:37 | Taiwan market hours, every 30 min |
+| `7 22 * * 0-5` | Sun–Fri 22:07 | Mon–Sat 06:07 | Pre-Taiwan-open; also captures prior-night US close (US closes ~20:00–21:00 UTC) |
+| `7 10 * * 5` | Fri 10:07 | Fri 18:07 | Friday Taiwan post-close (institutional data) |
 
-**Key fact**: US markets close ~20:00 UTC (EDT) or ~21:00 UTC (EST). The `0 22 * * 0-5` run fires 1–2 hours after US close Mon–Fri, and also fires Saturday 06:00 TST to capture Friday's final US prices for weekend viewers.
+**Key fact**: US markets close ~20:00 UTC (EDT) or ~21:00 UTC (EST). The `7 22 * * 0-5` run fires 1–2 hours after US close Mon–Fri, and also fires Saturday 06:07 TST to capture Friday's final US prices for weekend viewers.
+
+**Why `:07`/`:37` and not `:00`/`:30`**: GitHub's own docs warn that the scheduler is most congested — and most likely to delay or silently drop a run — exactly on the hour/half-hour. Confirmed empirically here: from 2026-07-01 (when the every-30-min cron went live) through 2026-07-03, only 4 of ~36 expected `*/30 1-9 * * 1-5` runs actually fired, two of them over an hour late. Offsetting a few minutes past the boundary is GitHub's recommended mitigation. If misses continue after this change, the next step is an external pinger (e.g. cron-job.org hitting the GitHub API to trigger `workflow_dispatch`) instead of relying on GitHub's internal `schedule` event.
 
 ---
 

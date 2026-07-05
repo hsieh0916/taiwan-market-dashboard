@@ -3,13 +3,16 @@ name: Fetch Market Data
 on:
   schedule:
     # Every 30 min on weekdays during Taiwan market hours (01:00-09:30 UTC = 09:00-17:30 TST)
-    - cron: '*/30 1-9 * * 1-5'
+    # Offset 7 min past :00/:30 — GitHub Actions scheduler is most congested (and most likely
+    # to delay/drop runs) exactly on the hour/half-hour; see
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
+    - cron: '7,37 1-9 * * 1-5'
     # Pre-market update (22:00 UTC Sun–Fri = 06:00 TST Mon–Sat)
     # Mon-Fri: captures prior night's US close (20:00-21:00 UTC) before Taiwan open
     # Sat: captures Friday US close for weekend viewers
-    - cron: '0 22 * * 0-5'
+    - cron: '7 22 * * 0-5'
     # Friday Taiwan post-market (10:00 UTC Fri = 18:00 TST) — institutional data etc.
-    - cron: '0 10 * * 5'
+    - cron: '7 10 * * 5'
   workflow_dispatch:  # Allow manual trigger
 
 permissions:
