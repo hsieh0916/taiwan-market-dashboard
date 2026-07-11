@@ -438,13 +438,34 @@ def fetch_tpex_index():
     return entry, full_history, history_60d
 
 
+CBOE_TERM_STRUCTURE = {"vix9d": "VIX9D", "vix3m": "VIX3M", "vix6m": "VIX6M"}
+
+
+def _fetch_cboe_index_history(cboe_symbol):
+    """
+    Fetch daily close history for a CBOE index directly from CBOE's public CSV feed.
+    Used for VIX9D/VIX3M/VIX6M instead of yfinance: Yahoo Finance's data for these
+    less-mainstream term-structure tickers has been observed to stall for a week or
+    more (last seen stuck at 2026-07-02) while ^VIX itself stays current, whereas
+    CBOE's own feed is same-day fresh.
+    """
+    url = f"https://cdn.cboe.com/api/global/us_indices/daily_prices/{cboe_symbol}_History.csv"
+    resp = _session.get(url, timeout=15)
+    resp.raise_for_status()
+    dates, closes = [], []
+    for line in resp.text.strip().splitlines()[1:]:  # skip header row
+        parts = line.split(",")
+        if len(parts) < 5:
+            continue
+        dates.append(datetime.strptime(parts[0], "%m/%d/%Y").date())
+        closes.append(round(float(parts[4]), 2))
+    return dates, closes
+
+
 def fetch_vix_data():
     """Fetch VIX, VIXTWN, Taiwan indices and US major index data."""
     tickers = {
         "vix":    "^VIX",
-        "vix9d":  "^VIX9D",
-        "vix3m":  "^VIX3M",
-        "vix6m":  "^VIX6M",
         "twii":   "^TWII",
         "sp500":  "^GSPC",
         "nasdaq": "^IXIC",
@@ -456,6 +477,32 @@ def fetch_vix_data():
 
     result = {}
     history = {}
+
+    for key, cboe_symbol in CBOE_TERM_STRUCTURE.items():
+        try:
+            dates, closes = _fetch_cboe_index_history(cboe_symbol)
+            if not dates:
+                raise ValueError("empty CBOE history")
+            cur  = closes[-1]
+            prev = closes[-2] if len(closes) > 1 else None
+            recent = closes[-252:]  # ~52 trading weeks
+            result[key] = {
+                "symbol":     f"^{cboe_symbol}",
+                "current":    cur,
+                "prev":       prev,
+                "change":     round(cur - prev, 2) if prev else 0,
+                "change_pct": round((cur - prev) / prev * 100, 2) if prev else 0,
+                "high_52w":   round(max(recent), 2),
+                "low_52w":    round(min(recent), 2),
+                "data_date":  str(dates[-1]),
+            }
+            history[key] = {
+                "dates":  [str(d) for d in dates[-60:]],
+                "closes": closes[-60:],
+            }
+        except Exception as e:
+            result[key] = {"symbol": f"^{cboe_symbol}", "current": None, "error": str(e)}
+            print(f"Warning: failed to fetch CBOE {cboe_symbol}: {e}", file=sys.stderr)
 
     for key, symbol in tickers.items():
         period = "300d" if key in MA_STAT_KEYS else "60d"

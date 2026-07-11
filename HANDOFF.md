@@ -65,7 +65,7 @@ index.html + js/app.js + css/style.css
 
 | Function | Source | Data |
 |---|---|---|
-| `fetch_vix_data()` | yfinance | VIX, VIX9D, VIX3M, VIX6M, S&P500, NASDAQ, DJI, SOX, Nikkei, KOSPI, TWII. Adds `data_date` field (last yfinance date) to each entry. |
+| `fetch_vix_data()` | yfinance (VIX, S&P500, NASDAQ, DJI, SOX, Nikkei, KOSPI, TWII) + **CBOE CSV** (VIX9D, VIX3M, VIX6M) | Adds `data_date` field (last available date) to each entry. VIX9D/VIX3M/VIX6M switched from yfinance to `https://cdn.cboe.com/api/global/us_indices/daily_prices/{SYMBOL}_History.csv` on 2026-07-11 — Yahoo Finance's feed for these three stalled at 2026-07-02 for over a week while `^VIX` itself stayed current; CBOE's own feed is same-day fresh. |
 | `fetch_tpex_index()` | TPEx HTML scrape | TPEX index with history accumulation |
 | `fetch_vixtwn_from_taifex()` | TAIFEX WebSocket + REST | Taiwan VIX (real-time during market hours) |
 | `fetch_cnn_fear_greed()` | CNN API | Fear & Greed index |
