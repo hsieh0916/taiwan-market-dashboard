@@ -735,7 +735,12 @@ def fetch_twse_institutional():
 
     except Exception as e:
         print(f"Warning: failed to fetch TWSE institutional: {e}", file=sys.stderr)
-        return {"error": str(e), "foreign": None, "investment_trust": None, "dealer": None, "total_net": None}
+        # Preserve accumulated history even when today's fetch fails (e.g. TWSE WAF
+        # blocked the request) — otherwise the next successful run reads an empty
+        # history from this run's output and the whole accumulated series is lost.
+        history = fetch_twse_institutional_history(today_entry=None)
+        return {"error": str(e), "foreign": None, "investment_trust": None, "dealer": None,
+                "total_net": None, "history": history}
 
 
 def fetch_twse_institutional_history(today_entry=None):

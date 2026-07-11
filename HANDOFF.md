@@ -173,11 +173,11 @@ gh workflow run deploy_pages.yml --ref main
 
 ---
 
-## Known state / known gaps (as of 2026-07-05)
+## Known state / known gaps (as of 2026-07-11)
 
 | Item | Status |
 |---|---|
-| `institutional.history` | 24 days as of 2026-07-05 (2026-06-01 → 2026-07-03): 23 backfilled estimates + 1 real day. Backfilled via `scripts/backfill_institutional_history.py` (T86 shares × MI_INDEX closing price — validated against the real 7/3 BFI82U figure: foreign/trust within ~0.2%, total within ~1.2%). Rolling window is now 60 days (`fetch_data.py` caps at `[-60:]`); grows 1 real entry per trading day going forward. Backfill run got blocked by TWSE's WAF (HiNetCDN "operation too frequent") after ~60 requests going further back than 2026-06-01 — rerun the script later (it skips dates already present) to fill in more history if needed. |
+| `institutional.history` | 28 days as of 2026-07-11 (2026-06-01 → 2026-07-09, missing 07-10: TWSE returned no T86 data for that date, not a WAF block). Rolling window is 60 days (`fetch_data.py` caps at `[-60:]`); grows 1 real entry per trading day going forward. **2026-07-10 incident**: a single BFI82U fetch got blocked by TWSE's WAF mid-run; `fetch_twse_institutional()`'s except branch returned an error dict with no `history` key, so the *next* successful run read "no saved history" and reset the whole 28-day series down to 1 entry. Fixed — the except branch now still calls `fetch_twse_institutional_history(today_entry=None)` to carry the existing history forward on a failed fetch. The lost 28 days were recovered from git history (commit `6c6cd41`), not re-scraped. |
 | `scan` (weekend) | Returns Friday's data with `is_cached: true`. Works as designed. |
 | `vix.sp500.data_date` | Shows `2026-07-02` — correct, US markets closed Jul 3–4 (Independence Day + observed). |
 | Frontend "資料截至 MM/DD" badge | Shows in US indices section header when `data_date ≠ today (TST)`. |
