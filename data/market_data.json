@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-07-14T14:25:03.354506+08:00",
-  "last_updated_utc": "2026-07-14T06:25:03.354519+00:00",
+  "last_updated": "2026-07-14T15:30:46.013154+08:00",
+  "last_updated_utc": "2026-07-14T07:30:46.013166+00:00",
   "vix": {
     "vix9d": {
       "symbol": "^VIX9D",
@@ -34,13 +34,13 @@
     },
     "vix": {
       "symbol": "^VIX",
-      "current": 17.16,
-      "prev": 15.03,
-      "change": 2.13,
-      "change_pct": 14.17,
+      "current": 17.21,
+      "prev": 17.16,
+      "change": 0.05,
+      "change_pct": 0.29,
       "high_52w": 22.22,
       "low_52w": 15.03,
-      "data_date": "2026-07-13"
+      "data_date": "2026-07-14"
     },
     "twii": {
       "symbol": "^TWII",
@@ -143,42 +143,42 @@
     },
     "nikkei": {
       "symbol": "^N225",
-      "current": 67688.78,
+      "current": 67743.5,
       "prev": 67242.73,
-      "change": 446.05,
-      "change_pct": 0.66,
+      "change": 500.77,
+      "change_pct": 0.74,
       "high_52w": 72366.34,
       "low_52w": 34220.6,
       "data_date": "2026-07-14",
-      "ma20": 69488.99,
-      "ma20_diff_pct": -2.59,
-      "ma60": 65212.77,
-      "ma60_diff_pct": 3.8,
-      "ma240": 53540.89,
-      "ma240_diff_pct": 26.42,
+      "ma20": 69491.72,
+      "ma20_diff_pct": -2.52,
+      "ma60": 65213.68,
+      "ma60_diff_pct": 3.88,
+      "ma240": 53541.12,
+      "ma240_diff_pct": 26.53,
       "high_recent": 72366.34,
-      "high_recent_diff_pct": -6.46
+      "high_recent_diff_pct": -6.39
     },
     "kospi": {
       "symbol": "^KS11",
-      "current": 6835.74,
+      "current": 6856.83,
       "prev": 6806.93,
-      "change": 28.81,
-      "change_pct": 0.42,
+      "change": 49.9,
+      "change_pct": 0.73,
       "high_52w": 9114.55,
       "low_52w": 2486.64,
       "data_date": "2026-07-14",
-      "ma20": 8119.37,
-      "ma20_diff_pct": -15.81,
-      "ma60": 7714.69,
-      "ma60_diff_pct": -11.39,
-      "ma240": 5158.4,
-      "ma240_diff_pct": 32.52,
+      "ma20": 8120.42,
+      "ma20_diff_pct": -15.56,
+      "ma60": 7715.04,
+      "ma60_diff_pct": -11.12,
+      "ma240": 5158.49,
+      "ma240_diff_pct": 32.92,
       "high_recent": 9114.55,
-      "high_recent_diff_pct": -25.0,
-      "volume_today": 441489.0,
+      "high_recent_diff_pct": -24.77,
+      "volume_today": 469856.0,
       "volume_max_recent": 1139500.0,
-      "volume_ratio": 38.7
+      "volume_ratio": 41.2
     },
     "tpex": {
       "symbol": "TPEX",
@@ -590,7 +590,6 @@
     },
     "vix": {
       "dates": [
-        "2026-04-21",
         "2026-04-22",
         "2026-04-23",
         "2026-04-24",
@@ -647,10 +646,10 @@
         "2026-07-08",
         "2026-07-09",
         "2026-07-10",
-        "2026-07-13"
+        "2026-07-13",
+        "2026-07-14"
       ],
       "closes": [
-        19.5,
         18.92,
         19.31,
         18.71,
@@ -707,7 +706,8 @@
         16.9,
         15.84,
         15.03,
-        17.16
+        17.16,
+        17.21
       ]
     },
     "twii": {
@@ -1463,7 +1463,7 @@
         67743.85,
         68557.73,
         67242.73,
-        67688.78
+        67743.5
       ]
     },
     "kospi": {
@@ -1589,7 +1589,7 @@
         7291.91,
         7475.94,
         6806.93,
-        6835.74
+        6856.83
       ]
     },
     "tpex": {
@@ -2220,7 +2220,7 @@
   "cnn_fear_greed": {
     "current": 43.7,
     "rating": "fear",
-    "data_timestamp": "2026-07-14T00:00:00Z",
+    "data_timestamp": "2026-07-14T07:15:01Z",
     "prev_close": 43.7,
     "prev_1week": 43.7,
     "prev_1month": 35.5,
@@ -2228,7 +2228,7 @@
     "history_dates": [
       1783900800000.0,
       1783987200000.0,
-      1783987200000.0
+      1784013301000.0
     ],
     "history_values": [
       43.7,
@@ -2237,12 +2237,12 @@
     ]
   },
   "institutional": {
-    "date": "20260713",
-    "title": "115年07月13日 三大法人買賣金額統計表",
-    "foreign": -19559763888,
-    "investment_trust": 12578555606,
-    "dealer": -1964371489,
-    "total_net": -8945579771,
+    "date": "20260714",
+    "title": "115年07月14日 三大法人買賣金額統計表",
+    "foreign": -51892812507,
+    "investment_trust": 14824152263,
+    "dealer": -1306115077,
+    "total_net": -38374775321,
     "history": [
       {
         "date": "20260601",
@@ -2469,11 +2469,18 @@
         "investment_trust": 12578555606,
         "dealer": -1964371489,
         "total": -8945579771
+      },
+      {
+        "date": "20260714",
+        "foreign": -51892812507,
+        "investment_trust": 14824152263,
+        "dealer": -1306115077,
+        "total": -38374775321
       }
     ]
   },
   "signal": {
-    "score": 10.2,
+    "score": 2.8,
     "outlook": "中性觀望",
     "outlook_en": "NEUTRAL",
     "color": "#ffc107",
@@ -2487,14 +2494,14 @@
       },
       {
         "indicator": "US VIX",
-        "value": 17.16,
+        "value": 17.21,
         "signal": -15,
         "label": "美股VIX偏低(17.2：13-18)：輕度過熱",
         "weight": "15%"
       },
       {
         "indicator": "VIX期限結構",
-        "value": -2.03,
+        "value": -2.08,
         "signal": -15,
         "label": "VIX期限結構正常順向(VIX9D 15.1 < VIX 17.2 < 3M 19.6)：市場自滿",
         "weight": "15%"
@@ -2508,9 +2515,9 @@
       },
       {
         "indicator": "三大法人",
-        "value": -89.5,
-        "signal": -40,
-        "label": "三大法人合計淨賣(-89.5億)：法人偏空",
+        "value": -383.7,
+        "signal": -70,
+        "label": "三大法人大量賣出(-383.7億)：空方強勢",
         "weight": "25%"
       }
     ],
@@ -2519,10 +2526,10 @@
       "vix": -2.25,
       "term_structure": -2.25,
       "cnn": 3.75,
-      "institutional": -10.0
+      "institutional": -17.5
     }
   },
-  "analysis": "【市場總覽】\n台股加權指數目前報 44,738 點。\n\n【波動率分析】\n台灣VIX（VIXTWN）目前為 36.61，處於極度恐慌水準。\n美股VIX目前為 17.16，市場情緒正常。\nVIX期限結構正常順向（VIX9D=15.13 < VIX=17.16 < VIX3M=19.64），市場處於相對平靜狀態。\n\n【市場情緒分析】\nCNN恐懼貪婪指數目前為 44（恐懼）。\n市場偏向悲觀，但未達極端，可逐步加碼。\n\n【三大法人動向】\n今日三大法人合計賣超 89.5 億元。\n  • 外資：賣超 195.6 億元（市場主力，對台股方向影響最大）\n  • 投信：買超 125.8 億元（國內基金動向，反映內資信心）\n  • 自營商：賣超 19.6 億元（短線交易為主，可作輔助參考）\n\n【綜合研判】\n綜合波動率指標、市場情緒及法人動向，本系統計算綜合信號分數為 +10.2 分（滿分 ±100），\n目前市場判斷為「中性觀望」。\n市場訊號混合，建議維持現有倉位，耐心等待更明確的方向突破。可關注成交量及外資動向變化。\n\n⚠️ 本分析僅供參考，不構成投資建議。投資有風險，入市需謹慎。",
+  "analysis": "【市場總覽】\n台股加權指數目前報 44,738 點。\n\n【波動率分析】\n台灣VIX（VIXTWN）目前為 36.61，處於極度恐慌水準。\n美股VIX目前為 17.21，市場情緒正常。\nVIX期限結構正常順向（VIX9D=15.13 < VIX=17.21 < VIX3M=19.64），市場處於相對平靜狀態。\n\n【市場情緒分析】\nCNN恐懼貪婪指數目前為 44（恐懼）。\n市場偏向悲觀，但未達極端，可逐步加碼。\n\n【三大法人動向】\n今日三大法人合計賣超 383.7 億元。\n  • 外資：賣超 518.9 億元（市場主力，對台股方向影響最大）\n  • 投信：買超 148.2 億元（國內基金動向，反映內資信心）\n  • 自營商：賣超 13.1 億元（短線交易為主，可作輔助參考）\n\n【綜合研判】\n綜合波動率指標、市場情緒及法人動向，本系統計算綜合信號分數為 +2.8 分（滿分 ±100），\n目前市場判斷為「中性觀望」。\n市場訊號混合，建議維持現有倉位，耐心等待更明確的方向突破。可關注成交量及外資動向變化。\n\n⚠️ 本分析僅供參考，不構成投資建議。投資有風險，入市需謹慎。",
   "drai": {
     "as_of": "07/14/2026",
     "holdings": [
@@ -2969,14 +2976,14 @@
     ]
   },
   "scan": {
-    "as_of": "2026/07/14 14:25",
+    "as_of": "2026/07/14 15:30",
     "candidates": [
       {
         "code": "4958",
         "name": "臻鼎-KY",
         "close": 629.0,
         "change_pct": -2.63,
-        "vol_b": 347.8,
+        "vol_b": 355.4,
         "tech_score": 46,
         "chip_score": 30,
         "val_score": 0,
@@ -2998,7 +3005,7 @@
         "name": "台化",
         "close": 67.0,
         "change_pct": 3.08,
-        "vol_b": 61.8,
+        "vol_b": 62.0,
         "tech_score": 50,
         "chip_score": 26,
         "val_score": 0,
@@ -3021,7 +3028,7 @@
         "name": "玉山金",
         "close": 34.5,
         "change_pct": -0.29,
-        "vol_b": 22.9,
+        "vol_b": 23.0,
         "tech_score": 35,
         "chip_score": 30,
         "val_score": 10,
@@ -3043,7 +3050,7 @@
         "name": "祥碩",
         "close": 1525.0,
         "change_pct": 0.99,
-        "vol_b": 15.6,
+        "vol_b": 16.9,
         "tech_score": 42,
         "chip_score": 26,
         "val_score": 5,
@@ -3086,7 +3093,7 @@
         "name": "大量",
         "close": 870.0,
         "change_pct": 5.33,
-        "vol_b": 49.8,
+        "vol_b": 51.3,
         "tech_score": 46,
         "chip_score": 26,
         "val_score": 0,
@@ -3108,7 +3115,7 @@
         "name": "廣達",
         "close": 380.0,
         "change_pct": 0.53,
-        "vol_b": 82.5,
+        "vol_b": 84.2,
         "tech_score": 35,
         "chip_score": 26,
         "val_score": 10,
@@ -3130,7 +3137,7 @@
         "name": "台塑化",
         "close": 66.2,
         "change_pct": 4.91,
-        "vol_b": 32.6,
+        "vol_b": 32.9,
         "tech_score": 40,
         "chip_score": 30,
         "val_score": 0,
@@ -3152,7 +3159,7 @@
         "name": "微星",
         "close": 147.0,
         "change_pct": -1.67,
-        "vol_b": 20.5,
+        "vol_b": 20.9,
         "tech_score": 38,
         "chip_score": 26,
         "val_score": 5,
@@ -3173,7 +3180,7 @@
         "name": "聯詠",
         "close": 468.0,
         "change_pct": 0.11,
-        "vol_b": 53.3,
+        "vol_b": 53.9,
         "tech_score": 28,
         "chip_score": 30,
         "val_score": 10,
@@ -3195,7 +3202,7 @@
         "name": "景碩",
         "close": 805.0,
         "change_pct": -1.71,
-        "vol_b": 27.4,
+        "vol_b": 28.7,
         "tech_score": 42,
         "chip_score": 26,
         "val_score": 0,
@@ -3217,7 +3224,7 @@
         "name": "崇越",
         "close": 550.0,
         "change_pct": -1.61,
-        "vol_b": 15.0,
+        "vol_b": 15.4,
         "tech_score": 50,
         "chip_score": 12,
         "val_score": 5,
@@ -3238,7 +3245,7 @@
         "name": "中信金",
         "close": 65.0,
         "change_pct": -2.26,
-        "vol_b": 51.0,
+        "vol_b": 51.6,
         "tech_score": 35,
         "chip_score": 26,
         "val_score": 5,
@@ -3260,7 +3267,7 @@
         "name": "台塑",
         "close": 63.6,
         "change_pct": 5.65,
-        "vol_b": 86.2,
+        "vol_b": 86.7,
         "tech_score": 50,
         "chip_score": 12,
         "val_score": 0,
@@ -3281,7 +3288,7 @@
         "name": "事欣科",
         "close": 110.0,
         "change_pct": -6.78,
-        "vol_b": 17.6,
+        "vol_b": 17.8,
         "tech_score": 50,
         "chip_score": 12,
         "val_score": 0,
@@ -3302,7 +3309,7 @@
         "name": "友訊",
         "close": 24.05,
         "change_pct": -7.32,
-        "vol_b": 14.8,
+        "vol_b": 14.9,
         "tech_score": 50,
         "chip_score": 12,
         "val_score": 0,
@@ -3323,7 +3330,7 @@
         "name": "統一",
         "close": 78.5,
         "change_pct": 0.0,
-        "vol_b": 14.0,
+        "vol_b": 14.1,
         "tech_score": 25,
         "chip_score": 30,
         "val_score": 5,
@@ -3343,7 +3350,7 @@
         "name": "揚博",
         "close": 241.0,
         "change_pct": -6.41,
-        "vol_b": 16.6,
+        "vol_b": 16.8,
         "tech_score": 31,
         "chip_score": 26,
         "val_score": 0,
@@ -3385,7 +3392,7 @@
         "name": "南亞科",
         "close": 448.0,
         "change_pct": 5.91,
-        "vol_b": 523.9,
+        "vol_b": 533.6,
         "tech_score": 42,
         "chip_score": 12,
         "val_score": 0,
