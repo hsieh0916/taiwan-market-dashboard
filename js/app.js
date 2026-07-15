@@ -195,8 +195,11 @@ function renderUsIndices(vix) {
     const badge = el(`${id}-badge`);
     if (badge && t.change_pct != null) {
       const up = t.change_pct > 0;
-      badge.textContent = (up ? '▲ ' : '▼ ') + Math.abs(t.change_pct).toFixed(2) + '%';
+      badge.textContent = (up ? '▲ ' : '▼ ') + Math.abs(t.change_pct).toFixed(2) + '%' + (t.gap_warning ? ' ⚠' : '');
       badge.className = `card-badge ${up ? 'badge--bull' : 'badge--bear'}`;
+      badge.title = t.gap_warning
+        ? `資料來源缺漏交易日（${t.prev_date} → ${t.data_date}），漲跌幅跨多個交易日，非單日變動`
+        : '';
     }
     renderMaRow(id, t);
   });
@@ -275,8 +278,13 @@ function updatePriceCard(id, ticker, prefix, suffix) {
   if (ticker.change != null) {
     const sign = ticker.change >= 0 ? '+' : '';
     const cls = ticker.change > 0 ? 'change-up' : ticker.change < 0 ? 'change-down' : 'change-flat';
-    el(`${id}-change`).textContent = `${sign}${ticker.change.toFixed(2)} (${sign}${ticker.change_pct?.toFixed(2)}%)`;
-    el(`${id}-change`).className = `card-change ${cls}`;
+    const changeEl = el(`${id}-change`);
+    changeEl.textContent = `${sign}${ticker.change.toFixed(2)} (${sign}${ticker.change_pct?.toFixed(2)}%)`
+      + (ticker.gap_warning ? ' ⚠' : '');
+    changeEl.className = `card-change ${cls}`;
+    changeEl.title = ticker.gap_warning
+      ? `資料來源缺漏交易日（${ticker.prev_date} → ${ticker.data_date}），漲跌幅跨多個交易日，非單日變動`
+      : '';
   }
 }
 

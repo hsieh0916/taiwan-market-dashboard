@@ -441,6 +441,24 @@ def fetch_tpex_index():
 CBOE_TERM_STRUCTURE = {"vix9d": "VIX9D", "vix3m": "VIX3M", "vix6m": "VIX6M"}
 
 
+def _is_normal_trading_gap(date_prev, date_last):
+    """
+    True if the calendar gap between two consecutive closes matches an ordinary
+    trading pattern: 1 day for same-week weekdays, 3 days for a Fri->Mon weekend.
+    A gap outside this pattern usually means the upstream feed silently skipped a
+    real trading day (observed repeatedly with yfinance's ^KS11/^N225/^TWII) rather
+    than that day being a genuine market holiday — can't fully tell the two apart
+    from price data alone, but this at least surfaces the anomaly instead of
+    silently mislabeling a multi-day move as a single day's change.
+    """
+    gap = (date_last - date_prev).days
+    if gap == 1:
+        return True
+    if gap == 3 and date_prev.weekday() == 4 and date_last.weekday() == 0:
+        return True
+    return False
+
+
 def _fetch_cboe_index_history(cboe_symbol):
     """
     Fetch daily close history for a CBOE index directly from CBOE's public CSV feed.
@@ -460,6 +478,64 @@ def _fetch_cboe_index_history(cboe_symbol):
         dates.append(datetime.strptime(parts[0], "%m/%d/%Y").date())
         closes.append(round(float(parts[4]), 2))
     return dates, closes
+
+
+def _fetch_twse_taiex_close(date_str):
+    """
+    Fetch TWSE's own authoritative TAIEX (發行量加權股價指數) close for a specific
+    trading date via MI_INDEX. date_str: 'YYYYMMDD'. Returns float or None.
+    """
+    try:
+        resp = _session.get(
+            "https://www.twse.com.tw/rwd/zh/afterTrading/MI_INDEX",
+            params={"response": "json", "date": date_str, "type": "ALLBUT0999"},
+            timeout=15,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        for t in data.get("tables", []):
+            title = t.get("title") or ""
+            if "價格指數" in title and "臺灣證券交易所" in title:
+                fields = t.get("fields", [])
+                idx_col = fields.index("指數")
+                close_col = fields.index("收盤指數")
+                for row in t.get("data", []):
+                    if "發行量加權股價指數" in str(row[idx_col]):
+                        return round(float(str(row[close_col]).replace(",", "")), 2)
+    except Exception as e:
+        print(f"Warning: TWSE MI_INDEX TAIEX fetch failed for {date_str}: {e}", file=sys.stderr)
+    return None
+
+
+def _patch_twii_gap(hist):
+    """
+    yfinance's ^TWII series has been observed to silently skip a real TWSE
+    trading day (e.g. missing 2026-07-14 entirely, hiding a genuine -1.42% move
+    behind a stale comparison). If the last two bars have an abnormal gap and
+    the single day immediately before the last bar looks like a plausible
+    missing weekday, patch it in using TWSE's own MI_INDEX close so "current
+    vs prev" reflects the real adjacent trading day instead of an older one.
+    """
+    if len(hist) < 2:
+        return hist
+    last_date = hist.index[-1].date()
+    prev_date = hist.index[-2].date()
+    if _is_normal_trading_gap(prev_date, last_date):
+        return hist
+    missing_date = last_date - timedelta(days=1)
+    if missing_date <= prev_date or missing_date.weekday() >= 5:
+        return hist  # nothing sensible to patch (weekend, or gap is bigger than 1 day)
+    close = _fetch_twse_taiex_close(missing_date.strftime("%Y%m%d"))
+    if close is None:
+        return hist
+
+    import pandas as pd
+    new_row = pd.DataFrame(
+        {c: (close if c == "Close" else (0 if c == "Volume" else close)) for c in hist.columns},
+        index=[pd.Timestamp(missing_date, tz=hist.index.tz)],
+    )
+    print(f"Patched TWII gap: inserted TWSE close {close} for {missing_date}", file=sys.stderr)
+    return pd.concat([hist.iloc[:-1], new_row, hist.iloc[-1:]]).sort_index()
 
 
 def fetch_vix_data():
@@ -496,6 +572,12 @@ def fetch_vix_data():
                 "low_52w":    round(min(recent), 2),
                 "data_date":  str(dates[-1]),
             }
+            if len(dates) > 1 and not _is_normal_trading_gap(dates[-2], dates[-1]):
+                result[key]["prev_date"] = str(dates[-2])
+                result[key]["gap_warning"] = (
+                    f"change spans {(dates[-1]-dates[-2]).days} calendar days "
+                    f"({dates[-2]} -> {dates[-1]}), not a single trading day"
+                )
             history[key] = {
                 "dates":  [str(d) for d in dates[-60:]],
                 "closes": closes[-60:],
@@ -509,6 +591,9 @@ def fetch_vix_data():
         try:
             ticker = yf.Ticker(symbol, session=_session)
             hist = ticker.history(period=period, interval="1d")
+
+            if key == "twii" and len(hist) > 1:
+                hist = _patch_twii_gap(hist)
 
             if not hist.empty:
                 cur  = round(float(hist["Close"].iloc[-1]), 2)
@@ -524,6 +609,15 @@ def fetch_vix_data():
                     "low_52w":    round(float(hist["Close"].min()), 2),
                     "data_date":  last_date,
                 }
+                if len(hist) > 1:
+                    prev_date_d = hist.index[-2].date()
+                    last_date_d = hist.index[-1].date()
+                    if not _is_normal_trading_gap(prev_date_d, last_date_d):
+                        entry["prev_date"] = str(prev_date_d)
+                        entry["gap_warning"] = (
+                            f"change spans {(last_date_d-prev_date_d).days} calendar days "
+                            f"({prev_date_d} -> {last_date_d}), not a single trading day"
+                        )
                 if key in MA_STAT_KEYS:
                     entry.update(_compute_ma_stats(hist["Close"], cur))
                 # Volume ratio: today vs 60-day max
