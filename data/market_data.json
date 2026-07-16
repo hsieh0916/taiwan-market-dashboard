@@ -174,23 +174,23 @@
     },
     "kospi": {
       "symbol": "^KS11",
-      "current": NaN,
+      "current": null,
       "prev": 6806.93,
-      "change": NaN,
-      "change_pct": NaN,
+      "change": null,
+      "change_pct": null,
       "high_52w": 9114.55,
       "low_52w": 2486.64,
       "data_date": "2026-07-15",
       "prev_date": "2026-07-13",
       "gap_warning": "change spans 2 calendar days (2026-07-13 -> 2026-07-15), not a single trading day",
-      "ma20": NaN,
-      "ma20_diff_pct": NaN,
-      "ma60": NaN,
-      "ma60_diff_pct": NaN,
-      "ma240": NaN,
-      "ma240_diff_pct": NaN,
-      "high_recent": NaN,
-      "high_recent_diff_pct": NaN,
+      "ma20": null,
+      "ma20_diff_pct": null,
+      "ma60": null,
+      "ma60_diff_pct": null,
+      "ma240": null,
+      "ma240_diff_pct": null,
+      "high_recent": null,
+      "high_recent_diff_pct": null,
       "volume_today": 397854.0,
       "volume_max_recent": 1139500.0,
       "volume_ratio": 34.9
@@ -1602,7 +1602,7 @@
         7291.91,
         7475.94,
         6806.93,
-        NaN
+        null
       ]
     },
     "tpex": {
