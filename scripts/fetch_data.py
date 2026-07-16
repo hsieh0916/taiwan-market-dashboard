@@ -6,6 +6,7 @@ Outputs to data/market_data.json for the static GitHub Pages site.
 """
 
 import json
+import math
 import os
 import sys
 from datetime import datetime, timezone, timedelta
@@ -591,6 +592,13 @@ def fetch_vix_data():
         try:
             ticker = yf.Ticker(symbol, session=_session)
             hist = ticker.history(period=period, interval="1d")
+
+            # Drop rows with no Close (e.g. an in-progress/placeholder bar for
+            # today with no tick yet) rather than let a NaN flow into "current"
+            # and downstream MA stats — a bare NaN in the JSON output breaks
+            # the whole site's fetch(), not just this one ticker.
+            if not hist.empty:
+                hist = hist[hist["Close"].notna()]
 
             if key == "twii" and len(hist) > 1:
                 hist = _patch_twii_gap(hist)
@@ -1837,6 +1845,27 @@ def scan_stock_opportunities(twse_raw):
     return {"as_of": as_of, "candidates": [], "is_cached": False}
 
 
+def _sanitize_nans(obj):
+    """
+    Recursively replace float NaN/Infinity with None. json.dump()'s default
+    allow_nan=True happily writes a bare `NaN` token for these — valid to
+    Python's own json.load(), but rejected outright by browsers' JSON.parse(),
+    which breaks the entire site's data fetch, not just the offending field.
+    (Confirmed cause of a full site outage on 2026-07-15: yfinance returned a
+    NaN close for ^KS11, and it flowed straight through to the deployed JSON.)
+    This is the last line of defense — main() combines it with allow_nan=False
+    on the actual write so any NaN this misses fails loudly in the Action log
+    instead of silently deploying broken JSON again.
+    """
+    if isinstance(obj, dict):
+        return {k: _sanitize_nans(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_sanitize_nans(v) for v in obj]
+    if isinstance(obj, float) and not math.isfinite(obj):
+        return None
+    return obj
+
+
 def main():
     print("Fetching VIX data...", file=sys.stderr)
     vix_data, vix_history = fetch_vix_data()
@@ -1878,9 +1907,11 @@ def main():
         "scan": scan_data,
     }
 
+    output = _sanitize_nans(output)
+
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
+        json.dump(output, f, ensure_ascii=False, indent=2, allow_nan=False)
 
     print(f"Done. Signal: {signal['score']:+.1f} ({signal['outlook']})", file=sys.stderr)
     print(json.dumps({"signal": signal["score"], "outlook": signal["outlook"]}))
