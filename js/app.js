@@ -6,6 +6,10 @@ const DATA_URL_ABS = 'https://hsieh0916.github.io/taiwan-market-dashboard/data/m
 let institutionalChart = null;
 let vixtwChart = null;
 let vixUsChart = null;
+let vixUsHistoryData = null;
+
+const VIX_TERM_COLORS = { vix9d: '#f44336', vix: '#ff9800', vix3m: '#2196F3', vix6m: '#9c27b0' };
+const VIX_TERM_LABELS = { vix9d: 'VIX9D', vix: 'VIX', vix3m: 'VIX3M', vix6m: 'VIX6M' };
 
 // ─── Chart.js global defaults ───────────────────────────────────────────────
 Chart.defaults.color = '#8fa3bf';
@@ -635,8 +639,63 @@ function renderVixCharts(history) {
   renderLineChart('vixtwChart', vixtwChart, history.vixtwn, '台灣VIX', '#00b0ff', [15, 20, 25]);
   vixtwChart = lastChart;
 
-  renderLineChart('vixUsChart', vixUsChart, history.vix, '美股VIX', '#ff9800', [15, 20, 30]);
-  vixUsChart = lastChart;
+  vixUsHistoryData = {
+    vix9d: history.vix9d,
+    vix:   history.vix,
+    vix3m: history.vix3m,
+    vix6m: history.vix6m,
+  };
+  renderVixTermChart();
+}
+
+// ─── VIX Term Structure Multi-Line Chart (checkbox-toggled) ──────────────────
+function renderVixTermChart() {
+  if (!vixUsHistoryData) return;
+  const toggle = el('vixTermToggle');
+  const checked = toggle
+    ? Array.from(toggle.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value)
+    : Object.keys(VIX_TERM_COLORS);
+
+  let labels = null;
+  const datasets = [];
+  checked.forEach(key => {
+    const series = vixUsHistoryData[key];
+    if (!series || !series.dates || series.dates.length === 0) return;
+    if (!labels) labels = series.dates.map(d => d.slice(5));
+    datasets.push({
+      label: VIX_TERM_LABELS[key] || key,
+      data: series.closes,
+      borderColor: VIX_TERM_COLORS[key] || '#8fa3bf',
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      fill: false,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      tension: 0.3,
+    });
+  });
+
+  if (vixUsChart) { vixUsChart.destroy(); vixUsChart = null; }
+  if (!labels || datasets.length === 0) return;
+
+  const ctx = document.getElementById('vixUsChart').getContext('2d');
+  vixUsChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}` } },
+      },
+      scales: {
+        x: { grid: { color: '#1e2d45' }, ticks: { maxTicksLimit: 10 } },
+        y: { grid: { color: '#1e2d45' } },
+      },
+    },
+  });
 }
 
 let lastChart = null;
@@ -1035,6 +1094,12 @@ function showError(msg) {
 
 // Auto-refresh every 5 minutes
 setInterval(loadData, 5 * 60 * 1000);
+
+// VIX term-structure chart: re-render (no refetch) when a checkbox is toggled
+const vixTermToggleEl = el('vixTermToggle');
+if (vixTermToggleEl) {
+  vixTermToggleEl.addEventListener('change', () => renderVixTermChart());
+}
 
 // Initial load
 loadData();

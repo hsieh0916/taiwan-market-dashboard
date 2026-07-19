@@ -366,6 +366,10 @@ body {
 .chart-legend { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: var(--text-secondary); flex-wrap: wrap; }
 .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 2px; }
 
+.chart-legend-toggle { display: flex; align-items: center; gap: 14px; font-size: 0.78rem; color: var(--text-secondary); flex-wrap: wrap; margin-bottom: 14px; }
+.chart-legend-toggle label { display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
+.chart-legend-toggle input[type="checkbox"] { cursor: pointer; margin: 0; accent-color: var(--cyan); }
+
 /* -------- VIX Term Structure Bars -------- */
 .term-structure-bars {
   display: flex;
