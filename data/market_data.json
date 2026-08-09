@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-08-08T06:47:28.852926+08:00",
-  "last_updated_utc": "2026-08-07T22:47:28.852938+00:00",
+  "last_updated": "2026-08-10T06:40:18.995971+08:00",
+  "last_updated_utc": "2026-08-09T22:40:18.995979+00:00",
   "vix": {
     "vix9d": {
       "symbol": "^VIX9D",
@@ -44,24 +44,24 @@
     },
     "twii": {
       "symbol": "^TWII",
-      "current": 44396.7,
-      "prev": 44611.6,
-      "change": -214.9,
-      "change_pct": -0.48,
+      "current": 44225.91,
+      "prev": 44396.7,
+      "change": -170.79,
+      "change_pct": -0.38,
       "high_52w": 47741.51,
       "low_52w": 21002.71,
-      "data_date": "2026-08-06",
-      "ma20": 43675.0,
-      "ma20_diff_pct": 1.65,
-      "ma60": 44231.23,
-      "ma60_diff_pct": 0.37,
-      "ma240": 33631.7,
-      "ma240_diff_pct": 32.01,
+      "data_date": "2026-08-07",
+      "ma20": 43618.57,
+      "ma20_diff_pct": 1.39,
+      "ma60": 44278.76,
+      "ma60_diff_pct": -0.12,
+      "ma240": 33715.41,
+      "ma240_diff_pct": 31.17,
       "high_recent": 47741.51,
-      "high_recent_diff_pct": -7.01,
-      "volume_today": 4904700.0,
+      "high_recent_diff_pct": -7.36,
+      "volume_today": 4388800.0,
       "volume_max_recent": 12618300.0,
-      "volume_ratio": 38.9
+      "volume_ratio": 34.8
     },
     "sp500": {
       "symbol": "^GSPC",
@@ -80,9 +80,9 @@
       "ma240_diff_pct": 11.2,
       "high_recent": 7757.64,
       "high_recent_diff_pct": 0.0,
-      "volume_today": 2719843000.0,
+      "volume_today": 5019970000.0,
       "volume_max_recent": 9105600000.0,
-      "volume_ratio": 29.9
+      "volume_ratio": 55.1
     },
     "nasdaq": {
       "symbol": "^IXIC",
@@ -101,9 +101,9 @@
       "ma240_diff_pct": 12.18,
       "high_recent": 27093.9,
       "high_recent_diff_pct": -1.49,
-      "volume_today": 7207856000.0,
+      "volume_today": 8183970000.0,
       "volume_max_recent": 18286150000.0,
-      "volume_ratio": 39.4
+      "volume_ratio": 44.8
     },
     "dji": {
       "symbol": "^DJI",
@@ -122,7 +122,7 @@
       "ma240_diff_pct": 10.95,
       "high_recent": 54349.12,
       "high_recent_diff_pct": -0.57,
-      "volume_today": 378681628.0,
+      "volume_today": 378680000.0,
       "volume_max_recent": 1297680000.0,
       "volume_ratio": 29.2
     },
@@ -146,45 +146,45 @@
     },
     "nikkei": {
       "symbol": "^N225",
-      "current": 65683.26,
-      "prev": 66300.44,
-      "change": -617.18,
-      "change_pct": -0.93,
+      "current": 65606.71,
+      "prev": 65683.26,
+      "change": -76.55,
+      "change_pct": -0.12,
       "high_52w": 72366.34,
       "low_52w": 36985.87,
-      "data_date": "2026-08-06",
-      "ma20": 65452.67,
-      "ma20_diff_pct": 0.35,
-      "ma60": 66379.05,
-      "ma60_diff_pct": -1.05,
-      "ma240": 55133.99,
-      "ma240_diff_pct": 19.13,
+      "data_date": "2026-08-07",
+      "ma20": 65345.81,
+      "ma20_diff_pct": 0.4,
+      "ma60": 66428.26,
+      "ma60_diff_pct": -1.24,
+      "ma240": 55227.04,
+      "ma240_diff_pct": 18.79,
       "high_recent": 72366.34,
-      "high_recent_diff_pct": -9.24,
-      "volume_today": 191500000.0,
+      "high_recent_diff_pct": -9.34,
+      "volume_today": 205400000.0,
       "volume_max_recent": 295100000.0,
-      "volume_ratio": 64.9
+      "volume_ratio": 69.6
     },
     "kospi": {
       "symbol": "^KS11",
-      "current": 6296.38,
-      "prev": 6598.26,
-      "change": -301.88,
-      "change_pct": -4.58,
+      "current": 6258.77,
+      "prev": 6296.38,
+      "change": -37.61,
+      "change_pct": -0.6,
       "high_52w": 9114.55,
       "low_52w": 2592.09,
-      "data_date": "2026-08-06",
-      "ma20": 6626.44,
-      "ma20_diff_pct": -4.98,
-      "ma60": 7648.79,
-      "ma60_diff_pct": -17.68,
-      "ma240": 5378.9,
-      "ma240_diff_pct": 17.06,
+      "data_date": "2026-08-07",
+      "ma20": 6574.78,
+      "ma20_diff_pct": -4.81,
+      "ma60": 7625.71,
+      "ma60_diff_pct": -17.93,
+      "ma240": 5391.69,
+      "ma240_diff_pct": 16.08,
       "high_recent": 9114.55,
-      "high_recent_diff_pct": -30.92,
-      "volume_today": 284500.0,
-      "volume_max_recent": 1021100.0,
-      "volume_ratio": 27.9
+      "high_recent_diff_pct": -31.33,
+      "volume_today": 299400.0,
+      "volume_max_recent": 885600.0,
+      "volume_ratio": 33.8
     },
     "tpex": {
       "symbol": "TPEX",
@@ -204,15 +204,8 @@
     },
     "vixtwn": {
       "symbol": "VIXTWN",
-      "current": 35.46,
-      "prev": 36.07,
-      "change": -0.61,
-      "change_pct": -1.69,
-      "open": 36.31,
-      "high": 37.52,
-      "low": 35.45,
-      "high_52w": null,
-      "low_52w": null
+      "current": null,
+      "error": "TAIFEX unavailable"
     }
   },
   "vix_history": {
@@ -718,7 +711,6 @@
     },
     "twii": {
       "dates": [
-        "2026-05-13",
         "2026-05-14",
         "2026-05-15",
         "2026-05-18",
@@ -777,10 +769,10 @@
         "2026-08-03",
         "2026-08-04",
         "2026-08-05",
-        "2026-08-06"
+        "2026-08-06",
+        "2026-08-07"
       ],
       "closes": [
-        41374.5,
         41751.75,
         41172.36,
         40891.82,
@@ -839,7 +831,8 @@
         43386.41,
         43360.66,
         44611.6,
-        44396.7
+        44396.7,
+        44225.91
       ]
     },
     "sp500": {
@@ -1348,7 +1341,6 @@
     },
     "nikkei": {
       "dates": [
-        "2026-05-14",
         "2026-05-15",
         "2026-05-18",
         "2026-05-19",
@@ -1407,10 +1399,10 @@
         "2026-08-03",
         "2026-08-04",
         "2026-08-05",
-        "2026-08-06"
+        "2026-08-06",
+        "2026-08-07"
       ],
       "closes": [
-        62654.05,
         61409.29,
         60815.95,
         60550.59,
@@ -1469,12 +1461,12 @@
         63754.9,
         63957.53,
         66300.44,
-        65683.26
+        65683.26,
+        65606.71
       ]
     },
     "kospi": {
       "dates": [
-        "2026-05-12",
         "2026-05-13",
         "2026-05-14",
         "2026-05-15",
@@ -1533,10 +1525,10 @@
         "2026-08-03",
         "2026-08-04",
         "2026-08-05",
-        "2026-08-06"
+        "2026-08-06",
+        "2026-08-07"
       ],
       "closes": [
-        7643.15,
         7844.01,
         7981.41,
         7493.18,
@@ -1595,7 +1587,8 @@
         6257.45,
         6358.95,
         6598.26,
-        6296.38
+        6296.38,
+        6258.77
       ]
     },
     "tpex": {
@@ -2302,19 +2295,15 @@
   "cnn_fear_greed": {
     "current": 63.7,
     "rating": "greed",
-    "data_timestamp": "2026-08-07T22:31:18Z",
+    "data_timestamp": "2026-08-07T23:59:47Z",
     "prev_close": 59.7,
     "prev_1week": 45.2,
     "prev_1month": 39.8,
     "prev_1year": 54.7,
     "history_dates": [
-      1785974400000.0,
-      1786060800000.0,
-      1786141878000.0
+      1786147187000.0
     ],
     "history_values": [
-      58.9,
-      63.7,
       63.7
     ]
   },
@@ -2688,18 +2677,11 @@
     ]
   },
   "signal": {
-    "score": -4.8,
-    "outlook": "中性觀望",
-    "outlook_en": "NEUTRAL",
-    "color": "#ffc107",
+    "score": -25.8,
+    "outlook": "偏空",
+    "outlook_en": "SELL",
+    "color": "#ff7043",
     "details": [
-      {
-        "indicator": "VIXTWN",
-        "value": 35.46,
-        "signal": 70,
-        "label": "台灣VIX極度恐慌(35.5≥30)：逆向強買訊號",
-        "weight": "30%"
-      },
       {
         "indicator": "US VIX",
         "value": 14.9,
@@ -2730,48 +2712,47 @@
       }
     ],
     "component_scores": {
-      "vixtwn": 21.0,
       "vix": -2.25,
       "term_structure": -2.25,
       "cnn": -3.75,
       "institutional": -17.5
     }
   },
-  "analysis": "【市場總覽】\n台股加權指數目前報 44,397 點。\n\n【波動率分析】\n台灣VIX（VIXTWN）目前為 35.46，處於極度恐慌水準。\n美股VIX目前為 14.90，市場情緒正常。\nVIX期限結構正常順向（VIX9D=11.96 < VIX=14.90 < VIX3M=18.72），市場處於相對平靜狀態。\n\n【市場情緒分析】\nCNN恐懼貪婪指數目前為 64（貪婪）。\n市場偏向貪婪，需留意回調風險，可適度降低槓桿。\n\n【三大法人動向】\n今日三大法人合計賣超 412.0 億元。\n  • 外資：賣超 407.2 億元（市場主力，對台股方向影響最大）\n  • 投信：賣超 12.0 億元（國內基金動向，反映內資信心）\n  • 自營商：買超 7.2 億元（短線交易為主，可作輔助參考）\n\n【綜合研判】\n綜合波動率指標、市場情緒及法人動向，本系統計算綜合信號分數為 -4.8 分（滿分 ±100），\n目前市場判斷為「中性觀望」。\n市場訊號混合，建議維持現有倉位，耐心等待更明確的方向突破。可關注成交量及外資動向變化。\n\n⚠️ 本分析僅供參考，不構成投資建議。投資有風險，入市需謹慎。",
+  "analysis": "【市場總覽】\n台股加權指數目前報 44,226 點。\n\n【波動率分析】\n美股VIX目前為 14.90，市場情緒正常。\nVIX期限結構正常順向（VIX9D=11.96 < VIX=14.90 < VIX3M=18.72），市場處於相對平靜狀態。\n\n【市場情緒分析】\nCNN恐懼貪婪指數目前為 64（貪婪）。\n市場偏向貪婪，需留意回調風險，可適度降低槓桿。\n\n【三大法人動向】\n今日三大法人合計賣超 412.0 億元。\n  • 外資：賣超 407.2 億元（市場主力，對台股方向影響最大）\n  • 投信：賣超 12.0 億元（國內基金動向，反映內資信心）\n  • 自營商：買超 7.2 億元（短線交易為主，可作輔助參考）\n\n【綜合研判】\n綜合波動率指標、市場情緒及法人動向，本系統計算綜合信號分數為 -25.8 分（滿分 ±100），\n目前市場判斷為「偏空」。\n多項指標偏空，建議降低倉位，持有防禦性資產，謹慎操作。\n\n⚠️ 本分析僅供參考，不構成投資建議。投資有風險，入市需謹慎。",
   "drai": {
-    "as_of": "08/07/2026",
+    "as_of": "08/10/2026",
     "holdings": [
       {
         "ticker": "FGXXX",
-        "weight": 20.35
-      },
-      {
-        "ticker": "SPXL",
-        "weight": 16.51
+        "weight": 20.21
       },
       {
         "ticker": "TQQQ",
-        "weight": 16.28
+        "weight": 16.65
+      },
+      {
+        "ticker": "SPXL",
+        "weight": 16.62
       },
       {
         "ticker": "HYG",
-        "weight": 13.83
+        "weight": 13.71
       },
       {
         "ticker": "IEF",
-        "weight": 13.79
+        "weight": 13.67
       },
       {
         "ticker": "BND",
-        "weight": 13.79
+        "weight": 13.67
       },
       {
         "ticker": "SOXL",
-        "weight": 1.8
+        "weight": 1.89
       },
       {
         "ticker": "TNA",
-        "weight": 1.79
+        "weight": 1.83
       },
       {
         "ticker": "UDOW",
@@ -2779,7 +2760,7 @@
       },
       {
         "ticker": "Cash&Other",
-        "weight": 0.08
+        "weight": 0.0
       }
     ]
   },
@@ -3196,7 +3177,7 @@
     ]
   },
   "scan": {
-    "as_of": "2026/08/08 06:47",
+    "as_of": "2026/08/10 06:40",
     "candidates": [
       {
         "code": "2618",
