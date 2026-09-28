@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-09-28T14:44:52.620524+08:00",
-  "last_updated_utc": "2026-09-28T06:44:52.620535+00:00",
+  "last_updated": "2026-09-28T23:21:01.877790+08:00",
+  "last_updated_utc": "2026-09-28T15:21:01.877799+00:00",
   "vix": {
     "vix9d": {
       "symbol": "^VIX9D",
@@ -34,13 +34,13 @@
     },
     "vix": {
       "symbol": "^VIX",
-      "current": 14.87,
-      "prev": 15.67,
-      "change": -0.8,
-      "change_pct": -5.11,
+      "current": 16.43,
+      "prev": 14.87,
+      "change": 1.56,
+      "change_pct": 10.49,
       "high_52w": 20.66,
       "low_52w": 14.21,
-      "data_date": "2026-09-25"
+      "data_date": "2026-09-28"
     },
     "twii": {
       "symbol": "^TWII",
@@ -65,125 +65,126 @@
     },
     "sp500": {
       "symbol": "^GSPC",
-      "current": 7743.41,
-      "prev": 7704.13,
-      "change": 39.28,
-      "change_pct": 0.51,
+      "current": 7678.75,
+      "prev": 7743.41,
+      "change": -64.66,
+      "change_pct": -0.84,
       "high_52w": 7798.99,
       "low_52w": 6238.01,
-      "data_date": "2026-09-25",
-      "ma20": 7672.48,
-      "ma20_diff_pct": 0.92,
-      "ma60": 7618.26,
-      "ma60_diff_pct": 1.64,
-      "ma240": 7131.11,
-      "ma240_diff_pct": 8.59,
+      "data_date": "2026-09-28",
+      "ma20": 7670.83,
+      "ma20_diff_pct": 0.1,
+      "ma60": 7621.52,
+      "ma60_diff_pct": 0.75,
+      "ma240": 7135.37,
+      "ma240_diff_pct": 7.62,
       "high_recent": 7798.99,
-      "high_recent_diff_pct": -0.71,
-      "volume_today": 4499180000.0,
+      "high_recent_diff_pct": -1.54,
+      "volume_today": 825519832.0,
       "volume_max_recent": 8858350000.0,
-      "volume_ratio": 50.8
+      "volume_ratio": 9.3
     },
     "nasdaq": {
       "symbol": "^IXIC",
-      "current": 27068.72,
-      "prev": 26939.37,
-      "change": 129.35,
-      "change_pct": 0.48,
+      "current": 26793.7,
+      "prev": 27068.72,
+      "change": -275.02,
+      "change_pct": -1.02,
       "high_52w": 27244.28,
       "low_52w": 20650.13,
-      "data_date": "2026-09-25",
-      "ma20": 26483.46,
-      "ma20_diff_pct": 2.21,
-      "ma60": 26145.66,
-      "ma60_diff_pct": 3.53,
-      "ma240": 24389.02,
-      "ma240_diff_pct": 10.99,
+      "data_date": "2026-09-28",
+      "ma20": 26503.02,
+      "ma20_diff_pct": 1.1,
+      "ma60": 26161.67,
+      "ma60_diff_pct": 2.42,
+      "ma240": 24406.1,
+      "ma240_diff_pct": 9.78,
       "high_recent": 27244.28,
-      "high_recent_diff_pct": -0.64,
-      "volume_today": 7275260000.0,
+      "high_recent_diff_pct": -1.65,
+      "volume_today": 2374159000.0,
       "volume_max_recent": 13286960000.0,
-      "volume_ratio": 54.8
+      "volume_ratio": 17.9
     },
     "dji": {
       "symbol": "^DJI",
-      "current": 51828.62,
-      "prev": 51349.98,
-      "change": 478.64,
-      "change_pct": 0.93,
+      "current": 51452.05,
+      "prev": 51828.62,
+      "change": -376.57,
+      "change_pct": -0.73,
       "high_52w": 54349.12,
       "low_52w": 43588.58,
-      "data_date": "2026-09-25",
-      "ma20": 52375.94,
-      "ma20_diff_pct": -1.04,
-      "ma60": 52773.33,
-      "ma60_diff_pct": -1.79,
-      "ma240": 49677.72,
-      "ma240_diff_pct": 4.33,
+      "data_date": "2026-09-28",
+      "ma20": 52270.54,
+      "ma20_diff_pct": -1.57,
+      "ma60": 52749.2,
+      "ma60_diff_pct": -2.46,
+      "ma240": 49700.15,
+      "ma240_diff_pct": 3.52,
       "high_recent": 54349.12,
-      "high_recent_diff_pct": -4.64,
-      "volume_today": 387540000.0,
+      "high_recent_diff_pct": -5.33,
+      "volume_today": 159536986.0,
       "volume_max_recent": 846980000.0,
-      "volume_ratio": 45.8
+      "volume_ratio": 18.8
     },
     "sox": {
       "symbol": "^SOX",
-      "current": 12668.93,
-      "prev": 12492.54,
-      "change": 176.39,
-      "change_pct": 1.41,
+      "current": 12306.54,
+      "prev": 12668.93,
+      "change": -362.39,
+      "change_pct": -2.86,
       "high_52w": 14634.72,
       "low_52w": 5527.61,
-      "data_date": "2026-09-25",
-      "ma20": 11793.51,
-      "ma20_diff_pct": 7.42,
-      "ma60": 11954.34,
-      "ma60_diff_pct": 5.98,
-      "ma240": 9653.78,
-      "ma240_diff_pct": 31.23,
+      "data_date": "2026-09-28",
+      "ma20": 11835.35,
+      "ma20_diff_pct": 3.98,
+      "ma60": 11949.01,
+      "ma60_diff_pct": 2.99,
+      "ma240": 9677.04,
+      "ma240_diff_pct": 27.17,
       "high_recent": 12967.16,
-      "high_recent_diff_pct": -2.3
+      "high_recent_diff_pct": -5.09
     },
     "nikkei": {
       "symbol": "^N225",
-      "current": 65995.8,
-      "prev": 66364.2,
-      "change": -368.4,
-      "change_pct": -0.56,
+      "current": 66364.2,
+      "prev": 65513.99,
+      "change": 850.21,
+      "change_pct": 1.3,
       "high_52w": 72366.34,
       "low_52w": 39459.62,
-      "data_date": "2026-09-28",
-      "ma20": 65132.47,
-      "ma20_diff_pct": 1.33,
-      "ma60": 66075.69,
-      "ma60_diff_pct": -0.12,
-      "ma240": 58172.84,
-      "ma240_diff_pct": 13.45,
+      "data_date": "2026-09-25",
+      "ma20": 65145.79,
+      "ma20_diff_pct": 1.87,
+      "ma60": 66133.56,
+      "ma60_diff_pct": 0.35,
+      "ma240": 58085.08,
+      "ma240_diff_pct": 14.25,
       "high_recent": 70474.96,
-      "high_recent_diff_pct": -6.36
+      "high_recent_diff_pct": -5.83,
+      "volume_today": 148900000.0,
+      "volume_max_recent": 264100000.0,
+      "volume_ratio": 56.4
     },
     "kospi": {
       "symbol": "^KS11",
-      "current": 6913.17,
-      "prev": 7080.92,
-      "change": -167.75,
-      "change_pct": -2.37,
+      "current": 7080.92,
+      "prev": 7017.91,
+      "change": 63.01,
+      "change_pct": 0.9,
       "high_52w": 9114.55,
       "low_52w": 3059.47,
-      "data_date": "2026-09-28",
-      "prev_date": "2026-09-23",
-      "gap_warning": "change spans 5 calendar days (2026-09-23 -> 2026-09-28), not a single trading day",
-      "ma20": 6843.92,
-      "ma20_diff_pct": 1.01,
-      "ma60": 6832.38,
-      "ma60_diff_pct": 1.18,
-      "ma240": 5873.56,
-      "ma240_diff_pct": 17.7,
-      "high_recent": 8303.41,
-      "high_recent_diff_pct": -16.74,
-      "volume_today": 207566.0,
+      "data_date": "2026-09-23",
+      "ma20": 6843.88,
+      "ma20_diff_pct": 3.46,
+      "ma60": 6858.43,
+      "ma60_diff_pct": 3.24,
+      "ma240": 5859.06,
+      "ma240_diff_pct": 20.85,
+      "high_recent": 8476.48,
+      "high_recent_diff_pct": -16.46,
+      "volume_today": 237000.0,
       "volume_max_recent": 582800.0,
-      "volume_ratio": 35.6
+      "volume_ratio": 40.7
     },
     "tpex": {
       "symbol": "TPEX",
@@ -595,7 +596,6 @@
     },
     "vix": {
       "dates": [
-        "2026-07-06",
         "2026-07-07",
         "2026-07-08",
         "2026-07-09",
@@ -654,10 +654,10 @@
         "2026-09-22",
         "2026-09-23",
         "2026-09-24",
-        "2026-09-25"
+        "2026-09-25",
+        "2026-09-28"
       ],
       "closes": [
-        15.57,
         16.13,
         16.9,
         15.84,
@@ -716,7 +716,8 @@
         14.21,
         15.18,
         15.67,
-        14.87
+        14.87,
+        16.43
       ]
     },
     "twii": {
@@ -847,7 +848,6 @@
     },
     "sp500": {
       "dates": [
-        "2026-07-02",
         "2026-07-06",
         "2026-07-07",
         "2026-07-08",
@@ -906,10 +906,10 @@
         "2026-09-22",
         "2026-09-23",
         "2026-09-24",
-        "2026-09-25"
+        "2026-09-25",
+        "2026-09-28"
       ],
       "closes": [
-        7483.24,
         7537.43,
         7503.85,
         7482.71,
@@ -968,12 +968,12 @@
         7764.64,
         7706.03,
         7704.13,
-        7743.41
+        7743.41,
+        7678.75
       ]
     },
     "nasdaq": {
       "dates": [
-        "2026-07-02",
         "2026-07-06",
         "2026-07-07",
         "2026-07-08",
@@ -1032,10 +1032,10 @@
         "2026-09-22",
         "2026-09-23",
         "2026-09-24",
-        "2026-09-25"
+        "2026-09-25",
+        "2026-09-28"
       ],
       "closes": [
-        25832.67,
         26121.16,
         25818.69,
         25870.65,
@@ -1094,12 +1094,12 @@
         27244.28,
         26936.04,
         26939.37,
-        27068.72
+        27068.72,
+        26793.7
       ]
     },
     "dji": {
       "dates": [
-        "2026-07-02",
         "2026-07-06",
         "2026-07-07",
         "2026-07-08",
@@ -1158,10 +1158,10 @@
         "2026-09-22",
         "2026-09-23",
         "2026-09-24",
-        "2026-09-25"
+        "2026-09-25",
+        "2026-09-28"
       ],
       "closes": [
-        52900.07,
         53055.91,
         52925.15,
         52348.39,
@@ -1220,12 +1220,12 @@
         51863.69,
         51511.59,
         51349.98,
-        51828.62
+        51828.62,
+        51452.05
       ]
     },
     "sox": {
       "dates": [
-        "2026-07-02",
         "2026-07-06",
         "2026-07-07",
         "2026-07-08",
@@ -1284,10 +1284,10 @@
         "2026-09-22",
         "2026-09-23",
         "2026-09-24",
-        "2026-09-25"
+        "2026-09-25",
+        "2026-09-28"
       ],
       "closes": [
-        12626.22,
         12900.14,
         12300.52,
         12574.97,
@@ -1346,11 +1346,13 @@
         12689.82,
         12534.28,
         12492.54,
-        12668.93
+        12668.93,
+        12306.54
       ]
     },
     "nikkei": {
       "dates": [
+        "2026-06-29",
         "2026-06-30",
         "2026-07-01",
         "2026-07-02",
@@ -1409,10 +1411,10 @@
         "2026-09-17",
         "2026-09-18",
         "2026-09-24",
-        "2026-09-25",
-        "2026-09-28"
+        "2026-09-25"
       ],
       "closes": [
+        69468.11,
         70062.32,
         70474.96,
         68733.15,
@@ -1471,12 +1473,12 @@
         64136.25,
         65018.95,
         65513.99,
-        66364.2,
-        65995.8
+        66364.2
       ]
     },
     "kospi": {
       "dates": [
+        "2026-06-30",
         "2026-07-01",
         "2026-07-02",
         "2026-07-03",
@@ -1535,10 +1537,10 @@
         "2026-09-18",
         "2026-09-21",
         "2026-09-22",
-        "2026-09-23",
-        "2026-09-28"
+        "2026-09-23"
       ],
       "closes": [
+        8476.48,
         8303.41,
         7648.09,
         8088.34,
@@ -1597,8 +1599,7 @@
         6894.23,
         7007.72,
         7017.91,
-        7080.92,
-        6913.17
+        7080.92
       ]
     },
     "tpex": {
@@ -2395,18 +2396,20 @@
     }
   },
   "cnn_fear_greed": {
-    "current": 37,
+    "current": 34.6,
     "rating": "fear",
-    "data_timestamp": "2026-09-25T23:59:59Z",
-    "prev_close": 36.1,
-    "prev_1week": 30.4,
-    "prev_1month": 59.6,
-    "prev_1year": 50.7,
+    "data_timestamp": "2026-09-28T15:19:55Z",
+    "prev_close": 37.0,
+    "prev_1week": 34.2,
+    "prev_1month": 53.7,
+    "prev_1year": 51.3,
     "history_dates": [
-      1790380799000.0
+      1790553600000.0,
+      1790608795000.0
     ],
     "history_values": [
-      37
+      34.6,
+      34.6
     ]
   },
   "institutional": {
@@ -2855,23 +2858,23 @@
       },
       {
         "indicator": "US VIX",
-        "value": 14.87,
+        "value": 16.43,
         "signal": -15,
-        "label": "美股VIX偏低(14.9：13-18)：輕度過熱",
+        "label": "美股VIX偏低(16.4：13-18)：輕度過熱",
         "weight": "15%"
       },
       {
         "indicator": "VIX期限結構",
-        "value": -2.11,
+        "value": -3.67,
         "signal": -15,
-        "label": "VIX期限結構正常順向(VIX9D 12.8 < VIX 14.9 < 3M 17.9)：市場自滿",
+        "label": "VIX期限結構正常順向(VIX9D 12.8 < VIX 16.4 < 3M 17.9)：市場自滿",
         "weight": "15%"
       },
       {
         "indicator": "CNN恐懼貪婪",
-        "value": 37,
+        "value": 34.6,
         "signal": 25,
-        "label": "CNN恐懼(37：26-45)：市場偏悲觀，偏多",
+        "label": "CNN恐懼(35：26-45)：市場偏悲觀，偏多",
         "weight": "15%"
       },
       {
@@ -2890,7 +2893,7 @@
       "institutional": -17.5
     }
   },
-  "analysis": "【市場總覽】\n台股加權指數目前報 48,025 點。\n\n【波動率分析】\n台灣VIX（VIXTWN）目前為 23.12，處於偏高水準。\n美股VIX目前為 14.87，市場情緒正常。\nVIX期限結構正常順向（VIX9D=12.76 < VIX=14.87 < VIX3M=17.93），市場處於相對平靜狀態。\n\n【市場情緒分析】\nCNN恐懼貪婪指數目前為 37（恐懼）。\n市場偏向悲觀，但未達極端，可逐步加碼。\n\n【三大法人動向】\n今日三大法人合計賣超 415.5 億元。\n  • 外資：賣超 329.6 億元（市場主力，對台股方向影響最大）\n  • 投信：賣超 128.2 億元（國內基金動向，反映內資信心）\n  • 自營商：買超 42.4 億元（短線交易為主，可作輔助參考）\n\n【綜合研判】\n綜合波動率指標、市場情緒及法人動向，本系統計算綜合信號分數為 -15.2 分（滿分 ±100），\n目前市場判斷為「中性觀望」。\n市場訊號混合，建議維持現有倉位，耐心等待更明確的方向突破。可關注成交量及外資動向變化。\n\n⚠️ 本分析僅供參考，不構成投資建議。投資有風險，入市需謹慎。",
+  "analysis": "【市場總覽】\n台股加權指數目前報 48,025 點。\n\n【波動率分析】\n台灣VIX（VIXTWN）目前為 23.12，處於偏高水準。\n美股VIX目前為 16.43，市場情緒正常。\nVIX期限結構正常順向（VIX9D=12.76 < VIX=16.43 < VIX3M=17.93），市場處於相對平靜狀態。\n\n【市場情緒分析】\nCNN恐懼貪婪指數目前為 35（恐懼）。\n市場偏向悲觀，但未達極端，可逐步加碼。\n\n【三大法人動向】\n今日三大法人合計賣超 415.5 億元。\n  • 外資：賣超 329.6 億元（市場主力，對台股方向影響最大）\n  • 投信：賣超 128.2 億元（國內基金動向，反映內資信心）\n  • 自營商：買超 42.4 億元（短線交易為主，可作輔助參考）\n\n【綜合研判】\n綜合波動率指標、市場情緒及法人動向，本系統計算綜合信號分數為 -15.2 分（滿分 ±100），\n目前市場判斷為「中性觀望」。\n市場訊號混合，建議維持現有倉位，耐心等待更明確的方向突破。可關注成交量及外資動向變化。\n\n⚠️ 本分析僅供參考，不構成投資建議。投資有風險，入市需謹慎。",
   "drai": {
     "as_of": "09/28/2026",
     "holdings": [
@@ -2925,7 +2928,7 @@
     ]
   },
   "heatmap": {
-    "as_of": "2026/09/24 13:30",
+    "as_of": null,
     "twse": [
       {
         "code": "2330",
@@ -2934,7 +2937,7 @@
         "close": 2475.0,
         "change_pct": -1.0,
         "cap": 641767.5,
-        "vol": 321.5
+        "vol": 361.07
       },
       {
         "code": "2454",
@@ -2943,7 +2946,7 @@
         "close": 5285.0,
         "change_pct": 1.93,
         "cap": 82446.0,
-        "vol": 377.24
+        "vol": 411.79
       },
       {
         "code": "3711",
@@ -2952,7 +2955,7 @@
         "close": 699.0,
         "change_pct": 0.87,
         "cap": 52984.2,
-        "vol": 73.34
+        "vol": 75.73
       },
       {
         "code": "2308",
@@ -2961,7 +2964,7 @@
         "close": 1910.0,
         "change_pct": 0.53,
         "cap": 49469.0,
-        "vol": 155.88
+        "vol": 171.7
       },
       {
         "code": "2303",
@@ -2970,7 +2973,7 @@
         "close": 154.0,
         "change_pct": -3.75,
         "cap": 37329.6,
-        "vol": 236.41
+        "vol": 241.64
       },
       {
         "code": "2317",
@@ -2979,7 +2982,7 @@
         "close": 250.5,
         "change_pct": -2.15,
         "cap": 34719.3,
-        "vol": 82.49
+        "vol": 86.51
       },
       {
         "code": "1303",
@@ -2988,7 +2991,7 @@
         "close": 238.0,
         "change_pct": 4.62,
         "cap": 18587.8,
-        "vol": 157.04
+        "vol": 156.26
       },
       {
         "code": "2881",
@@ -2997,7 +3000,7 @@
         "close": 150.0,
         "change_pct": -1.96,
         "cap": 15900.0,
-        "vol": 12.24
+        "vol": 12.71
       },
       {
         "code": "2345",
@@ -3006,7 +3009,7 @@
         "close": 1895.0,
         "change_pct": 0.26,
         "cap": 15728.5,
-        "vol": 45.44
+        "vol": 49.18
       },
       {
         "code": "2882",
@@ -3015,7 +3018,7 @@
         "close": 110.5,
         "change_pct": -0.9,
         "cap": 15602.6,
-        "vol": 12.94
+        "vol": 13.05
       },
       {
         "code": "2891",
@@ -3024,7 +3027,7 @@
         "close": 68.5,
         "change_pct": -0.58,
         "cap": 13234.2,
-        "vol": 11.92
+        "vol": 12.09
       },
       {
         "code": "2357",
@@ -3033,7 +3036,7 @@
         "close": 953.0,
         "change_pct": -0.52,
         "cap": 12865.5,
-        "vol": 11.98
+        "vol": 12.36
       },
       {
         "code": "2412",
@@ -3042,7 +3045,7 @@
         "close": 145.0,
         "change_pct": -0.34,
         "cap": 11252.0,
-        "vol": 9.06
+        "vol": 9.18
       },
       {
         "code": "2885",
@@ -3051,7 +3054,7 @@
         "close": 69.2,
         "change_pct": -0.57,
         "cap": 10580.7,
-        "vol": 8.47
+        "vol": 9.51
       },
       {
         "code": "2603",
@@ -3060,7 +3063,7 @@
         "close": 243.0,
         "change_pct": 0.0,
         "cap": 9209.7,
-        "vol": 11.77
+        "vol": 11.94
       },
       {
         "code": "2382",
@@ -3069,7 +3072,7 @@
         "close": 338.5,
         "change_pct": -0.88,
         "cap": 8530.2,
-        "vol": 30.99
+        "vol": 35.74
       },
       {
         "code": "3008",
@@ -3078,7 +3081,7 @@
         "close": 6245.0,
         "change_pct": 0.89,
         "cap": 8368.3,
-        "vol": 67.45
+        "vol": 74.59
       },
       {
         "code": "2884",
@@ -3087,7 +3090,7 @@
         "close": 45.6,
         "change_pct": 0.0,
         "cap": 8303.8,
-        "vol": 8.23
+        "vol": 8.31
       },
       {
         "code": "2379",
@@ -3096,7 +3099,7 @@
         "close": 749.0,
         "change_pct": -1.58,
         "cap": 7864.5,
-        "vol": 20.52
+        "vol": 20.99
       },
       {
         "code": "3231",
@@ -3105,7 +3108,7 @@
         "close": 184.5,
         "change_pct": 2.5,
         "cap": 7066.3,
-        "vol": 50.09
+        "vol": 56.91
       },
       {
         "code": "2886",
@@ -3114,7 +3117,7 @@
         "close": 49.6,
         "change_pct": -0.8,
         "cap": 4831.0,
-        "vol": 4.01
+        "vol": 4.13
       },
       {
         "code": "2892",
@@ -3123,7 +3126,7 @@
         "close": 39.5,
         "change_pct": -0.88,
         "cap": 4427.9,
-        "vol": 4.43
+        "vol": 4.49
       },
       {
         "code": "5880",
@@ -3132,7 +3135,7 @@
         "close": 26.45,
         "change_pct": -1.12,
         "cap": 4274.3,
-        "vol": 3.8
+        "vol": 3.89
       },
       {
         "code": "1216",
@@ -3141,7 +3144,7 @@
         "close": 74.5,
         "change_pct": -1.19,
         "cap": 4231.6,
-        "vol": 3.57
+        "vol": 3.63
       },
       {
         "code": "3045",
@@ -3150,7 +3153,7 @@
         "close": 122.5,
         "change_pct": -0.41,
         "cap": 4116.0,
-        "vol": 5.97
+        "vol": 6.0
       },
       {
         "code": "1301",
@@ -3159,7 +3162,7 @@
         "close": 64.1,
         "change_pct": 1.58,
         "cap": 4076.8,
-        "vol": 10.45
+        "vol": 10.47
       },
       {
         "code": "4904",
@@ -3168,7 +3171,7 @@
         "close": 105.5,
         "change_pct": 0.0,
         "cap": 3544.8,
-        "vol": 2.08
+        "vol": 2.1
       },
       {
         "code": "2002",
@@ -3177,7 +3180,7 @@
         "close": 18.65,
         "change_pct": 0.0,
         "cap": 2937.4,
-        "vol": 3.79
+        "vol": 3.82
       },
       {
         "code": "2609",
@@ -3186,7 +3189,7 @@
         "close": 59.6,
         "change_pct": -0.5,
         "cap": 1799.9,
-        "vol": 7.13
+        "vol": 7.21
       },
       {
         "code": "2324",
@@ -3195,28 +3198,10 @@
         "close": 36.5,
         "change_pct": -0.82,
         "cap": 1551.2,
-        "vol": 6.46
+        "vol": 6.59
       }
     ],
     "tpex": [
-      {
-        "code": "5274",
-        "name": "信驊",
-        "sector": "半導體",
-        "close": 19835.0,
-        "change_pct": -2.19,
-        "cap": 5950.5,
-        "vol": 34.12
-      },
-      {
-        "code": "6223",
-        "name": "旺矽",
-        "sector": "半導體",
-        "close": 5415.0,
-        "change_pct": -3.65,
-        "cap": 5415.0,
-        "vol": 26.37
-      },
       {
         "code": "3661",
         "name": "世芯",
@@ -3224,16 +3209,7 @@
         "close": 3770.0,
         "change_pct": 0.27,
         "cap": 1998.1,
-        "vol": 37.96
-      },
-      {
-        "code": "3529",
-        "name": "力旺",
-        "sector": "半導體",
-        "close": 3230.0,
-        "change_pct": -2.27,
-        "cap": 1776.5,
-        "vol": 49.42
+        "vol": 42.71
       },
       {
         "code": "3533",
@@ -3242,25 +3218,7 @@
         "close": 1690.0,
         "change_pct": 0.0,
         "cap": 946.4,
-        "vol": 17.27
-      },
-      {
-        "code": "8299",
-        "name": "群聯",
-        "sector": "半導體",
-        "close": 2125.0,
-        "change_pct": -4.06,
-        "cap": 892.5,
-        "vol": 82.81
-      },
-      {
-        "code": "3081",
-        "name": "聯亞",
-        "sector": "半導體",
-        "close": 2700.0,
-        "change_pct": 0.75,
-        "cap": 729.0,
-        "vol": 48.55
+        "vol": 18.27
       },
       {
         "code": "3034",
@@ -3269,7 +3227,7 @@
         "close": 543.0,
         "change_pct": -0.37,
         "cap": 684.2,
-        "vol": 18.76
+        "vol": 19.05
       },
       {
         "code": "5269",
@@ -3278,7 +3236,7 @@
         "close": 1480.0,
         "change_pct": 0.0,
         "cap": 680.8,
-        "vol": 3.86
+        "vol": 4.18
       },
       {
         "code": "6415",
@@ -3287,7 +3245,7 @@
         "close": 425.5,
         "change_pct": -0.12,
         "cap": 306.4,
-        "vol": 6.33
+        "vol": 6.44
       },
       {
         "code": "3702",
@@ -3296,7 +3254,7 @@
         "close": 117.5,
         "change_pct": 3.07,
         "cap": 101.0,
-        "vol": 9.34
+        "vol": 9.37
       },
       {
         "code": "4919",
@@ -3305,7 +3263,7 @@
         "close": 136.0,
         "change_pct": 1.49,
         "cap": 73.4,
-        "vol": 19.37
+        "vol": 19.45
       },
       {
         "code": "3596",
@@ -3314,7 +3272,7 @@
         "close": 153.5,
         "change_pct": 0.99,
         "cap": 70.6,
-        "vol": 1.67
+        "vol": 1.68
       },
       {
         "code": "6269",
@@ -3332,142 +3290,13 @@
         "close": 73.4,
         "change_pct": 1.1,
         "cap": 33.0,
-        "vol": 0.98
+        "vol": 0.99
       }
     ]
   },
   "scan": {
-    "as_of": "2026/09/28 14:44",
+    "as_of": "2026/09/28 23:21",
     "candidates": [
-      {
-        "code": "3026",
-        "name": "禾伸堂",
-        "close": 810.0,
-        "change_pct": 5.47,
-        "vol_b": 105.9,
-        "tech_score": 42,
-        "chip_score": 30,
-        "val_score": 0,
-        "total_score": 72,
-        "signals": [
-          "多頭排列",
-          "RSI64",
-          "MACD↑",
-          "↑20%",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 810.0,
-        "div_yield": 0.72
-      },
-      {
-        "code": "6213",
-        "name": "聯茂",
-        "close": 595.0,
-        "change_pct": 9.98,
-        "vol_b": 100.0,
-        "tech_score": 38,
-        "chip_score": 30,
-        "val_score": 0,
-        "total_score": 68,
-        "signals": [
-          "多頭排列",
-          "RSI67",
-          "MACD↑",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 595.0,
-        "div_yield": 0.5
-      },
-      {
-        "code": "4770",
-        "name": "上品",
-        "close": 281.5,
-        "change_pct": 2.36,
-        "vol_b": 12.7,
-        "tech_score": 50,
-        "chip_score": 12,
-        "val_score": 5,
-        "total_score": 67,
-        "signals": [
-          "多頭排列",
-          "RSI70",
-          "MACD↑",
-          "量增4.8×",
-          "↑32%",
-          "投信↑"
-        ],
-        "pe": 281.5,
-        "div_yield": 2.13
-      },
-      {
-        "code": "3189",
-        "name": "景碩",
-        "close": 962.0,
-        "change_pct": 6.18,
-        "vol_b": 424.2,
-        "tech_score": 36,
-        "chip_score": 30,
-        "val_score": 0,
-        "total_score": 66,
-        "signals": [
-          "多頭排列",
-          "MACD↑",
-          "量增2.2×",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 962.0,
-        "div_yield": 0.16
-      },
-      {
-        "code": "6526",
-        "name": "達發",
-        "close": 840.0,
-        "change_pct": 0.0,
-        "vol_b": 38.5,
-        "tech_score": 40,
-        "chip_score": 26,
-        "val_score": 0,
-        "total_score": 66,
-        "signals": [
-          "多頭排列",
-          "MACD↑",
-          "量增3.8×",
-          "↑38%",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 840.0,
-        "div_yield": 1.61
-      },
-      {
-        "code": "6505",
-        "name": "台塑化",
-        "close": 87.2,
-        "change_pct": -0.11,
-        "vol_b": 9.5,
-        "tech_score": 42,
-        "chip_score": 22,
-        "val_score": 0,
-        "total_score": 64,
-        "signals": [
-          "多頭排列",
-          "RSI67",
-          "MACD↑",
-          "↑20%",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 87.2,
-        "div_yield": 1.38
-      },
       {
         "code": "3653",
         "name": "健策",
@@ -3475,19 +3304,18 @@
         "change_pct": 7.96,
         "vol_b": 181.5,
         "tech_score": 50,
-        "chip_score": 12,
+        "chip_score": 0,
         "val_score": 0,
-        "total_score": 62,
+        "total_score": 50,
         "signals": [
           "多頭排列",
           "RSI68",
           "MACD↑",
           "量增2.4×",
-          "↑23%",
-          "投信↑"
+          "↑23%"
         ],
-        "pe": 6920.0,
-        "div_yield": 0.31
+        "pe": null,
+        "div_yield": null
       },
       {
         "code": "3167",
@@ -3496,222 +3324,38 @@
         "change_pct": 6.63,
         "vol_b": 77.7,
         "tech_score": 50,
-        "chip_score": 12,
+        "chip_score": 0,
         "val_score": 0,
-        "total_score": 62,
+        "total_score": 50,
         "signals": [
           "多頭排列",
           "RSI64",
           "MACD↑",
           "量增1.6×",
-          "↑28%",
-          "外資↑"
+          "↑28%"
         ],
-        "pe": 949.0,
-        "div_yield": 0.41
+        "pe": null,
+        "div_yield": null
       },
       {
-        "code": "2609",
-        "name": "陽明",
-        "close": 59.6,
-        "change_pct": -0.5,
-        "vol_b": 7.2,
-        "tech_score": 35,
-        "chip_score": 22,
-        "val_score": 5,
-        "total_score": 62,
-        "signals": [
-          "多頭排列",
-          "RSI57",
-          "MACD↑",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 59.6,
-        "div_yield": 3.36
-      },
-      {
-        "code": "2603",
-        "name": "長榮",
-        "close": 243.0,
-        "change_pct": 0.0,
-        "vol_b": 11.9,
-        "tech_score": 38,
-        "chip_score": 12,
-        "val_score": 10,
-        "total_score": 60,
+        "code": "6933",
+        "name": "AMAX-KY",
+        "close": 385.0,
+        "change_pct": 10.0,
+        "vol_b": 22.6,
+        "tech_score": 50,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 50,
         "signals": [
           "多頭排列",
           "RSI64",
           "MACD↑",
-          "投信↑",
-          "殖6.6%"
+          "量增4.2×",
+          "↑63%"
         ],
-        "pe": 243.0,
-        "div_yield": 6.58
-      },
-      {
-        "code": "3702",
-        "name": "大聯大",
-        "close": 117.5,
-        "change_pct": 3.07,
-        "vol_b": 9.4,
-        "tech_score": 24,
-        "chip_score": 30,
-        "val_score": 5,
-        "total_score": 59,
-        "signals": [
-          "MACD↑",
-          "↑16%",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 117.5,
-        "div_yield": 3.1
-      },
-      {
-        "code": "2412",
-        "name": "中華電",
-        "close": 145.0,
-        "change_pct": -0.34,
-        "vol_b": 9.2,
-        "tech_score": 28,
-        "chip_score": 26,
-        "val_score": 5,
-        "total_score": 59,
-        "signals": [
-          "多頭排列",
-          "MACD↑",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 145.0,
-        "div_yield": 3.59
-      },
-      {
-        "code": "2884",
-        "name": "玉山金",
-        "close": 45.6,
-        "change_pct": 0.0,
-        "vol_b": 8.3,
-        "tech_score": 42,
-        "chip_score": 12,
-        "val_score": 5,
-        "total_score": 59,
-        "signals": [
-          "多頭排列",
-          "RSI61",
-          "MACD↑",
-          "↑18%",
-          "投信↑"
-        ],
-        "pe": 45.6,
-        "div_yield": 3.07
-      },
-      {
-        "code": "2368",
-        "name": "金像電",
-        "close": 1105.0,
-        "change_pct": -3.07,
-        "vol_b": 174.3,
-        "tech_score": 46,
-        "chip_score": 12,
-        "val_score": 0,
-        "total_score": 58,
-        "signals": [
-          "多頭排列",
-          "RSI55",
-          "MACD↑",
-          "量增1.8×",
-          "投信↑"
-        ],
-        "pe": 1105.0,
-        "div_yield": 0.89
-      },
-      {
-        "code": "8150",
-        "name": "南茂",
-        "close": 112.0,
-        "change_pct": 4.67,
-        "vol_b": 92.8,
-        "tech_score": 32,
-        "chip_score": 26,
-        "val_score": 0,
-        "total_score": 58,
-        "signals": [
-          "MACD↑",
-          "量增2.5×",
-          "↑24%",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 112.0,
-        "div_yield": 1.1
-      },
-      {
-        "code": "3037",
-        "name": "欣興",
-        "close": 1185.0,
-        "change_pct": 2.16,
-        "vol_b": 194.3,
-        "tech_score": 25,
-        "chip_score": 30,
-        "val_score": 0,
-        "total_score": 55,
-        "signals": [
-          "多頭排列",
-          "MACD↑",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 1185.0,
-        "div_yield": 0.17
-      },
-      {
-        "code": "3017",
-        "name": "奇鋐",
-        "close": 3555.0,
-        "change_pct": 2.45,
-        "vol_b": 79.9,
-        "tech_score": 33,
-        "chip_score": 22,
-        "val_score": 0,
-        "total_score": 55,
-        "signals": [
-          "多頭排列",
-          "MACD↑",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 3555.0,
-        "div_yield": 0.59
-      },
-      {
-        "code": "2492",
-        "name": "華新科",
-        "close": 311.5,
-        "change_pct": 1.8,
-        "vol_b": 48.5,
-        "tech_score": 29,
-        "chip_score": 26,
-        "val_score": 0,
-        "total_score": 55,
-        "signals": [
-          "RSI55",
-          "MACD↑",
-          "↑9%",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 311.5,
-        "div_yield": 0.8
+        "pe": null,
+        "div_yield": null
       },
       {
         "code": "1709",
@@ -3721,8 +3365,8 @@
         "vol_b": 21.6,
         "tech_score": 50,
         "chip_score": 0,
-        "val_score": 5,
-        "total_score": 55,
+        "val_score": 0,
+        "total_score": 50,
         "signals": [
           "多頭排列",
           "RSI66",
@@ -3730,8 +3374,127 @@
           "量增1.9×",
           "↑31%"
         ],
-        "pe": 43.5,
-        "div_yield": 2.3
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "4770",
+        "name": "上品",
+        "close": 281.5,
+        "change_pct": 2.36,
+        "vol_b": 12.7,
+        "tech_score": 50,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 50,
+        "signals": [
+          "多頭排列",
+          "RSI70",
+          "MACD↑",
+          "量增4.8×",
+          "↑32%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "3094",
+        "name": "聯傑",
+        "close": 54.3,
+        "change_pct": 0.0,
+        "vol_b": 12.6,
+        "tech_score": 50,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 50,
+        "signals": [
+          "多頭排列",
+          "RSI62",
+          "MACD↑",
+          "量增2.3×",
+          "↑43%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "3563",
+        "name": "牧德",
+        "close": 769.0,
+        "change_pct": 2.12,
+        "vol_b": 10.9,
+        "tech_score": 50,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 50,
+        "signals": [
+          "多頭排列",
+          "RSI68",
+          "MACD↑",
+          "量增2.7×",
+          "↑11%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "4956",
+        "name": "光鋐",
+        "close": 44.5,
+        "change_pct": 2.18,
+        "vol_b": 10.4,
+        "tech_score": 50,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 50,
+        "signals": [
+          "多頭排列",
+          "RSI61",
+          "MACD↑",
+          "量增2.9×",
+          "↑24%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "6205",
+        "name": "詮欣",
+        "close": 73.6,
+        "change_pct": 2.22,
+        "vol_b": 8.6,
+        "tech_score": 50,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 50,
+        "signals": [
+          "多頭排列",
+          "RSI64",
+          "MACD↑",
+          "量增13.1×",
+          "↑10%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "2368",
+        "name": "金像電",
+        "close": 1105.0,
+        "change_pct": -3.07,
+        "vol_b": 174.3,
+        "tech_score": 46,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 46,
+        "signals": [
+          "多頭排列",
+          "RSI55",
+          "MACD↑",
+          "量增1.8×"
+        ],
+        "pe": null,
+        "div_yield": null
       },
       {
         "code": "6533",
@@ -3740,17 +3503,187 @@
         "change_pct": 9.96,
         "vol_b": 18.1,
         "tech_score": 43,
-        "chip_score": 12,
+        "chip_score": 0,
         "val_score": 0,
-        "total_score": 55,
+        "total_score": 43,
         "signals": [
           "多頭排列",
           "RSI58",
           "MACD↑",
-          "量增3.6×",
-          "外資↑"
+          "量增3.6×"
         ],
-        "pe": 276.0,
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "2303",
+        "name": "聯電",
+        "close": 154.0,
+        "change_pct": -3.75,
+        "vol_b": 241.6,
+        "tech_score": 42,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 42,
+        "signals": [
+          "多頭排列",
+          "RSI70",
+          "MACD↑",
+          "↑30%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "2409",
+        "name": "友達",
+        "close": 34.2,
+        "change_pct": -1.44,
+        "vol_b": 187.1,
+        "tech_score": 42,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 42,
+        "signals": [
+          "多頭排列",
+          "RSI70",
+          "MACD↑",
+          "↑35%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "3665",
+        "name": "貿聯-KY",
+        "close": 2340.0,
+        "change_pct": 0.0,
+        "vol_b": 106.4,
+        "tech_score": 42,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 42,
+        "signals": [
+          "多頭排列",
+          "RSI61",
+          "MACD↑",
+          "↑14%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "3026",
+        "name": "禾伸堂",
+        "close": 810.0,
+        "change_pct": 5.47,
+        "vol_b": 105.9,
+        "tech_score": 42,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 42,
+        "signals": [
+          "多頭排列",
+          "RSI64",
+          "MACD↑",
+          "↑20%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "2481",
+        "name": "強茂",
+        "close": 174.5,
+        "change_pct": 0.87,
+        "vol_b": 63.0,
+        "tech_score": 42,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 42,
+        "signals": [
+          "多頭排列",
+          "RSI65",
+          "MACD↑",
+          "↑19%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "2360",
+        "name": "致茂",
+        "close": 2295.0,
+        "change_pct": -1.29,
+        "vol_b": 45.8,
+        "tech_score": 42,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 42,
+        "signals": [
+          "多頭排列",
+          "RSI62",
+          "MACD↑",
+          "↑15%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "8996",
+        "name": "高力",
+        "close": 1530.0,
+        "change_pct": -0.65,
+        "vol_b": 43.8,
+        "tech_score": 42,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 42,
+        "signals": [
+          "多頭排列",
+          "RSI62",
+          "MACD↑",
+          "↑17%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "6531",
+        "name": "愛普*",
+        "close": 993.0,
+        "change_pct": 0.61,
+        "vol_b": 30.6,
+        "tech_score": 42,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 42,
+        "signals": [
+          "多頭排列",
+          "RSI58",
+          "MACD↑",
+          "↑8%"
+        ],
+        "pe": null,
+        "div_yield": null
+      },
+      {
+        "code": "8028",
+        "name": "昇陽半導體",
+        "close": 269.0,
+        "change_pct": 4.26,
+        "vol_b": 27.6,
+        "tech_score": 42,
+        "chip_score": 0,
+        "val_score": 0,
+        "total_score": 42,
+        "signals": [
+          "RSI65",
+          "MACD↑",
+          "量增2.1×",
+          "↑8%"
+        ],
+        "pe": null,
         "div_yield": null
       }
     ],
