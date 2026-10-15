@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-10-15T08:26:00.997744+08:00",
-  "last_updated_utc": "2026-10-15T00:26:00.997757+00:00",
+  "last_updated": "2026-10-15T13:51:11.977983+08:00",
+  "last_updated_utc": "2026-10-15T05:51:11.977995+00:00",
   "vix": {
     "vix9d": {
       "symbol": "^VIX9D",
@@ -44,24 +44,21 @@
     },
     "twii": {
       "symbol": "^TWII",
-      "current": 48341.31,
-      "prev": 49301.96,
-      "change": -960.65,
-      "change_pct": -1.95,
+      "current": 46965.97,
+      "prev": 48625.83,
+      "change": -1659.86,
+      "change_pct": -3.41,
       "high_52w": 49822.55,
-      "low_52w": 22987.92,
-      "data_date": "2026-10-13",
-      "ma20": 47863.82,
-      "ma20_diff_pct": 1.0,
-      "ma60": 45833.23,
-      "ma60_diff_pct": 5.47,
-      "ma240": 37668.63,
-      "ma240_diff_pct": 28.33,
+      "low_52w": 23201.52,
+      "data_date": "2026-10-15",
+      "ma20": 48041.04,
+      "ma20_diff_pct": -2.24,
+      "ma60": 46007.74,
+      "ma60_diff_pct": 2.08,
+      "ma240": 37837.97,
+      "ma240_diff_pct": 24.12,
       "high_recent": 49822.55,
-      "high_recent_diff_pct": -2.97,
-      "volume_today": 5165900.0,
-      "volume_max_recent": 7217600.0,
-      "volume_ratio": 71.6
+      "high_recent_diff_pct": -5.73
     },
     "sp500": {
       "symbol": "^GSPC",
@@ -80,9 +77,9 @@
       "ma240_diff_pct": 7.42,
       "high_recent": 7818.93,
       "high_recent_diff_pct": -1.28,
-      "volume_today": 3388032000.0,
+      "volume_today": 5955580000.0,
       "volume_max_recent": 8858350000.0,
-      "volume_ratio": 38.2
+      "volume_ratio": 67.2
     },
     "nasdaq": {
       "symbol": "^IXIC",
@@ -101,9 +98,9 @@
       "ma240_diff_pct": 8.46,
       "high_recent": 27599.79,
       "high_recent_diff_pct": -3.29,
-      "volume_today": 7640476000.0,
+      "volume_today": 8568280000.0,
       "volume_max_recent": 13286960000.0,
-      "volume_ratio": 57.5
+      "volume_ratio": 64.5
     },
     "dji": {
       "symbol": "^DJI",
@@ -122,7 +119,7 @@
       "ma240_diff_pct": 3.39,
       "high_recent": 54349.12,
       "high_recent_diff_pct": -5.02,
-      "volume_today": 442523838.0,
+      "volume_today": 442520000.0,
       "volume_max_recent": 846980000.0,
       "volume_ratio": 52.2
     },
@@ -146,46 +143,42 @@
     },
     "nikkei": {
       "symbol": "^N225",
-      "current": 65889.23,
-      "prev": 67777.52,
-      "change": -1888.29,
-      "change_pct": -2.79,
+      "current": 64583.44,
+      "prev": 67744.29,
+      "change": -3160.85,
+      "change_pct": -4.67,
       "high_52w": 72366.34,
       "low_52w": 39774.92,
       "data_date": "2026-10-15",
-      "prev_date": "2026-10-13",
-      "gap_warning": "change spans 2 calendar days (2026-10-13 -> 2026-10-15), not a single trading day",
-      "ma20": 66686.5,
-      "ma20_diff_pct": -1.2,
-      "ma60": 66020.25,
-      "ma60_diff_pct": -0.2,
-      "ma240": 59145.48,
-      "ma240_diff_pct": 11.4,
+      "ma20": 66807.85,
+      "ma20_diff_pct": -3.33,
+      "ma60": 65981.7,
+      "ma60_diff_pct": -2.12,
+      "ma240": 59224.05,
+      "ma240_diff_pct": 9.05,
       "high_recent": 70683.98,
-      "high_recent_diff_pct": -6.78
+      "high_recent_diff_pct": -8.63
     },
     "kospi": {
       "symbol": "^KS11",
-      "current": 5741.43,
-      "prev": 6035.35,
-      "change": -293.92,
-      "change_pct": -4.87,
+      "current": 5508.43,
+      "prev": 6008.81,
+      "change": -500.38,
+      "change_pct": -8.33,
       "high_52w": 9114.55,
       "low_52w": 3119.41,
       "data_date": "2026-10-15",
-      "prev_date": "2026-10-13",
-      "gap_warning": "change spans 2 calendar days (2026-10-13 -> 2026-10-15), not a single trading day",
-      "ma20": 6738.08,
-      "ma20_diff_pct": -14.79,
-      "ma60": 6678.49,
-      "ma60_diff_pct": -14.03,
-      "ma240": 5998.72,
-      "ma240_diff_pct": -4.29,
-      "high_recent": 7284.41,
-      "high_recent_diff_pct": -21.18,
-      "volume_today": 27764.0,
+      "ma20": 6681.38,
+      "ma20_diff_pct": -17.56,
+      "ma60": 6653.35,
+      "ma60_diff_pct": -17.21,
+      "ma240": 6006.85,
+      "ma240_diff_pct": -8.3,
+      "high_recent": 7096.89,
+      "high_recent_diff_pct": -22.38,
+      "volume_today": 295521.0,
       "volume_max_recent": 457400.0,
-      "volume_ratio": 6.1
+      "volume_ratio": 64.6
     },
     "tpex": {
       "symbol": "TPEX",
@@ -205,8 +198,15 @@
     },
     "vixtwn": {
       "symbol": "VIXTWN",
-      "current": null,
-      "error": "TAIFEX unavailable"
+      "current": 30.61,
+      "prev": 26.08,
+      "change": 4.53,
+      "change_pct": 17.37,
+      "open": 27.93,
+      "high": 30.83,
+      "low": 27.53,
+      "high_52w": null,
+      "low_52w": null
     }
   },
   "vix_history": {
@@ -716,8 +716,6 @@
     },
     "twii": {
       "dates": [
-        "2026-07-17",
-        "2026-07-20",
         "2026-07-21",
         "2026-07-22",
         "2026-07-23",
@@ -775,11 +773,11 @@
         "2026-10-07",
         "2026-10-08",
         "2026-10-12",
-        "2026-10-13"
+        "2026-10-13",
+        "2026-10-14",
+        "2026-10-15"
       ],
       "closes": [
-        42671.27,
-        42449.7,
         44232.87,
         44825.78,
         44850.81,
@@ -837,7 +835,9 @@
         49806.37,
         49313.44,
         49301.96,
-        48341.31
+        48341.31,
+        48625.83,
+        46965.97
       ]
     },
     "sp500": {
@@ -1346,7 +1346,6 @@
     },
     "nikkei": {
       "dates": [
-        "2026-07-15",
         "2026-07-16",
         "2026-07-17",
         "2026-07-21",
@@ -1405,10 +1404,10 @@
         "2026-10-08",
         "2026-10-09",
         "2026-10-13",
+        "2026-10-14",
         "2026-10-15"
       ],
       "closes": [
-        68751.51,
         66835.54,
         64141.12,
         66232.19,
@@ -1467,12 +1466,12 @@
         69042.11,
         69030.92,
         67777.52,
-        65889.23
+        67744.29,
+        64583.44
       ]
     },
     "kospi": {
       "dates": [
-        "2026-07-15",
         "2026-07-16",
         "2026-07-20",
         "2026-07-21",
@@ -1531,10 +1530,10 @@
         "2026-10-08",
         "2026-10-12",
         "2026-10-13",
+        "2026-10-14",
         "2026-10-15"
       ],
       "closes": [
-        7284.41,
         6820.6,
         6516.27,
         6747.95,
@@ -1593,7 +1592,8 @@
         6625.93,
         6384.24,
         6035.35,
-        5741.43
+        6008.81,
+        5508.43
       ]
     },
     "tpex": {
@@ -2204,7 +2204,6 @@
     },
     "vixtwn": {
       "dates": [
-        "2026-06-25",
         "2026-06-26",
         "2026-06-29",
         "2026-06-30",
@@ -2293,10 +2292,10 @@
         "2026-10-10",
         "2026-10-12",
         "2026-10-13",
-        "2026-10-14"
+        "2026-10-14",
+        "2026-10-15"
       ],
       "closes": [
-        40.31,
         44.01,
         39.98,
         38.54,
@@ -2385,25 +2384,28 @@
         24.55,
         25.16,
         26.72,
-        26.08
+        26.08,
+        30.61
       ]
     }
   },
   "cnn_fear_greed": {
-    "current": 32.4,
+    "current": 32.3,
     "rating": "fear",
-    "data_timestamp": "2026-10-14T23:59:45Z",
-    "prev_close": 44.7,
-    "prev_1week": 42.1,
-    "prev_1month": 31.0,
-    "prev_1year": 28.3,
+    "data_timestamp": "2026-10-15T00:00:00Z",
+    "prev_close": 32.3,
+    "prev_1week": 39.8,
+    "prev_1month": 28.0,
+    "prev_1year": 27.4,
     "history_dates": [
       1791936000000.0,
-      1792022385000.0
+      1792022400000.0,
+      1792022400000.0
     ],
     "history_values": [
-      32.4,
-      32.4
+      32.3,
+      32.3,
+      32.3
     ]
   },
   "institutional": {
@@ -2837,11 +2839,18 @@
     ]
   },
   "signal": {
-    "score": -10.8,
+    "score": 10.2,
     "outlook": "中性觀望",
     "outlook_en": "NEUTRAL",
     "color": "#ffc107",
     "details": [
+      {
+        "indicator": "VIXTWN",
+        "value": 30.61,
+        "signal": 70,
+        "label": "台灣VIX極度恐慌(30.6≥30)：逆向強買訊號",
+        "weight": "30%"
+      },
       {
         "indicator": "US VIX",
         "value": 16.87,
@@ -2858,7 +2867,7 @@
       },
       {
         "indicator": "CNN恐懼貪婪",
-        "value": 32.4,
+        "value": 32.3,
         "signal": 25,
         "label": "CNN恐懼(32：26-45)：市場偏悲觀，偏多",
         "weight": "15%"
@@ -2872,39 +2881,40 @@
       }
     ],
     "component_scores": {
+      "vixtwn": 21.0,
       "vix": -2.25,
       "term_structure": -2.25,
       "cnn": 3.75,
       "institutional": -10.0
     }
   },
-  "analysis": "【市場總覽】\n台股加權指數目前報 48,341 點。\n\n【波動率分析】\n美股VIX目前為 16.87，市場情緒正常。\nVIX期限結構正常順向（VIX9D=14.59 < VIX=16.87 < VIX3M=18.79），市場處於相對平靜狀態。\n\n【市場情緒分析】\nCNN恐懼貪婪指數目前為 32（恐懼）。\n市場偏向悲觀，但未達極端，可逐步加碼。\n\n【三大法人動向】\n今日三大法人合計賣超 65.2 億元。\n  • 外資：賣超 200.4 億元（市場主力，對台股方向影響最大）\n  • 投信：買超 160.3 億元（國內基金動向，反映內資信心）\n  • 自營商：賣超 25.1 億元（短線交易為主，可作輔助參考）\n\n【綜合研判】\n綜合波動率指標、市場情緒及法人動向，本系統計算綜合信號分數為 -10.8 分（滿分 ±100），\n目前市場判斷為「中性觀望」。\n市場訊號混合，建議維持現有倉位，耐心等待更明確的方向突破。可關注成交量及外資動向變化。\n\n⚠️ 本分析僅供參考，不構成投資建議。投資有風險，入市需謹慎。",
+  "analysis": "【市場總覽】\n台股加權指數目前報 46,966 點。\n\n【波動率分析】\n台灣VIX（VIXTWN）目前為 30.61，處於極度恐慌水準。\n美股VIX目前為 16.87，市場情緒正常。\nVIX期限結構正常順向（VIX9D=14.59 < VIX=16.87 < VIX3M=18.79），市場處於相對平靜狀態。\n\n【市場情緒分析】\nCNN恐懼貪婪指數目前為 32（恐懼）。\n市場偏向悲觀，但未達極端，可逐步加碼。\n\n【三大法人動向】\n今日三大法人合計賣超 65.2 億元。\n  • 外資：賣超 200.4 億元（市場主力，對台股方向影響最大）\n  • 投信：買超 160.3 億元（國內基金動向，反映內資信心）\n  • 自營商：賣超 25.1 億元（短線交易為主，可作輔助參考）\n\n【綜合研判】\n綜合波動率指標、市場情緒及法人動向，本系統計算綜合信號分數為 +10.2 分（滿分 ±100），\n目前市場判斷為「中性觀望」。\n市場訊號混合，建議維持現有倉位，耐心等待更明確的方向突破。可關注成交量及外資動向變化。\n\n⚠️ 本分析僅供參考，不構成投資建議。投資有風險，入市需謹慎。",
   "drai": {
-    "as_of": "10/14/2026",
+    "as_of": "10/15/2026",
     "holdings": [
       {
         "ticker": "USDU",
-        "weight": 32.61
+        "weight": 32.86
       },
       {
         "ticker": "TLT",
-        "weight": 21.26
+        "weight": 21.53
       },
       {
         "ticker": "FGXXX",
-        "weight": 20.01
+        "weight": 20.13
       },
       {
         "ticker": "IAU",
-        "weight": 13.35
+        "weight": 13.23
       },
       {
         "ticker": "SPXL",
-        "weight": 6.47
+        "weight": 6.3
       },
       {
         "ticker": "TQQQ",
-        "weight": 6.29
+        "weight": 5.96
       },
       {
         "ticker": "Cash&Other",
@@ -2913,277 +2923,277 @@
     ]
   },
   "heatmap": {
-    "as_of": "2026/10/15 07:50",
+    "as_of": "2026/10/15 13:30",
     "twse": [
       {
         "code": "2330",
         "name": "台積電",
         "sector": "半導體",
-        "close": 2490.0,
-        "change_pct": 0.0,
-        "cap": 645657.0,
-        "vol": 0.0
+        "close": 2440.0,
+        "change_pct": -2.01,
+        "cap": 632692.0,
+        "vol": 1167.13
       },
       {
         "code": "2454",
         "name": "聯發科",
         "sector": "半導體",
-        "close": 4475.0,
-        "change_pct": 0.0,
-        "cap": 69810.0,
-        "vol": 0.0
+        "close": 4165.0,
+        "change_pct": -6.93,
+        "cap": 64974.0,
+        "vol": 602.43
       },
       {
         "code": "3711",
         "name": "日月光",
         "sector": "半導體",
-        "close": 747.0,
-        "change_pct": 0.0,
-        "cap": 56622.6,
-        "vol": 0.0
+        "close": 673.0,
+        "change_pct": -9.91,
+        "cap": 51013.4,
+        "vol": 231.51
       },
       {
         "code": "2308",
         "name": "台達電",
         "sector": "電子",
-        "close": 1785.0,
-        "change_pct": 0.0,
-        "cap": 46231.5,
-        "vol": 0.0
-      },
-      {
-        "code": "2303",
-        "name": "聯電",
-        "sector": "半導體",
-        "close": 142.0,
-        "change_pct": 0.0,
-        "cap": 34420.8,
-        "vol": 0.0
+        "close": 1630.0,
+        "change_pct": -8.68,
+        "cap": 42217.0,
+        "vol": 326.23
       },
       {
         "code": "2317",
         "name": "鴻海",
         "sector": "電子",
-        "close": 243.0,
-        "change_pct": 0.0,
-        "cap": 33679.8,
-        "vol": 0.0
+        "close": 239.5,
+        "change_pct": -1.44,
+        "cap": 33194.7,
+        "vol": 111.13
+      },
+      {
+        "code": "2303",
+        "name": "聯電",
+        "sector": "半導體",
+        "close": 133.5,
+        "change_pct": -5.99,
+        "cap": 32360.4,
+        "vol": 278.06
       },
       {
         "code": "1303",
         "name": "南亞",
         "sector": "石化",
-        "close": 349.0,
-        "change_pct": 0.0,
-        "cap": 27256.9,
-        "vol": 0.0
-      },
-      {
-        "code": "2345",
-        "name": "智邦",
-        "sector": "電子",
-        "close": 2050.0,
-        "change_pct": 0.0,
-        "cap": 17015.0,
-        "vol": 0.0
+        "close": 314.5,
+        "change_pct": -9.89,
+        "cap": 24562.4,
+        "vol": 316.87
       },
       {
         "code": "2881",
         "name": "富邦金",
         "sector": "金融",
-        "close": 160.5,
-        "change_pct": 0.0,
-        "cap": 17013.0,
-        "vol": 0.0
+        "close": 159.5,
+        "change_pct": -0.62,
+        "cap": 16907.0,
+        "vol": 38.09
+      },
+      {
+        "code": "2345",
+        "name": "智邦",
+        "sector": "電子",
+        "close": 1950.0,
+        "change_pct": -4.88,
+        "cap": 16185.0,
+        "vol": 83.17
       },
       {
         "code": "2882",
         "name": "國泰金",
         "sector": "金融",
-        "close": 114.0,
-        "change_pct": 0.0,
-        "cap": 16096.8,
-        "vol": 0.0
+        "close": 113.5,
+        "change_pct": -0.44,
+        "cap": 16026.2,
+        "vol": 23.34
       },
       {
         "code": "2891",
         "name": "中信金",
         "sector": "金融",
-        "close": 71.4,
-        "change_pct": 0.0,
-        "cap": 13794.5,
-        "vol": 0.0
+        "close": 72.9,
+        "change_pct": 2.1,
+        "cap": 14084.3,
+        "vol": 55.49
       },
       {
         "code": "2357",
         "name": "華碩",
         "sector": "電子",
-        "close": 990.0,
-        "change_pct": 0.0,
-        "cap": 13365.0,
-        "vol": 0.0
+        "close": 975.0,
+        "change_pct": -1.52,
+        "cap": 13162.5,
+        "vol": 24.58
       },
       {
         "code": "2412",
         "name": "中華電",
         "sector": "電信",
-        "close": 148.5,
-        "change_pct": 0.0,
-        "cap": 11523.6,
-        "vol": 0.0
+        "close": 152.5,
+        "change_pct": 2.69,
+        "cap": 11834.0,
+        "vol": 36.94
       },
       {
         "code": "2885",
         "name": "元大金",
         "sector": "金融",
-        "close": 72.2,
-        "change_pct": 0.0,
-        "cap": 11039.4,
-        "vol": 0.0
+        "close": 72.7,
+        "change_pct": 0.69,
+        "cap": 11115.8,
+        "vol": 23.91
       },
       {
         "code": "2603",
         "name": "長榮",
         "sector": "航運",
-        "close": 263.0,
-        "change_pct": 0.0,
-        "cap": 9967.7,
-        "vol": 0.0
-      },
-      {
-        "code": "3008",
-        "name": "大立光",
-        "sector": "半導體",
-        "close": 6880.0,
-        "change_pct": 0.0,
-        "cap": 9219.2,
-        "vol": 0.0
+        "close": 257.0,
+        "change_pct": -2.28,
+        "cap": 9740.3,
+        "vol": 38.41
       },
       {
         "code": "2884",
         "name": "玉山金",
         "sector": "金融",
-        "close": 47.3,
-        "change_pct": 0.0,
-        "cap": 8613.3,
-        "vol": 0.0
+        "close": 48.8,
+        "change_pct": 3.17,
+        "cap": 8886.5,
+        "vol": 30.36
+      },
+      {
+        "code": "3008",
+        "name": "大立光",
+        "sector": "半導體",
+        "close": 6605.0,
+        "change_pct": -4.0,
+        "cap": 8850.7,
+        "vol": 202.05
       },
       {
         "code": "2379",
         "name": "瑞昱",
         "sector": "半導體",
-        "close": 778.0,
-        "change_pct": 0.0,
-        "cap": 8169.0,
-        "vol": 0.0
+        "close": 764.0,
+        "change_pct": -1.8,
+        "cap": 8022.0,
+        "vol": 22.94
       },
       {
         "code": "2382",
         "name": "廣達",
         "sector": "電子",
-        "close": 323.0,
-        "change_pct": 0.0,
-        "cap": 8139.6,
-        "vol": 0.0
+        "close": 316.5,
+        "change_pct": -2.01,
+        "cap": 7975.8,
+        "vol": 46.97
       },
       {
         "code": "3231",
         "name": "緯創",
         "sector": "電子",
-        "close": 187.0,
-        "change_pct": 0.0,
-        "cap": 7162.1,
-        "vol": 0.0
+        "close": 176.0,
+        "change_pct": -5.88,
+        "cap": 6740.8,
+        "vol": 128.92
       },
       {
         "code": "1301",
         "name": "台塑",
         "sector": "石化",
-        "close": 88.9,
-        "change_pct": 0.0,
-        "cap": 5654.0,
-        "vol": 0.0
+        "close": 81.7,
+        "change_pct": -8.1,
+        "cap": 5196.1,
+        "vol": 123.62
       },
       {
         "code": "2886",
         "name": "兆豐金",
         "sector": "金融",
-        "close": 51.1,
-        "change_pct": 0.0,
-        "cap": 4977.1,
-        "vol": 0.0
+        "close": 52.5,
+        "change_pct": 2.74,
+        "cap": 5113.5,
+        "vol": 24.33
       },
       {
         "code": "2892",
         "name": "第一金",
         "sector": "金融",
-        "close": 40.65,
-        "change_pct": 0.0,
-        "cap": 4556.9,
-        "vol": 0.0
+        "close": 41.6,
+        "change_pct": 2.34,
+        "cap": 4663.4,
+        "vol": 15.24
       },
       {
         "code": "1216",
         "name": "統一",
         "sector": "消費",
-        "close": 78.2,
-        "change_pct": 0.0,
-        "cap": 4441.8,
-        "vol": 0.0
+        "close": 79.5,
+        "change_pct": 1.66,
+        "cap": 4515.6,
+        "vol": 30.42
       },
       {
         "code": "5880",
         "name": "合庫金",
         "sector": "金融",
-        "close": 27.15,
-        "change_pct": 0.0,
-        "cap": 4387.4,
-        "vol": 0.0
+        "close": 27.5,
+        "change_pct": 1.29,
+        "cap": 4444.0,
+        "vol": 10.78
       },
       {
         "code": "3045",
         "name": "台灣大",
         "sector": "電信",
-        "close": 126.5,
-        "change_pct": 0.0,
-        "cap": 4250.4,
-        "vol": 0.0
+        "close": 131.0,
+        "change_pct": 3.56,
+        "cap": 4401.6,
+        "vol": 21.36
       },
       {
         "code": "4904",
         "name": "遠傳",
         "sector": "電信",
-        "close": 108.0,
-        "change_pct": 0.0,
-        "cap": 3628.8,
-        "vol": 0.0
+        "close": 113.0,
+        "change_pct": 4.63,
+        "cap": 3796.8,
+        "vol": 16.64
       },
       {
         "code": "2002",
         "name": "中鋼",
         "sector": "鋼鐵",
-        "close": 19.5,
-        "change_pct": 0.0,
-        "cap": 3071.2,
-        "vol": 0.0
+        "close": 19.25,
+        "change_pct": -1.28,
+        "cap": 3031.9,
+        "vol": 8.92
       },
       {
         "code": "2609",
         "name": "陽明",
         "sector": "航運",
-        "close": 65.0,
-        "change_pct": 0.0,
-        "cap": 1963.0,
-        "vol": 0.0
+        "close": 63.3,
+        "change_pct": -2.62,
+        "cap": 1911.7,
+        "vol": 19.74
       },
       {
         "code": "2324",
         "name": "仁寶",
         "sector": "電子",
-        "close": 37.0,
-        "change_pct": 0.0,
-        "cap": 1572.5,
-        "vol": 0.0
+        "close": 36.0,
+        "change_pct": -2.7,
+        "cap": 1530.0,
+        "vol": 11.59
       }
     ],
     "tpex": [
@@ -3191,227 +3201,157 @@
         "code": "6223",
         "name": "旺矽",
         "sector": "半導體",
-        "close": 5885.0,
-        "change_pct": 0.0,
-        "cap": 5885.0,
-        "vol": 0.0
+        "close": 5300.0,
+        "change_pct": -9.94,
+        "cap": 5300.0,
+        "vol": 51.99
       },
       {
         "code": "5274",
         "name": "信驊",
         "sector": "半導體",
-        "close": 17500.0,
-        "change_pct": 0.0,
-        "cap": 5250.0,
-        "vol": 0.0
+        "close": 15945.0,
+        "change_pct": -8.89,
+        "cap": 4783.5,
+        "vol": 94.23
       },
       {
         "code": "3661",
         "name": "世芯",
         "sector": "半導體",
-        "close": 3940.0,
-        "change_pct": 0.0,
-        "cap": 2088.2,
-        "vol": 0.0
+        "close": 3705.0,
+        "change_pct": -5.96,
+        "cap": 1963.7,
+        "vol": 75.29
       },
       {
         "code": "3529",
         "name": "力旺",
         "sector": "半導體",
-        "close": 2875.0,
-        "change_pct": 0.0,
-        "cap": 1581.3,
-        "vol": 0.0
+        "close": 2655.0,
+        "change_pct": -7.65,
+        "cap": 1460.3,
+        "vol": 31.09
       },
       {
         "code": "3533",
         "name": "嘉澤",
         "sector": "連接器",
-        "close": 1935.0,
-        "change_pct": 0.0,
-        "cap": 1083.6,
-        "vol": 0.0
+        "close": 1815.0,
+        "change_pct": -6.2,
+        "cap": 1016.4,
+        "vol": 46.08
       },
       {
         "code": "8299",
         "name": "群聯",
         "sector": "半導體",
-        "close": 1965.0,
-        "change_pct": 0.0,
-        "cap": 825.3,
-        "vol": 0.0
+        "close": 1830.0,
+        "change_pct": -6.87,
+        "cap": 768.6,
+        "vol": 89.41
       },
       {
         "code": "3081",
         "name": "聯亞",
         "sector": "半導體",
-        "close": 2880.0,
-        "change_pct": 0.0,
-        "cap": 777.6,
-        "vol": 0.0
+        "close": 2640.0,
+        "change_pct": -8.33,
+        "cap": 712.8,
+        "vol": 79.25
+      },
+      {
+        "code": "3034",
+        "name": "聯詠",
+        "sector": "半導體",
+        "close": 565.0,
+        "change_pct": 0.89,
+        "cap": 711.9,
+        "vol": 29.95
       },
       {
         "code": "5269",
         "name": "祥碩",
         "sector": "半導體",
-        "close": 1545.0,
-        "change_pct": 0.0,
-        "cap": 710.7,
-        "vol": 0.0
-      },
-      {
-        "code": "3034",
-        "name": "聯詠",
-        "sector": "半導體",
-        "close": 560.0,
-        "change_pct": 0.0,
-        "cap": 705.6,
-        "vol": 0.0
+        "close": 1495.0,
+        "change_pct": -3.24,
+        "cap": 687.7,
+        "vol": 11.11
       },
       {
         "code": "6415",
         "name": "矽力",
         "sector": "半導體",
-        "close": 471.0,
-        "change_pct": 0.0,
-        "cap": 339.1,
-        "vol": 0.0
+        "close": 466.5,
+        "change_pct": -0.96,
+        "cap": 335.9,
+        "vol": 61.43
       },
       {
         "code": "3702",
         "name": "大聯大",
         "sector": "通路",
-        "close": 118.5,
-        "change_pct": 0.0,
-        "cap": 101.9,
-        "vol": 0.0
+        "close": 115.5,
+        "change_pct": -2.53,
+        "cap": 99.3,
+        "vol": 13.56
       },
       {
         "code": "4919",
         "name": "新唐",
         "sector": "半導體",
-        "close": 150.0,
-        "change_pct": 0.0,
-        "cap": 81.0,
-        "vol": 0.0
+        "close": 138.5,
+        "change_pct": -7.67,
+        "cap": 74.8,
+        "vol": 13.38
       },
       {
         "code": "3596",
         "name": "智易",
         "sector": "網通",
-        "close": 160.5,
-        "change_pct": 0.0,
-        "cap": 73.8,
-        "vol": 0.0
+        "close": 158.5,
+        "change_pct": -1.25,
+        "cap": 72.9,
+        "vol": 1.29
       },
       {
         "code": "6269",
         "name": "台郡",
         "sector": "軟板",
-        "close": 67.9,
-        "change_pct": 0.0,
-        "cap": 57.0,
-        "vol": 0.0
+        "close": 74.6,
+        "change_pct": 9.87,
+        "cap": 62.7,
+        "vol": 22.2
       },
       {
         "code": "5388",
         "name": "中磊",
         "sector": "網通",
-        "close": 75.2,
-        "change_pct": 0.0,
-        "cap": 33.8,
-        "vol": 0.0
+        "close": 74.8,
+        "change_pct": -0.53,
+        "cap": 33.7,
+        "vol": 1.54
       }
     ]
   },
   "scan": {
-    "as_of": "2026/10/15 08:26",
+    "as_of": "2026/10/15 13:51",
     "candidates": [
-      {
-        "code": "2603",
-        "name": "長榮",
-        "close": 263.0,
-        "change_pct": -0.38,
-        "vol_b": 53.3,
-        "tech_score": 50,
-        "chip_score": 30,
-        "val_score": 10,
-        "total_score": 90,
-        "signals": [
-          "多頭排列",
-          "RSI69",
-          "MACD↑",
-          "量增1.7×",
-          "↑12%",
-          "外資↑",
-          "投信↑",
-          "法人雙買",
-          "殖6.1%"
-        ],
-        "pe": 263.0,
-        "div_yield": 6.08
-      },
-      {
-        "code": "1101",
-        "name": "台泥",
-        "close": 27.05,
-        "change_pct": 2.66,
-        "vol_b": 21.9,
-        "tech_score": 50,
-        "chip_score": 30,
-        "val_score": 5,
-        "total_score": 85,
-        "signals": [
-          "多頭排列",
-          "RSI69",
-          "MACD↑",
-          "量增1.9×",
-          "↑10%",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 27.05,
-        "div_yield": 2.96
-      },
-      {
-        "code": "3702",
-        "name": "大聯大",
-        "close": 118.5,
-        "change_pct": 0.85,
-        "vol_b": 15.8,
-        "tech_score": 50,
-        "chip_score": 30,
-        "val_score": 5,
-        "total_score": 85,
-        "signals": [
-          "多頭排列",
-          "RSI60",
-          "MACD↑",
-          "量增1.6×",
-          "↑11%",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 118.5,
-        "div_yield": 3.07
-      },
       {
         "code": "3034",
         "name": "聯詠",
-        "close": 560.0,
-        "change_pct": 2.56,
-        "vol_b": 28.2,
+        "close": 565.0,
+        "change_pct": 0.89,
+        "vol_b": 29.8,
         "tech_score": 43,
         "chip_score": 30,
         "val_score": 10,
         "total_score": 83,
         "signals": [
           "多頭排列",
-          "RSI56",
+          "RSI54",
           "MACD↑",
-          "量增1.7×",
+          "量增1.8×",
           "外資↑",
           "投信↑",
           "法人雙買",
@@ -3421,21 +3361,88 @@
         "div_yield": 4.11
       },
       {
+        "code": "2603",
+        "name": "長榮",
+        "close": 257.0,
+        "change_pct": -2.28,
+        "vol_b": 38.5,
+        "tech_score": 42,
+        "chip_score": 30,
+        "val_score": 10,
+        "total_score": 82,
+        "signals": [
+          "多頭排列",
+          "RSI62",
+          "MACD↑",
+          "↑8%",
+          "外資↑",
+          "投信↑",
+          "法人雙買",
+          "殖6.1%"
+        ],
+        "pe": 263.0,
+        "div_yield": 6.08
+      },
+      {
+        "code": "3045",
+        "name": "台灣大",
+        "close": 131.0,
+        "change_pct": 3.56,
+        "vol_b": 21.3,
+        "tech_score": 46,
+        "chip_score": 30,
+        "val_score": 5,
+        "total_score": 81,
+        "signals": [
+          "多頭排列",
+          "RSI69",
+          "MACD↑",
+          "量增2.2×",
+          "外資↑",
+          "投信↑",
+          "法人雙買"
+        ],
+        "pe": 126.5,
+        "div_yield": 3.75
+      },
+      {
+        "code": "2892",
+        "name": "第一金",
+        "close": 41.6,
+        "change_pct": 2.34,
+        "vol_b": 15.2,
+        "tech_score": 46,
+        "chip_score": 30,
+        "val_score": 5,
+        "total_score": 81,
+        "signals": [
+          "多頭排列",
+          "RSI64",
+          "MACD↑",
+          "量增1.7×",
+          "外資↑",
+          "投信↑",
+          "法人雙買"
+        ],
+        "pe": 40.65,
+        "div_yield": 3.2
+      },
+      {
         "code": "1802",
         "name": "台玻",
-        "close": 67.0,
-        "change_pct": 8.41,
-        "vol_b": 124.8,
+        "close": 62.7,
+        "change_pct": -6.42,
+        "vol_b": 51.3,
         "tech_score": 50,
         "chip_score": 30,
         "val_score": 0,
         "total_score": 80,
         "signals": [
           "多頭排列",
-          "RSI64",
+          "RSI57",
           "MACD↑",
-          "量增5.4×",
-          "↑15%",
+          "量增1.9×",
+          "↑8%",
           "外資↑",
           "投信↑",
           "法人雙買"
@@ -3444,43 +3451,20 @@
         "div_yield": null
       },
       {
-        "code": "1605",
-        "name": "華新",
-        "close": 40.7,
-        "change_pct": 5.58,
-        "vol_b": 29.7,
-        "tech_score": 50,
-        "chip_score": 30,
-        "val_score": 0,
-        "total_score": 80,
-        "signals": [
-          "多頭排列",
-          "RSI67",
-          "MACD↑",
-          "量增3.4×",
-          "↑9%",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 40.7,
-        "div_yield": 1.23
-      },
-      {
         "code": "2885",
         "name": "元大金",
-        "close": 72.2,
-        "change_pct": 2.27,
-        "vol_b": 27.3,
+        "close": 72.7,
+        "change_pct": 0.69,
+        "vol_b": 23.8,
         "tech_score": 43,
         "chip_score": 30,
         "val_score": 5,
         "total_score": 78,
         "signals": [
           "多頭排列",
-          "RSI57",
+          "RSI58",
           "MACD↑",
-          "量增1.8×",
+          "量增1.5×",
           "外資↑",
           "投信↑",
           "法人雙買"
@@ -3489,42 +3473,20 @@
         "div_yield": 3.05
       },
       {
-        "code": "2379",
-        "name": "瑞昱",
-        "close": 778.0,
-        "change_pct": 2.64,
-        "vol_b": 22.6,
+        "code": "3044",
+        "name": "健鼎",
+        "close": 586.0,
+        "change_pct": -2.82,
+        "vol_b": 22.5,
         "tech_score": 42,
         "chip_score": 30,
         "val_score": 5,
         "total_score": 77,
         "signals": [
           "多頭排列",
-          "RSI67",
+          "RSI66",
           "MACD↑",
-          "↑11%",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 778.0,
-        "div_yield": 3.21
-      },
-      {
-        "code": "3044",
-        "name": "健鼎",
-        "close": 603.0,
-        "change_pct": 5.42,
-        "vol_b": 29.8,
-        "tech_score": 40,
-        "chip_score": 30,
-        "val_score": 5,
-        "total_score": 75,
-        "signals": [
-          "多頭排列",
-          "MACD↑",
-          "量增1.8×",
-          "↑19%",
+          "↑15%",
           "外資↑",
           "投信↑",
           "法人雙買"
@@ -3533,63 +3495,62 @@
         "div_yield": 2.11
       },
       {
-        "code": "1216",
-        "name": "統一",
-        "close": 78.2,
-        "change_pct": 1.43,
-        "vol_b": 12.0,
+        "code": "2379",
+        "name": "瑞昱",
+        "close": 764.0,
+        "change_pct": -1.8,
+        "vol_b": 23.1,
         "tech_score": 38,
         "chip_score": 30,
         "val_score": 5,
         "total_score": 73,
         "signals": [
-          "RSI68",
+          "多頭排列",
+          "RSI54",
           "MACD↑",
-          "量增1.6×",
           "外資↑",
           "投信↑",
           "法人雙買"
         ],
-        "pe": 78.2,
-        "div_yield": 3.84
+        "pe": 778.0,
+        "div_yield": 3.21
       },
       {
-        "code": "2327",
-        "name": "國巨*",
-        "close": 627.0,
-        "change_pct": 4.67,
-        "vol_b": 294.5,
-        "tech_score": 42,
+        "code": "3702",
+        "name": "大聯大",
+        "close": 115.5,
+        "change_pct": -2.53,
+        "vol_b": 13.6,
+        "tech_score": 38,
         "chip_score": 30,
-        "val_score": 0,
-        "total_score": 72,
+        "val_score": 5,
+        "total_score": 73,
         "signals": [
           "多頭排列",
-          "RSI65",
+          "RSI55",
           "MACD↑",
-          "↑15%",
           "外資↑",
           "投信↑",
           "法人雙買"
         ],
-        "pe": 627.0,
-        "div_yield": 0.96
+        "pe": 118.5,
+        "div_yield": 3.07
       },
       {
         "code": "3026",
         "name": "禾伸堂",
-        "close": 854.0,
-        "change_pct": 5.96,
-        "vol_b": 110.0,
+        "close": 811.0,
+        "change_pct": -5.04,
+        "vol_b": 116.9,
         "tech_score": 42,
         "chip_score": 30,
         "val_score": 0,
         "total_score": 72,
         "signals": [
           "多頭排列",
-          "RSI58",
+          "RSI54",
           "MACD↑",
-          "↑15%",
+          "↑11%",
           "外資↑",
           "投信↑",
           "法人雙買"
@@ -3598,33 +3559,54 @@
         "div_yield": 0.68
       },
       {
-        "code": "1303",
-        "name": "南亞",
-        "close": 349.0,
-        "change_pct": 9.4,
-        "vol_b": 602.0,
-        "tech_score": 40,
+        "code": "4938",
+        "name": "和碩",
+        "close": 98.1,
+        "change_pct": -1.9,
+        "vol_b": 24.8,
+        "tech_score": 50,
+        "chip_score": 12,
+        "val_score": 10,
+        "total_score": 72,
+        "signals": [
+          "多頭排列",
+          "RSI67",
+          "MACD↑",
+          "量增1.9×",
+          "↑9%",
+          "外資↑",
+          "殖4.0%"
+        ],
+        "pe": 100.0,
+        "div_yield": 4.01
+      },
+      {
+        "code": "2412",
+        "name": "中華電",
+        "close": 152.5,
+        "change_pct": 2.69,
+        "vol_b": 36.8,
+        "tech_score": 36,
         "chip_score": 30,
-        "val_score": 0,
-        "total_score": 70,
+        "val_score": 5,
+        "total_score": 71,
         "signals": [
           "多頭排列",
           "MACD↑",
-          "量增2.3×",
-          "↑49%",
+          "量增2.2×",
           "外資↑",
           "投信↑",
           "法人雙買"
         ],
-        "pe": 349.0,
-        "div_yield": 0.23
+        "pe": 148.5,
+        "div_yield": 3.5
       },
       {
         "code": "1301",
         "name": "台塑",
-        "close": 88.9,
-        "change_pct": 9.89,
-        "vol_b": 167.5,
+        "close": 81.7,
+        "change_pct": -8.1,
+        "vol_b": 126.5,
         "tech_score": 40,
         "chip_score": 30,
         "val_score": 0,
@@ -3632,8 +3614,8 @@
         "signals": [
           "多頭排列",
           "MACD↑",
-          "量增3.7×",
-          "↑38%",
+          "量增2.5×",
+          "↑30%",
           "外資↑",
           "投信↑",
           "法人雙買"
@@ -3642,42 +3624,64 @@
         "div_yield": 0.56
       },
       {
-        "code": "5269",
-        "name": "祥碩",
-        "close": 1545.0,
-        "change_pct": 0.32,
-        "vol_b": 11.1,
-        "tech_score": 42,
-        "chip_score": 22,
-        "val_score": 5,
-        "total_score": 69,
-        "signals": [
-          "多頭排列",
-          "RSI69",
-          "MACD↑",
-          "↑17%",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 1545.0,
-        "div_yield": 2.94
-      },
-      {
-        "code": "3037",
-        "name": "欣興",
-        "close": 1185.0,
-        "change_pct": 0.42,
-        "vol_b": 202.1,
+        "code": "3533",
+        "name": "嘉澤",
+        "close": 1815.0,
+        "change_pct": -6.2,
+        "vol_b": 46.4,
         "tech_score": 42,
         "chip_score": 26,
         "val_score": 0,
         "total_score": 68,
         "signals": [
-          "多頭排列",
-          "RSI67",
+          "RSI56",
           "MACD↑",
-          "↑21%",
+          "量增1.7×",
+          "↑14%",
+          "外資↑",
+          "投信↑",
+          "法人雙買"
+        ],
+        "pe": 1935.0,
+        "div_yield": 1.81
+      },
+      {
+        "code": "1605",
+        "name": "華新",
+        "close": 37.7,
+        "change_pct": -7.37,
+        "vol_b": 25.5,
+        "tech_score": 38,
+        "chip_score": 30,
+        "val_score": 0,
+        "total_score": 68,
+        "signals": [
+          "多頭排列",
+          "RSI53",
+          "MACD↑",
+          "量增2.7×",
+          "外資↑",
+          "投信↑",
+          "法人雙買"
+        ],
+        "pe": 40.7,
+        "div_yield": 1.23
+      },
+      {
+        "code": "3037",
+        "name": "欣興",
+        "close": 1075.0,
+        "change_pct": -9.28,
+        "vol_b": 294.2,
+        "tech_score": 40,
+        "chip_score": 26,
+        "val_score": 0,
+        "total_score": 66,
+        "signals": [
+          "多頭排列",
+          "MACD↑",
+          "量增2.1×",
+          "↑11%",
           "外資↑",
           "投信↑",
           "法人雙買"
@@ -3686,90 +3690,89 @@
         "div_yield": 0.17
       },
       {
-        "code": "2409",
-        "name": "友達",
-        "close": 36.25,
-        "change_pct": 6.15,
-        "vol_b": 108.1,
-        "tech_score": 42,
+        "code": "3711",
+        "name": "日月光投控",
+        "close": 673.0,
+        "change_pct": -9.91,
+        "vol_b": 234.4,
+        "tech_score": 40,
         "chip_score": 26,
         "val_score": 0,
-        "total_score": 68,
+        "total_score": 66,
         "signals": [
           "多頭排列",
-          "RSI57",
           "MACD↑",
-          "↑20%",
+          "量增2.9×",
+          "↑10%",
           "外資↑",
           "投信↑",
           "法人雙買"
         ],
-        "pe": 36.25,
-        "div_yield": 1.1
+        "pe": 747.0,
+        "div_yield": 0.88
       },
       {
-        "code": "3481",
-        "name": "群創",
-        "close": 50.9,
-        "change_pct": 1.8,
-        "vol_b": 45.7,
-        "tech_score": 38,
+        "code": "8046",
+        "name": "南電",
+        "close": 1345.0,
+        "change_pct": -5.94,
+        "vol_b": 137.8,
+        "tech_score": 42,
+        "chip_score": 22,
+        "val_score": 0,
+        "total_score": 64,
+        "signals": [
+          "多頭排列",
+          "RSI68",
+          "MACD↑",
+          "↑27%",
+          "外資↑",
+          "投信↑",
+          "法人雙買"
+        ],
+        "pe": 1430.0,
+        "div_yield": 0.14
+      },
+      {
+        "code": "4958",
+        "name": "臻鼎-KY",
+        "close": 519.0,
+        "change_pct": -8.47,
+        "vol_b": 122.8,
+        "tech_score": 33,
         "chip_score": 30,
         "val_score": 0,
-        "total_score": 68,
+        "total_score": 63,
         "signals": [
           "多頭排列",
-          "RSI52",
+          "RSI56",
           "MACD↑",
           "外資↑",
           "投信↑",
           "法人雙買"
         ],
-        "pe": 50.9,
-        "div_yield": 1.96
+        "pe": 567.0,
+        "div_yield": 0.6
       },
       {
-        "code": "6239",
-        "name": "力成",
-        "close": 298.5,
-        "change_pct": 0.84,
-        "vol_b": 27.5,
-        "tech_score": 42,
-        "chip_score": 26,
-        "val_score": 0,
-        "total_score": 68,
-        "signals": [
-          "多頭排列",
-          "RSI54",
-          "MACD↑",
-          "↑9%",
-          "外資↑",
-          "投信↑",
-          "法人雙買"
-        ],
-        "pe": 298.5,
-        "div_yield": 1.51
-      },
-      {
-        "code": "3706",
-        "name": "神達",
-        "close": 84.2,
-        "change_pct": 1.45,
-        "vol_b": 12.7,
+        "code": "3090",
+        "name": "日電貿",
+        "close": 171.5,
+        "change_pct": -6.54,
+        "vol_b": 66.4,
         "tech_score": 46,
         "chip_score": 12,
-        "val_score": 10,
-        "total_score": 68,
+        "val_score": 5,
+        "total_score": 63,
         "signals": [
           "多頭排列",
-          "RSI70",
+          "RSI56",
           "MACD↑",
-          "量增2.3×",
-          "外資↑",
-          "殖4.8%"
+          "量增7.9×",
+          "外資↑"
         ],
-        "pe": 84.2,
-        "div_yield": 4.75
+        "pe": 183.5,
+        "div_yield": 2.62
       }
     ],
     "is_cached": false
